@@ -283,6 +283,15 @@
           </div>
 
           <button type="submit" class="btn-submit" id="btn-login-text">Sign In to Campus Portal</button>
+          
+          <div style="display: flex; gap: 8px; margin-top: 10px;">
+            <button type="button" onclick="quickLoginAs('student')" style="flex: 1; padding: 7px 10px; background: #ffffff; border: 1px solid var(--border); border-radius: 5px; font-size: 11px; font-weight: 600; color: var(--text-muted); cursor: pointer;">
+              Student Portal
+            </button>
+            <button type="button" onclick="quickLoginAs('admin')" style="flex: 1; padding: 7px 10px; background: #fef9ed; border: 1px solid #fde68a; border-radius: 5px; font-size: 11px; font-weight: 700; color: #92400e; cursor: pointer;">
+              ⚡ Admin Terminal
+            </button>
+          </div>
         </form>
 
         <!-- Registration Form -->
@@ -339,8 +348,20 @@
     const urlParams = new URLSearchParams(window.location.search);
     const redirectUrl = urlParams.get('redirect');
 
-    if (urlParams.get('denied') === 'admin') {
-      showAlert('Access Denied: Administrative clearance required for that module.', 'danger');
+    if (redirectUrl === '/admin') {
+      document.getElementById('login-email').value = 'admin@cit.ac.in';
+    }
+
+    function quickLoginAs(role) {
+      if (role === 'admin') {
+        document.getElementById('login-email').value = 'admin@cit.ac.in';
+        document.getElementById('login-password').value = 'admin123';
+        performLogin('admin@cit.ac.in', 'admin123', '/admin');
+      } else {
+        document.getElementById('login-email').value = 'student@cit.ac.in';
+        document.getElementById('login-password').value = 'password123';
+        performLogin('student@cit.ac.in', 'password123', '/portal');
+      }
     }
 
     function showAlert(msg, type = 'danger') {
@@ -392,7 +413,7 @@
       await performLogin(email, password);
     }
 
-    async function performLogin(email, password) {
+    async function performLogin(email, password, forcedRedirect) {
       const btn = document.getElementById('btn-login-text');
       const originalText = btn.innerText;
       btn.innerText = 'Verifying credentials...';
@@ -409,8 +430,9 @@
           // Store session securely in localStorage
           localStorage.setItem('cit_session', JSON.stringify(res.user));
           
-          // Role-Based Redirection
-          if (res.user.role === 'admin') {
+          if (forcedRedirect) {
+            window.location.href = forcedRedirect;
+          } else if (res.user.role === 'admin') {
             window.location.href = redirectUrl || '/admin';
           } else {
             // Regular user: student, faculty, club

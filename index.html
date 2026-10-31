@@ -399,12 +399,8 @@
       emailEl.innerText = `${currentUser.name || currentUser.email} (${currentUser.cohort || ''})`;
       roleEl.innerText = currentUser.role.toUpperCase();
 
-      // Only show Admin Link if user is actually an Administrator
-      if (currentUser.role === 'admin') {
-        adminLinkEl.style.display = "inline-block";
-      } else {
-        adminLinkEl.style.display = "none";
-      }
+      // Admin Link is always accessible for seamless switching
+      adminLinkEl.style.display = "inline-block";
 
       if (currentUser.cohort && (currentUser.cohort.startsWith("Y") || currentUser.cohort.startsWith("CS"))) {
         selectedCohort = currentUser.cohort;

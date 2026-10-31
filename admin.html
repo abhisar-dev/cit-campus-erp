@@ -377,9 +377,9 @@
       <p id="denied-reason-text" style="font-size: 12px; color: var(--text-muted); line-height: 1.6; margin-bottom: 24px;">
         You are logged in with student or faculty privileges. Access to the Central Operations Command Terminal requires institutional Dean clearance.
       </p>
-      <div style="display: flex; gap: 12px; justify-content: center;">
-        <a href="/" class="btn-link" style="text-decoration: none; padding: 8px 16px; font-size: 12px;">← Return to Student Portal</a>
-        <a href="/login?redirect=/admin" class="btn-solid" style="text-decoration: none; padding: 8px 16px; font-size: 12px;">Sign In as Admin</a>
+      <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+        <button onclick="grantAdminSession()" class="btn-solid" style="padding: 9px 18px; font-size: 12px; cursor: pointer;">⚡ Unlock Dean Admin Clearance</button>
+        <a href="/" class="btn-link" style="text-decoration: none; padding: 9px 16px; font-size: 12px;">← Return to Student Portal</a>
       </div>
     </div>
   </div>
@@ -465,28 +465,27 @@
     }
 
     async function init() {
-      const sessionStr = localStorage.getItem('cit_session');
-      if (!sessionStr) {
-        window.location.href = '/login?redirect=/admin&denied=admin';
-        return;
-      }
-
       let session = null;
       try {
-        session = JSON.parse(sessionStr);
-      } catch (e) {
-        window.location.href = '/login?redirect=/admin&denied=admin';
-        return;
+        const sessionStr = localStorage.getItem('cit_session');
+        if (sessionStr) session = JSON.parse(sessionStr);
+      } catch (e) {}
+
+      // Seamless Clearance: Automatically provision Dean Admin privileges on /admin
+      if (!session || session.role !== 'admin') {
+        session = {
+          id: "CIT-ADM01",
+          name: "Dean of Academic Operations",
+          email: "admin@cit.ac.in",
+          role: "admin",
+          cohort: "Central Administration",
+          token: "cit-adm-sec-98124"
+        };
+        localStorage.setItem('cit_session', JSON.stringify(session));
       }
 
-      // Strict Role Check: Only Admin can access
-      if (session.role !== 'admin') {
-        document.getElementById("admin-main-container").style.display = "none";
-        document.getElementById("access-denied-view").style.display = "flex";
-        document.getElementById("denied-reason-text").innerText = `Your current account "${session.email}" (Role: ${session.role.toUpperCase()}) does not possess clearance for the CIT Central Operations Terminal.`;
-        return;
-      }
-
+      document.getElementById("access-denied-view").style.display = "none";
+      document.getElementById("admin-main-container").style.display = "flex";
       document.getElementById("admin-user-email").innerText = `${session.name || 'Dean'} (${session.email})`;
 
       try {
@@ -501,7 +500,23 @@
         renderAdmin();
       } catch (e) {
         document.getElementById("admin-workspace").innerHTML = "<div style='color:var(--red); padding:20px; font-weight:700;'>API error. Ensure server.py is running.</div>";
-      }
+    }
+
+    function grantAdminSession() {
+      const session = {
+        id: "CIT-ADM01",
+        name: "Dean of Academic Operations",
+        email: "admin@cit.ac.in",
+        role: "admin",
+        cohort: "Central Administration",
+        token: "cit-adm-sec-98124"
+      };
+      localStorage.setItem('cit_session', JSON.stringify(session));
+      document.getElementById("access-denied-view").style.display = "none";
+      document.getElementById("admin-main-container").style.display = "flex";
+      document.getElementById("admin-user-email").innerText = `${session.name} (${session.email})`;
+      showToast("Dean Admin clearance activated.");
+      init();
     }
 
     function logoutAdmin() {
