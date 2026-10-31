@@ -9,6 +9,15 @@ import re
 PORT = 8000
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
+USERS_DB = [
+    {"id": "CIT-U001", "name": "Aarav Sharma", "email": "student@cit.ac.in", "role": "student", "cohort": "Y1-A", "status": "Active", "last_active": "Just now"},
+    {"id": "CIT-U002", "name": "Prof. S. R. Mohanty", "email": "faculty.f19@cit.ac.in", "role": "faculty", "cohort": "Faculty F19 (Physics)", "status": "Active", "last_active": "12m ago"},
+    {"id": "CIT-U003", "name": "Rohan Jena (Spectra Lead)", "email": "spectra.club@cit.ac.in", "role": "club", "cohort": "Robotics & AI Club", "status": "Active", "last_active": "1h ago"},
+    {"id": "CIT-U004", "name": "Priya Nair", "email": "priya.nair@cit.ac.in", "role": "student", "cohort": "CSE-2", "status": "Active", "last_active": "Yesterday"},
+    {"id": "CIT-U005", "name": "Dr. K. Patnaik", "email": "faculty.f07@cit.ac.in", "role": "faculty", "cohort": "Faculty F07 (Leave/Disruption)", "status": "Medical Leave", "last_active": "3d ago"},
+    {"id": "CIT-U006", "name": "Ananya Sen", "email": "ananya.sen@cit.ac.in", "role": "student", "cohort": "Y1-B", "status": "Active", "last_active": "4h ago"}
+]
+
 class ThreadingHTTPServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
     daemon_threads = True
     allow_reuse_address = True
@@ -86,6 +95,12 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
                     self.wfile.write(f.read())
             else:
                 self.wfile.write(b'{"error": "Failed to run validator"}')
+        if url.path == "/api/admin/users":
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(json.dumps(USERS_DB).encode("utf-8"))
             return
 
         return super().do_GET()
@@ -133,11 +148,53 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
             self.send_header("Content-Type", "application/json; charset=utf-8")
             self.send_header("Access-Control-Allow-Origin", "*")
             self.end_headers()
+            try:
+                data = json.loads(body)
+                name = data.get("name", "New CIT Member")
+                email = data.get("email", "user@cit.ac.in")
+                cohort = data.get("cohort", "Y1-A")
+            except Exception:
+                name, email, cohort = "New CIT Member", "user@cit.ac.in", "Y1-A"
+
+            new_id = f"CIT-U{len(USERS_DB)+1:03d}"
+            role = "student"
+            if "faculty" in email: role = "faculty"
+            elif "club" in email or "spectra" in email: role = "club"
+
+            USERS_DB.append({
+                "id": new_id,
+                "name": name,
+                "email": email,
+                "role": role,
+                "cohort": cohort,
+                "status": "Active",
+                "last_active": "Just registered"
+            })
             res = {
                 "success": True,
-                "message": "Account registered successfully. You may now log in."
+                "message": f"Account {new_id} ({email}) created successfully. You can now sign in."
             }
             self.wfile.write(json.dumps(res).encode("utf-8"))
+            return
+
+        if url.path == "/api/admin/users/update":
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            try:
+                data = json.loads(body)
+                uid = data.get("id")
+                new_status = data.get("status")
+                new_role = data.get("role")
+                for u in USERS_DB:
+                    if u["id"] == uid:
+                        if new_status: u["status"] = new_status
+                        if new_role: u["role"] = new_role
+                        break
+            except Exception:
+                pass
+            self.wfile.write(json.dumps({"success": True, "users": USERS_DB}).encode("utf-8"))
             return
 
         if url.path == "/api/parse-nlp":

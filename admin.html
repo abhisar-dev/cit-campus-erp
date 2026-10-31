@@ -342,6 +342,12 @@
           </button>
         </li>
         <li>
+          <button class="admin-tab" onclick="switchAdminTab('users')">
+            <span>User Control & Directory</span>
+            <span class="mono" style="font-size: 10px; color: var(--blue);" id="user-count-badge">Users</span>
+          </button>
+        </li>
+        <li>
           <button class="admin-tab" onclick="switchAdminTab('timetable')">
             <span>Master Timetable Solver</span>
             <span class="mono" style="font-size: 10px; color: var(--green);">0 Clash</span>
@@ -419,6 +425,7 @@
 
       if (activeTab === 'disruption') renderDisruption(ws);
       else if (activeTab === 'fest') renderFest(ws);
+      else if (activeTab === 'users') renderUsers(ws);
       else if (activeTab === 'timetable') renderTimetable(ws);
       else if (activeTab === 'audit') renderAudit(ws);
       else if (activeTab === 'exports') renderExports(ws);
@@ -685,6 +692,131 @@
           </div>
         </div>
       `;
+    }
+
+    // 6. USER DIRECTORY & ACCESS CONTROL
+    async function renderUsers(ws) {
+      ws.innerHTML = `<div style="color: var(--text-dim); padding: 20px;" class="mono">Loading user directory...</div>`;
+      try {
+        const users = await fetch("/api/admin/users").then(r => r.json());
+        const total = users.length;
+        const students = users.filter(u => u.role === 'student').length;
+        const faculty = users.filter(u => u.role === 'faculty').length;
+        const club = users.filter(u => u.role === 'club').length;
+
+        ws.innerHTML = `
+          <div class="stat-row">
+            <div class="stat-box">
+              <div class="stat-box-title">Registered Accounts</div>
+              <div class="stat-box-val mono">${total}</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-box-title">Students (Y1 & Y2)</div>
+              <div class="stat-box-val mono" style="color: var(--blue);">${students}</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-box-title">Faculty Members</div>
+              <div class="stat-box-val mono" style="color: var(--green);">${faculty}</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-box-title">Fest / Club Reps</div>
+              <div class="stat-box-val mono" style="color: var(--amber);">${club}</div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <div>
+                <div class="panel-title">Campus User Access Control & Directory</div>
+                <div class="panel-desc">Real-time control over authenticated portal users, permission roles, and account statuses.</div>
+              </div>
+              <button class="btn-solid" onclick="renderUsers(document.getElementById('admin-workspace'))">↻ Refresh</button>
+            </div>
+
+            <div class="terminal-table-wrapper">
+              <table class="terminal-table">
+                <thead>
+                  <tr>
+                    <th>User ID</th>
+                    <th>Name</th>
+                    <th>Institute Email</th>
+                    <th>Cohort / Dept</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Last Active</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${users.map(u => {
+                    const statusColor = u.status === 'Active' ? 'var(--green)' : (u.status === 'Medical Leave' ? 'var(--amber)' : 'var(--red)');
+                    return `
+                      <tr>
+                        <td class="mono" style="font-weight: 700; color: var(--text-main);">${u.id}</td>
+                        <td style="font-weight: 600;">${u.name}</td>
+                        <td class="mono" style="color: var(--text-muted);">${u.email}</td>
+                        <td>${u.cohort}</td>
+                        <td>
+                          <select onchange="changeUserRole('${u.id}', this.value)" style="background: #18181b; border: 1px solid var(--border); color: #fff; font-size: 11px; padding: 2px 6px; border-radius: 4px;">
+                            <option value="student" ${u.role === 'student' ? 'selected' : ''}>Student</option>
+                            <option value="faculty" ${u.role === 'faculty' ? 'selected' : ''}>Faculty</option>
+                            <option value="club" ${u.role === 'club' ? 'selected' : ''}>Club Lead</option>
+                            <option value="admin" ${u.role === 'admin' ? 'selected' : ''}>Admin</option>
+                          </select>
+                        </td>
+                        <td>
+                          <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: ${statusColor}; margin-right: 6px;"></span>
+                          <span class="mono" style="font-size: 11px; color: ${statusColor}; font-weight: 600;">${u.status}</span>
+                        </td>
+                        <td style="font-size: 11px; color: var(--text-dim);">${u.last_active}</td>
+                        <td>
+                          <button onclick="toggleUserStatus('${u.id}', '${u.status === 'Active' ? 'Suspended' : 'Active'}')" style="background: transparent; border: 1px solid var(--border); color: var(--text-muted); font-size: 10px; padding: 3px 8px; border-radius: 4px; cursor: pointer;">
+                            ${u.status === 'Active' ? 'Suspend' : 'Activate'}
+                          </button>
+                        </td>
+                      </tr>
+                    `;
+                  }).join("")}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      } catch (e) {
+        ws.innerHTML = `<div style="color: var(--red); padding: 20px;">Failed to load users: ${e.message}</div>`;
+      }
+    }
+
+    async function toggleUserStatus(id, newStatus) {
+      try {
+        const res = await fetch("/api/admin/users/update", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id, status: newStatus })
+        }).then(r => r.json());
+        if (res.success) {
+          showToast(`User ${id} status changed to ${newStatus}`);
+          renderUsers(document.getElementById("admin-workspace"));
+        }
+      } catch (e) {
+        showToast("Error updating user status");
+      }
+    }
+
+    async function changeUserRole(id, newRole) {
+      try {
+        const res = await fetch("/api/admin/users/update", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id, role: newRole })
+        }).then(r => r.json());
+        if (res.success) {
+          showToast(`User ${id} role updated to ${newRole}`);
+          renderUsers(document.getElementById("admin-workspace"));
+        }
+      } catch (e) {
+        showToast("Error updating role");
+      }
     }
 
     window.addEventListener("DOMContentLoaded", init);
