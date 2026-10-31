@@ -27,15 +27,22 @@ USERS_DB = [
 ]
 
 def find_file(rel_path):
-    # Strip leading slashes
     clean_rel = rel_path.lstrip("/\\")
+    alt_rel = clean_rel
+    if clean_rel.startswith("public/"):
+        alt_rel = clean_rel.replace("public/", "assets/", 1)
+    elif clean_rel.startswith("public\\"):
+        alt_rel = clean_rel.replace("public\\", "assets\\", 1)
+
     candidates = [
         os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), clean_rel),
+        os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), alt_rel),
         os.path.join(os.getcwd(), clean_rel),
-        os.path.join(os.path.dirname(os.path.abspath(__file__)), clean_rel),
+        os.path.join(os.getcwd(), alt_rel),
         os.path.join("/var/task", clean_rel),
-        os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "dist", clean_rel),
-        os.path.join(os.getcwd(), "dist", clean_rel)
+        os.path.join("/var/task", alt_rel),
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), clean_rel),
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), alt_rel),
     ]
     for c in candidates:
         if os.path.exists(c) and os.path.isfile(c):
@@ -51,11 +58,16 @@ def read_data_file(rel_path):
 
 class handler(http.server.BaseHTTPRequestHandler):
     def get_requested_path(self):
-        for h in ("x-forwarded-uri", "x-matched-path", "x-invoke-path"):
+        p = urllib.parse.urlparse(self.path).path
+        if p and p not in ("/api/index.py", "/api/index", "/api"):
+            return p
+        for h in ("x-forwarded-uri", "x-invoke-path", "x-matched-path"):
             val = self.headers.get(h)
             if val:
-                return urllib.parse.urlparse(val).path
-        return urllib.parse.urlparse(self.path).path
+                vp = urllib.parse.urlparse(val).path
+                if vp not in ("/api/index.py", "/api/index", "/api"):
+                    return vp
+        return p
 
     def send_cors_headers(self, content_type="application/json; charset=utf-8"):
         self.send_header("Content-Type", content_type)
@@ -102,9 +114,16 @@ class handler(http.server.BaseHTTPRequestHandler):
             if self.serve_file("index.html"):
                 return
 
+        # Static assets (/public/* or /assets/* or /exports/*)
+        if req_path.startswith("/public/") or req_path.startswith("/assets/") or req_path.startswith("/exports/"):
+            if self.serve_file(req_path):
+                return
+
         # API Endpoints
         if req_path.endswith("/api/data") or req_path == "/data":
-            content = read_data_file("public/cit_public.json")
+            content = read_data_file("assets/cit_public.json")
+            if not content:
+                content = read_data_file("public/cit_public.json")
             if content:
                 self.send_response(200)
                 self.send_cors_headers("application/json; charset=utf-8")
@@ -113,6 +132,8 @@ class handler(http.server.BaseHTTPRequestHandler):
 
         if req_path.endswith("/api/schedule") or req_path == "/schedule":
             content = read_data_file("exports/schedule.json")
+            if not content:
+                content = read_data_file("assets/schedule.json")
             if content:
                 self.send_response(200)
                 self.send_cors_headers("application/json; charset=utf-8")
@@ -121,6 +142,8 @@ class handler(http.server.BaseHTTPRequestHandler):
 
         if req_path.endswith("/api/schedule_after") or req_path == "/schedule_after":
             content = read_data_file("exports/schedule_after.json")
+            if not content:
+                content = read_data_file("assets/schedule_after.json")
             if content:
                 self.send_response(200)
                 self.send_cors_headers("application/json; charset=utf-8")
@@ -129,6 +152,8 @@ class handler(http.server.BaseHTTPRequestHandler):
 
         if req_path.endswith("/api/validate") or req_path == "/validate":
             content = read_data_file("report.json")
+            if not content:
+                content = read_data_file("assets/report.json")
             if not content:
                 content = read_data_file("public/report.json")
             if content:
@@ -142,11 +167,6 @@ class handler(http.server.BaseHTTPRequestHandler):
             self.send_cors_headers("application/json; charset=utf-8")
             self.wfile.write(json.dumps(USERS_DB).encode("utf-8"))
             return
-
-        # Serve static assets from /public/ or /exports/
-        if req_path.startswith("/public/") or req_path.startswith("/exports/"):
-            if self.serve_file(req_path):
-                return
 
         # Direct file check (e.g. favicon, css, js)
         if self.serve_file(req_path):
