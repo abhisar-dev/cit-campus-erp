@@ -1,0 +1,26 @@
+# ==============================================================================
+# Chilika Institute of Technology (CIT) - Campus ERP & Academic Platform
+# Robots Exclusion Protocol (RFC 9309)
+# ==============================================================================
+
+User-agent: *
+# Public Academic Services & Portals
+Allow: /
+Allow: /login
+Allow: /support
+Allow: /privacy
+Allow: /terms
+Allow: /public/
+Allow: /assets/
+Allow: /favicon.ico
+Allow: /sitemap.xml
+
+# Guarded Administration & Private Endpoints
+Disallow: /admin
+Disallow: /admin/
+Disallow: /admin.html
+Disallow: /admin_login.html
+Disallow: /api/
+
+# Canonical Sitemap Declaration
+Sitemap: https://cit-campus-erp.vercel.app/sitemap.xml

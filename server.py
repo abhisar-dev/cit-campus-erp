@@ -162,6 +162,25 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
                 self.wfile.write(f.read())
             return
 
+        # Robots & Sitemap routes
+        if url.path == "/robots.txt":
+            self.send_response(200)
+            self.send_header("Content-Type", "text/plain; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            with open(os.path.join(BASE_DIR, "robots.txt"), "rb") as f:
+                self.wfile.write(f.read())
+            return
+
+        if url.path == "/sitemap.xml":
+            self.send_response(200)
+            self.send_header("Content-Type", "application/xml; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            with open(os.path.join(BASE_DIR, "sitemap.xml"), "rb") as f:
+                self.wfile.write(f.read())
+            return
+
         if url.path == "/api/data":
             self.send_response(200)
             self.send_header("Content-Type", "application/json; charset=utf-8")

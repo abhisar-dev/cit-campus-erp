@@ -48,7 +48,9 @@ MIME_TYPES = {
     ".svg": "image/svg+xml",
     ".ico": "image/x-icon",
     ".webp": "image/webp",
-    ".webmanifest": "application/manifest+json"
+    ".webmanifest": "application/manifest+json",
+    ".xml": "application/xml; charset=utf-8",
+    ".txt": "text/plain; charset=utf-8"
 }
 
 USERS_DB = [
@@ -186,6 +188,15 @@ class handler(http.server.BaseHTTPRequestHandler):
         # User portal routes
         if req_path in ("/", "/index.html", "/portal", "/dashboard", "/timetable", "/bookings"):
             if self.serve_file("index.html"):
+                return
+
+        # SEO & Web Crawler routes
+        if req_path == "/robots.txt":
+            if self.serve_file("robots.txt", default_mime="text/plain; charset=utf-8"):
+                return
+
+        if req_path == "/sitemap.xml":
+            if self.serve_file("sitemap.xml", default_mime="application/xml; charset=utf-8"):
                 return
 
         # Static assets (/public/* or /assets/* or /exports/*)
