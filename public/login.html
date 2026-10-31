@@ -820,9 +820,6 @@
     </div>
   </div>
 
-  <!-- Device Incoming Push Notification Simulation Banner -->
-  <div id="device-notification-banner" style="display: none; position: fixed; top: 20px; right: 20px; z-index: 100000; width: 340px; background: #0f172a; color: #ffffff; border-radius: 12px; box-shadow: 0 12px 30px rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.12); padding: 14px 16px; animation: slideInNotif 0.3s cubic-bezier(0.16, 1, 0.3, 1);"></div>
-
   <script>
     // Get query params if any redirect was requested
     const urlParams = new URLSearchParams(window.location.search);
@@ -1163,7 +1160,6 @@
       const m = document.getElementById('modalForgotPassword');
       if (m) m.classList.remove('show');
       if (forgotCooldownInterval) clearInterval(forgotCooldownInterval);
-      dismissDeviceNotification();
     }
 
     function showForgotAlert(msg, type = 'danger') {
@@ -1211,58 +1207,6 @@
       if (alertBox) alertBox.style.display = 'none';
     }
 
-    function showDeviceNotification(notif) {
-      const container = document.getElementById('device-notification-banner');
-      if (!container) return;
-
-      const isSms = notif.channel === 'sms';
-      const iconSvg = isSms 
-        ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`
-        : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>`;
-
-      container.innerHTML = `
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <div style="width: 26px; height: 26px; border-radius: 6px; background: ${isSms ? '#0284c7' : '#961528'}; display: flex; align-items: center; justify-content: center; color: #fff;">
-              ${iconSvg}
-            </div>
-            <div>
-              <span style="font-size: 11.5px; font-weight: 700; color: #f8fafc; letter-spacing: 0.2px;">${notif.sender}</span>
-              <span style="font-size: 10px; color: #94a3b8; display: block;">${notif.sender_address}</span>
-            </div>
-          </div>
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <span style="font-size: 10px; color: #94a3b8; font-weight: 600;">now</span>
-            <button type="button" onclick="dismissDeviceNotification()" style="background: none; border: none; color: #94a3b8; cursor: pointer; padding: 2px; font-size: 13px; line-height: 1;">✕</button>
-          </div>
-        </div>
-        <div style="margin-top: 6px; padding-left: 34px;">
-          <div style="font-size: 12px; font-weight: 700; color: #ffffff; margin-bottom: 2px;">${notif.title}</div>
-          <div style="font-size: 11.5px; color: #cbd5e1; line-height: 1.4;">
-            ${notif.preview}
-          </div>
-        </div>
-        <div style="margin-top: 10px; height: 3px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden;">
-          <div id="device-notif-progress" style="height: 100%; width: 100%; background: #38bdf8; transition: width 12s linear;"></div>
-        </div>
-      `;
-
-      container.style.display = 'block';
-      setTimeout(() => {
-        const prog = document.getElementById('device-notif-progress');
-        if (prog) prog.style.width = '0%';
-      }, 50);
-
-      if (window.deviceNotifTimer) clearTimeout(window.deviceNotifTimer);
-      window.deviceNotifTimer = setTimeout(dismissDeviceNotification, 12000);
-    }
-
-    function dismissDeviceNotification() {
-      const container = document.getElementById('device-notification-banner');
-      if (container) container.style.display = 'none';
-      if (window.deviceNotifTimer) clearTimeout(window.deviceNotifTimer);
-    }
-
     async function handleRequestResetCode(e) {
       if (e) e.preventDefault();
       const email = document.getElementById('forgot-email').value.trim().toLowerCase();
@@ -1284,7 +1228,7 @@
           document.getElementById('form-forgot-step1').style.display = 'none';
           document.getElementById('form-forgot-step2').style.display = 'block';
 
-          // Never auto-fill code - leave blank for user entry
+          // Never show or auto-fill code - leave blank for user entry
           const otpInput = document.getElementById('forgot-otp-code');
           otpInput.value = '';
           otpInput.focus();
@@ -1306,13 +1250,6 @@
           }
 
           startForgotCooldown(res.cooldown || 45);
-
-          // Simulated device incoming push notification arrives after 1.8 seconds
-          if (res.simulated_notification) {
-            setTimeout(() => {
-              showDeviceNotification(res.simulated_notification);
-            }, 1800);
-          }
         } else {
           showForgotAlert(res.message || 'Unable to generate reset code.');
         }
@@ -1359,7 +1296,6 @@
 
         if (res.success) {
           closeForgotPasswordModal();
-          dismissDeviceNotification();
           failedLoginAttempts = 0;
           localStorage.removeItem('cit_failed_attempts');
           const box = document.getElementById('bot-protection-box');

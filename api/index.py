@@ -100,33 +100,53 @@ def dispatch_email_code(to_email: str, otp: str):
                     "Content-Type": "application/json"
                 }
             )
-            with urllib.request.urlopen(req, timeout=5) as resp:
+            with urllib.request.urlopen(req, timeout=8) as resp:
                 if resp.status in (200, 201):
                     return True, "Resend API Gateway"
         except Exception as e:
             print(f"[MAIL WARN] Resend dispatch failed: {e}")
 
-    if smtp_host and smtp_user and smtp_pass:
+    # Auto-detect SMTP host if user provided email credentials
+    if smtp_user and smtp_pass:
+        if not smtp_host:
+            if "@gmail.com" in smtp_user.lower():
+                smtp_host = "smtp.gmail.com"
+                smtp_port = 587
+            elif "@outlook.com" in smtp_user.lower() or "@hotmail.com" in smtp_user.lower():
+                smtp_host = "smtp.office365.com"
+                smtp_port = 587
+            elif "@yahoo.com" in smtp_user.lower():
+                smtp_host = "smtp.mail.yahoo.com"
+                smtp_port = 587
+
+        effective_from = f"CIT Central Security <{smtp_user}>" if ("<" not in smtp_from or "noreply" in smtp_from) else smtp_from
+
         try:
             import smtplib
             from email.mime.multipart import MIMEMultipart
             from email.mime.text import MIMEText
+            from email.utils import make_msgid, formatdate
+
             msg = MIMEMultipart("alternative")
             msg["Subject"] = subject
-            msg["From"] = smtp_from
+            msg["From"] = effective_from
             msg["To"] = to_email
+            msg["Date"] = formatdate(localtime=True)
+            msg["Message-ID"] = make_msgid(domain="cit.ac.in")
+            msg.attach(MIMEText(f"CIT ERP Verification Code: {otp}\nValid for 10 minutes.", "plain"))
             msg.attach(MIMEText(html_content, "html"))
 
-            with smtplib.SMTP(smtp_host, smtp_port, timeout=5) as server:
+            with smtplib.SMTP(smtp_host, smtp_port, timeout=8) as server:
                 server.ehlo()
                 if smtp_port != 465:
                     server.starttls()
                     server.ehlo()
                 server.login(smtp_user, smtp_pass)
-                server.sendmail(smtp_from, [to_email], msg.as_string())
+                server.sendmail(effective_from, [to_email], msg.as_string())
+            print(f"[MAIL SUCCESS] Real email delivered to {to_email} via {smtp_host}!")
             return True, f"SMTP Gateway ({smtp_host})"
         except Exception as e:
-            print(f"[MAIL WARN] SMTP dispatch failed: {e}")
+            print(f"[MAIL WARN] SMTP dispatch to {to_email} failed: {e}")
 
     return False, "Simulated Campus Gateway"
 
@@ -920,18 +940,11 @@ class handler(http.server.BaseHTTPRequestHandler):
                 "success": True,
                 "channel": channel,
                 "masked_target": masked_target,
-                "message": f"Verification code dispatched via {channel.upper()} to {masked_target}.",
+                "dispatched_real_email": dispatched,
+                "message": f"Verification code dispatched to {masked_target}. Please check your inbox and spam folder.",
                 "expires_in": 600,
                 "cooldown": 45,
-                "delivery_id": f"CIT-DISPATCH-{secrets.token_hex(4).upper()}",
-                "simulated_notification": {
-                    "channel": channel,
-                    "sender": "CIT Security Gateway" if channel == "email" else "CIT-AUTH-SMS",
-                    "sender_address": "noreply@cit.ac.in" if channel == "email" else "+91 (06756) 220-100",
-                    "title": "CIT ERP Verification Code",
-                    "code": otp,
-                    "preview": f"Your 6-digit recovery OTP is {otp}. Valid for 10 minutes. Do not share."
-                }
+                "delivery_id": f"CIT-DISPATCH-{secrets.token_hex(4).upper()}"
             }
             self.wfile.write(json.dumps(res).encode("utf-8"))
             return
