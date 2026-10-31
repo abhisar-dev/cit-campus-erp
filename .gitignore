@@ -2,3 +2,4 @@
 dist
 *.bak
 __pycache__
+users_store.json

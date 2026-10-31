@@ -391,11 +391,30 @@
 
         <div id="alert-box" class="alert-banner"></div>
 
+        <!-- Quick Resume Box for Returning Users -->
+        <div id="quick-resume-box" style="display: none; margin-bottom: 14px; padding: 12px 14px; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 10px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <div style="font-size: 11px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px;">Previous Account Detected</div>
+            <button type="button" onclick="dismissQuickResume()" style="background: transparent; border: none; font-size: 12px; color: var(--text-muted); cursor: pointer; padding: 0 4px;" title="Dismiss">✕</button>
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+            <div id="quick-resume-avatar"></div>
+            <div style="overflow: hidden; flex: 1;">
+              <div id="quick-resume-name" style="font-size: 13px; font-weight: 700; color: var(--text-main); white-space: nowrap; text-overflow: ellipsis; overflow: hidden;"></div>
+              <div id="quick-resume-email" style="font-size: 11.5px; color: var(--text-muted); white-space: nowrap; text-overflow: ellipsis; overflow: hidden;"></div>
+            </div>
+          </div>
+          <button type="button" onclick="continueWithActiveSession()" style="width: 100%; height: 36px; background: var(--primary); color: #fff; border: none; border-radius: 6px; font-size: 12.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+            <span>Continue as Current User</span>
+            <span>→</span>
+          </button>
+        </div>
+
         <!-- Sign In Form -->
         <form id="form-login" onsubmit="handleLoginSubmit(event)">
           <div class="form-group">
-            <label class="form-label" for="login-email">CIT Email Address / Username</label>
-            <input type="text" id="login-email" class="form-input" placeholder="e.g. user@cit.ac.in" autocomplete="username" required />
+            <label class="form-label" for="login-email">Email Address / Username</label>
+            <input type="text" id="login-email" class="form-input" placeholder="e.g. name@gmail.com or user@cit.ac.in" autocomplete="username" required />
           </div>
 
           <div class="form-group">
@@ -454,9 +473,9 @@
           </div>
 
           <div class="form-group">
-            <label class="form-label" for="reg-email">Institute Email</label>
-            <input type="email" id="reg-email" class="form-input" placeholder="user@cit.ac.in" required />
-            <div class="form-hint">Must end in @cit.ac.in</div>
+            <label class="form-label" for="reg-email">Account Email Address</label>
+            <input type="email" id="reg-email" class="form-input" placeholder="e.g. name@gmail.com or user@cit.ac.in" required />
+            <div class="form-hint">Institutional @cit.ac.in or personal @gmail.com accepted</div>
           </div>
 
           <div class="form-group">
@@ -629,8 +648,8 @@
           <input type="text" id="modal-bug-name" class="form-input" placeholder="e.g. Subhajit Nayak" required />
         </div>
         <div class="form-group" style="margin-bottom: 12px;">
-          <label class="form-label" for="modal-bug-email">CIT Email Address</label>
-          <input type="email" id="modal-bug-email" class="form-input" placeholder="student@cit.ac.in" required />
+          <label class="form-label" for="modal-bug-email">Email Address</label>
+          <input type="email" id="modal-bug-email" class="form-input" placeholder="e.g. user@gmail.com or user@cit.ac.in" required />
         </div>
         <div class="form-group" style="margin-bottom: 12px;">
           <label class="form-label" for="modal-bug-cat">Issue Category</label>
@@ -671,9 +690,9 @@
       <!-- Step 1: Request OTP -->
       <form id="form-forgot-step1" onsubmit="handleRequestResetCode(event)">
         <div class="form-group" style="margin-bottom: 12px;">
-          <label class="form-label" for="forgot-email">CIT Email Address</label>
-          <input type="email" id="forgot-email" class="form-input" placeholder="e.g. student@cit.ac.in" required />
-          <div class="form-hint" style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Must be your registered @cit.ac.in institutional account.</div>
+          <label class="form-label" for="forgot-email">Account Email Address</label>
+          <input type="email" id="forgot-email" class="form-input" placeholder="e.g. student@gmail.com or user@cit.ac.in" required />
+          <div class="form-hint" style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Enter your registered institutional @cit.ac.in or personal @gmail.com account.</div>
         </div>
         <button type="submit" class="btn-submit" id="btn-request-code" style="margin-top: 6px;">Send Reset Verification Code →</button>
       </form>
@@ -765,6 +784,7 @@
 
         if (res.success && res.user) {
           localStorage.setItem('cit_session', JSON.stringify(res.user));
+          saveAccountToVault(res.user);
           if (res.user.avatar) {
             let prof = {};
             try {
@@ -1144,11 +1164,43 @@
       await performLogin(email, password);
     }
 
+    function saveAccountToVault(user) {
+      if (!user || !user.email) return;
+      try {
+        let vault = JSON.parse(localStorage.getItem('cit_accounts_vault') || '[]');
+        if (!Array.isArray(vault)) vault = [];
+        const cleanEmail = user.email.toLowerCase().trim();
+        const idx = vault.findIndex(u => (u.email || '').toLowerCase().trim() === cleanEmail);
+        const entry = {
+          name: user.name || cleanEmail.split('@')[0],
+          email: cleanEmail,
+          role: user.role || 'student',
+          cohort: user.cohort || 'Y1-A',
+          avatar: user.avatar || ''
+        };
+        if (idx >= 0) {
+          vault[idx] = Object.assign({}, vault[idx], entry);
+        } else {
+          vault.push(entry);
+        }
+        localStorage.setItem('cit_accounts_vault', JSON.stringify(vault));
+      } catch(e) {
+        console.warn('Vault storage note:', e);
+      }
+    }
+
     async function performLogin(email, password, forcedRedirect) {
       const btn = document.getElementById('btn-login-text');
       const originalText = btn.innerText;
       btn.innerText = 'Verifying credentials...';
       btn.disabled = true;
+
+      // Collect any client-cached accounts to restore across cold reboots / devices
+      let clientVault = [];
+      try {
+        clientVault = JSON.parse(localStorage.getItem('cit_accounts_vault') || '[]');
+        if (!Array.isArray(clientVault)) clientVault = [];
+      } catch(e) {}
 
       try {
         const res = await fetch('/api/auth/login', {
@@ -1157,7 +1209,8 @@
           body: JSON.stringify({
             email,
             password,
-            human_token: activeHumanToken
+            human_token: activeHumanToken,
+            client_vault: clientVault
           })
         }).then(r => r.json());
 
@@ -1168,6 +1221,7 @@
           activeHumanToken = '';
 
           localStorage.setItem('cit_session', JSON.stringify(res.user));
+          saveAccountToVault(res.user);
           sessionStorage.setItem('cit_show_privacy_popup', '1');
           
           if (forcedRedirect) {
@@ -1209,8 +1263,8 @@
       const cohort = role === 'student' ? document.getElementById('reg-cohort').value : (role === 'faculty' ? 'Faculty Member' : 'Club Operations');
       const password = document.getElementById('reg-password').value;
 
-      if (!email.endsWith('@cit.ac.in')) {
-        showAlert('Registration requires an official @cit.ac.in institute email.');
+      if (!email || !email.includes('@') || !email.includes('.')) {
+        showAlert('Please enter a valid email address (e.g., student@gmail.com or user@cit.ac.in).');
         return;
       }
 
@@ -1236,6 +1290,7 @@
 
         if (res.success) {
           showAlert(res.message + ' You can now sign in.', 'success');
+          saveAccountToVault({ name, email, role, cohort });
           sessionStorage.setItem('cit_show_privacy_popup', '1');
           switchTab('login');
           document.getElementById('login-email').value = email;
@@ -1250,6 +1305,50 @@
         btn.disabled = false;
       }
     }
+
+    function continueWithActiveSession() {
+      sessionStorage.setItem('cit_show_privacy_popup', '1');
+      try {
+        const session = JSON.parse(localStorage.getItem('cit_session') || '{}');
+        if (session.role === 'admin') {
+          window.location.href = redirectUrl || '/admin';
+        } else {
+          window.location.href = '/portal';
+        }
+      } catch(e) {
+        window.location.href = '/portal';
+      }
+    }
+
+    function dismissQuickResume() {
+      const quickResumeEl = document.getElementById('quick-resume-box');
+      if (quickResumeEl) quickResumeEl.style.display = 'none';
+    }
+
+    // Auto-detect previously signed in accounts for smooth resumption
+    document.addEventListener('DOMContentLoaded', () => {
+      try {
+        const session = JSON.parse(localStorage.getItem('cit_session') || 'null');
+        if (session && session.email) {
+          const emailInput = document.getElementById('login-email');
+          if (emailInput && !emailInput.value) {
+            emailInput.value = session.email;
+          }
+          const quickResumeEl = document.getElementById('quick-resume-box');
+          if (quickResumeEl) {
+            const displayName = session.name || session.email.split('@')[0];
+            const avatarHtml = session.avatar 
+              ? `<img src="${session.avatar}" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover;" alt="Avatar" />`
+              : `<div style="width: 36px; height: 36px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px;">${displayName.charAt(0).toUpperCase()}</div>`;
+            
+            document.getElementById('quick-resume-avatar').innerHTML = avatarHtml;
+            document.getElementById('quick-resume-name').innerText = displayName;
+            document.getElementById('quick-resume-email').innerText = session.email;
+            quickResumeEl.style.display = 'block';
+          }
+        }
+      } catch(e) {}
+    });
   </script>
 </body>
 </html>
