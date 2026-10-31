@@ -16,6 +16,8 @@ USERS_DB = [
     {"id": "CIT-U003", "name": "", "email": "spectra.club@cit.ac.in", "role": "club", "cohort": "Club Operations", "status": "Active", "last_active": "1h ago"}
 ]
 
+USER_PROFILES = {}
+
 class ThreadingHTTPServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
     daemon_threads = True
     allow_reuse_address = True
@@ -184,6 +186,29 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
             self.wfile.write(json.dumps(USERS_DB).encode("utf-8"))
             return
 
+        if url.path == "/api/user/profile":
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            email = urllib.parse.parse_qs(url.query).get("email", ["student@cit.ac.in"])[0]
+            prof = USER_PROFILES.get(email, {
+                "name": "",
+                "email": email,
+                "student_id": "CIT2026BCSE01",
+                "branch": "Computer Science & Engineering",
+                "phone": "",
+                "academic_year": "1st Year / 2nd Semester",
+                "cohort": "Y1-A",
+                "campus": "Chilika Institute of Technology",
+                "bio": "Enrolled Undergraduate Scholar · Central Academic Services",
+                "github": "",
+                "linkedin": "",
+                "avatar": ""
+            })
+            self.wfile.write(json.dumps({"success": True, "profile": prof}).encode("utf-8"))
+            return
+
         return super().do_GET()
 
     def do_POST(self):
@@ -192,7 +217,26 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
         url = urllib.parse.urlparse(self.path)
         content_length = int(self.headers.get("Content-Length", 0))
         body = self.rfile.read(content_length).decode("utf-8") if content_length > 0 else "{}"
-        
+
+        # Profile Update API
+        if url.path == "/api/user/profile":
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            try:
+                prof = json.loads(body)
+                email = prof.get("email", "student@cit.ac.in")
+                USER_PROFILES[email] = prof
+                if prof.get("name"):
+                    for u in USERS_DB:
+                        if u["email"].lower() == email.lower():
+                            u["name"] = prof["name"]
+                self.wfile.write(json.dumps({"success": True, "profile": prof}).encode("utf-8"))
+            except Exception as e:
+                self.wfile.write(json.dumps({"success": False, "error": str(e)}).encode("utf-8"))
+            return
+
         # User Authentication API
         if url.path == "/api/auth/login":
             self.send_response(200)

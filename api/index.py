@@ -24,6 +24,8 @@ USERS_DB = [
     {"id": "CIT-U003", "name": "", "email": "spectra.club@cit.ac.in", "role": "club", "cohort": "Club Operations", "status": "Active", "last_active": "1h ago"}
 ]
 
+USER_PROFILES = {}
+
 def find_file(rel_path):
     clean_rel = rel_path.lstrip("/\\")
     alt_rel = clean_rel
@@ -207,6 +209,28 @@ class handler(http.server.BaseHTTPRequestHandler):
             self.wfile.write(json.dumps(USERS_DB).encode("utf-8"))
             return
 
+        if req_path.endswith("/api/user/profile") or req_path == "/user/profile":
+            self.send_response(200)
+            self.send_cors_headers("application/json; charset=utf-8")
+            url_parsed = urllib.parse.urlparse(self.path)
+            email = urllib.parse.parse_qs(url_parsed.query).get("email", ["student@cit.ac.in"])[0]
+            prof = USER_PROFILES.get(email, {
+                "name": "",
+                "email": email,
+                "student_id": "CIT2026BCSE01",
+                "branch": "Computer Science & Engineering",
+                "phone": "",
+                "academic_year": "1st Year / 2nd Semester",
+                "cohort": "Y1-A",
+                "campus": "Chilika Institute of Technology",
+                "bio": "Enrolled Undergraduate Scholar · Central Academic Services",
+                "github": "",
+                "linkedin": "",
+                "avatar": ""
+            })
+            self.wfile.write(json.dumps({"success": True, "profile": prof}).encode("utf-8"))
+            return
+
         # Direct file check (e.g. favicon, css, js)
         if self.serve_file(req_path):
             return
@@ -225,6 +249,23 @@ class handler(http.server.BaseHTTPRequestHandler):
         req_path = self.get_requested_path()
         content_length = int(self.headers.get("Content-Length", 0))
         body = self.rfile.read(content_length).decode("utf-8") if content_length > 0 else "{}"
+
+        # Profile Update API
+        if req_path.endswith("/api/user/profile") or req_path == "/user/profile":
+            self.send_response(200)
+            self.send_cors_headers("application/json; charset=utf-8")
+            try:
+                prof = json.loads(body)
+                email = prof.get("email", "student@cit.ac.in")
+                USER_PROFILES[email] = prof
+                if prof.get("name"):
+                    for u in USERS_DB:
+                        if u["email"].lower() == email.lower():
+                            u["name"] = prof["name"]
+                self.wfile.write(json.dumps({"success": True, "profile": prof}).encode("utf-8"))
+            except Exception as e:
+                self.wfile.write(json.dumps({"success": False, "error": str(e)}).encode("utf-8"))
+            return
 
         # User Authentication API
         if req_path.endswith("/api/auth/login") or req_path.endswith("/auth/login"):

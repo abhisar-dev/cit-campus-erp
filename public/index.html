@@ -672,6 +672,425 @@
       color: var(--text-muted);
       margin-top: 2px;
     }
+
+    /* Header Profile Pill */
+    .header-profile-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--yellow-light);
+      border: 1px solid var(--yellow-border);
+      padding: 4px 12px 4px 5px;
+      border-radius: 30px;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .header-profile-btn:hover {
+      background: #ffffff;
+      border-color: var(--primary);
+      box-shadow: 0 2px 8px rgba(96, 15, 28, 0.12);
+    }
+    .header-avatar-circle {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      overflow: hidden;
+      flex-shrink: 0;
+      border: 1.5px solid #ffffff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .header-avatar-circle img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .header-profile-text {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .header-profile-text #user-display-email {
+      font-weight: 600;
+      font-size: 12px;
+      color: var(--text-main);
+      max-width: 160px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* My Profile Modal Card Layout */
+    .profile-modal-box {
+      background: #ffffff;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 900px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 25px 50px -12px rgba(96, 15, 28, 0.25), 0 0 0 1px rgba(0,0,0,0.06);
+      border: 1px solid var(--border);
+      animation: modalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .prof-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      background: #ffffff;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .prof-modal-header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .prof-cit-badge {
+      background: var(--primary);
+      color: #ffffff;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 12px;
+      padding: 6px 9px;
+      border-radius: 6px;
+      letter-spacing: 0.5px;
+    }
+
+    .prof-status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #dcfce7;
+      color: #15803d;
+      border: 1px solid #bbf7d0;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .prof-modal-body {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 20px;
+      padding: 24px;
+      background: var(--bg);
+    }
+
+    @media (max-width: 768px) {
+      .prof-modal-body {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Left Sidebar */
+    .prof-sidebar-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    }
+
+    .prof-avatar-wrap {
+      position: relative;
+      width: 96px;
+      height: 96px;
+      margin-bottom: 16px;
+    }
+
+    .prof-avatar-circle {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #ffffff;
+      font-size: 36px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border: 3px solid #ffffff;
+      box-shadow: 0 4px 12px rgba(96, 15, 28, 0.2);
+    }
+
+    .prof-avatar-circle img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .prof-upload-btn {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      background: var(--primary);
+      color: #ffffff;
+      border: 2px solid #ffffff;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      cursor: pointer;
+      transition: transform 0.15s ease, background 0.15s ease;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .prof-upload-btn:hover {
+      background: #4a0b15;
+      transform: scale(1.08);
+    }
+
+    .prof-name {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 4px;
+    }
+
+    .prof-role-badge {
+      display: inline-block;
+      font-size: 10px;
+      background: var(--yellow-badge);
+      color: var(--gold-dark);
+      border: 1px solid var(--yellow-border);
+      padding: 3px 9px;
+      border-radius: 4px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-bottom: 18px;
+    }
+
+    .prof-stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      width: 100%;
+      margin-bottom: 18px;
+    }
+
+    .prof-stat-box {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 8px;
+      text-align: center;
+    }
+
+    .prof-stat-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .prof-stat-value {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--primary);
+      margin-top: 3px;
+    }
+
+    .prof-meta-list {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      font-size: 12px;
+      text-align: left;
+      border-top: 1px solid var(--border);
+      padding-top: 16px;
+    }
+
+    .prof-meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .prof-meta-label {
+      font-size: 10px;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .prof-meta-val {
+      color: var(--text-main);
+      font-weight: 600;
+      word-break: break-all;
+    }
+
+    /* Right Card */
+    .prof-main-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    }
+
+    .prof-main-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .prof-section-tag {
+      font-size: 10.5px;
+      font-weight: 800;
+      color: var(--text-muted);
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+
+    .prof-section-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--primary);
+      margin-top: 2px;
+    }
+
+    .prof-edit-toggle-btn {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .prof-edit-toggle-btn:hover {
+      background: var(--yellow-light);
+      border-color: var(--yellow-border);
+    }
+
+    .prof-form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .prof-field-full {
+      grid-column: 1 / -1;
+    }
+
+    .prof-field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .prof-label {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .prof-input {
+      padding: 9px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      font-size: 12.5px;
+      background: #ffffff;
+      color: var(--text-main);
+      font-family: inherit;
+      transition: border 0.15s ease, box-shadow 0.15s ease;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .prof-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(96, 15, 28, 0.1);
+    }
+
+    .prof-input:disabled {
+      background: #fafaf9;
+      color: #78716c;
+      cursor: not-allowed;
+    }
+
+    .prof-actions-bar {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 24px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+    }
+
+    .prof-btn-save {
+      background: var(--primary);
+      color: #ffffff;
+      border: 1px solid var(--primary);
+      padding: 9px 20px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.15s ease;
+    }
+
+    .prof-btn-save:hover {
+      background: #4a0b15;
+    }
+
+    .prof-btn-cancel {
+      background: transparent;
+      border: 1px solid var(--border);
+      padding: 9px 18px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .prof-btn-cancel:hover {
+      background: #f5f5f4;
+    }
   </style>
 </head>
 <body>
@@ -688,8 +1107,17 @@
 
     <div class="user-actions">
       <div id="user-profile-badge" style="display: flex; align-items: center; gap: 10px;">
-        <span id="user-display-email" style="font-weight: 600; font-size: 12px; color: var(--text-main);">student@cit.ac.in</span>
-        <span id="user-role-tag" class="mono" style="font-size: 10px; background: var(--yellow-badge); color: var(--gold-dark); border: 1px solid var(--yellow-border); padding: 2px 7px; border-radius: 3px; font-weight: 700;">STUDENT</span>
+        <!-- Interactive Profile Button -->
+        <button type="button" class="header-profile-btn" onclick="openProfileModal()" title="View and edit your CIT profile">
+          <div class="header-avatar-circle" id="header-avatar-circle">
+            <span id="header-avatar-initials">S</span>
+            <img id="header-avatar-img" src="" alt="Avatar" style="display: none;" />
+          </div>
+          <div class="header-profile-text">
+            <span id="user-display-email">student@cit.ac.in</span>
+            <span id="user-role-tag" class="mono" style="font-size: 10px; background: var(--yellow-badge); color: var(--gold-dark); border: 1px solid var(--yellow-border); padding: 2px 7px; border-radius: 3px; font-weight: 700;">STUDENT</span>
+          </div>
+        </button>
 
         <!-- Support Dropdown Button -->
         <div class="support-dropdown-container" id="supportContainer">
@@ -765,6 +1193,7 @@
       <button class="tab-item" onclick="switchUserTab('bookings', this)">Spectra Venue Bookings</button>
       <button class="tab-item" onclick="switchUserTab('ai', this)">AI Booking Assistant</button>
       <button class="tab-item" onclick="switchUserTab('exams', this)">Midsem Exams</button>
+      <button class="tab-item" onclick="openProfileModal()">👤 My Profile</button>
       <button class="tab-item" onclick="switchUserTab('privacy', this)">Privacy Policy</button>
       <button class="tab-item" onclick="switchUserTab('terms', this)">Terms & Conditions</button>
     </div>
@@ -891,6 +1320,11 @@
       }
 
       updateAuthUI();
+      try {
+        await loadUserProfile();
+      } catch (profErr) {
+        console.warn("Profile load non-fatal:", profErr);
+      }
 
       try {
         const [d, s] = await Promise.all([
@@ -1660,6 +2094,244 @@
       }, 500);
     }
 
+    // User Profile Management & State
+    let userProfile = {
+      name: '',
+      email: '',
+      rollNumber: 'CIT2024-CSE-042',
+      course: 'B.Tech Computer Science & Engineering',
+      phone: '+91 98765 43210',
+      cohort: 'Y1-A',
+      semester: '2nd Sem',
+      campus: 'Chilika Institute of Technology',
+      bio: 'Undergraduate student at Chilika Institute of Technology.',
+      github: 'https://github.com/',
+      linkedin: 'https://linkedin.com/in/',
+      avatar: ''
+    };
+
+    async function loadUserProfile() {
+      if (currentUser) {
+        userProfile.email = currentUser.email || 'student@cit.ac.in';
+        if (currentUser.name) userProfile.name = currentUser.name;
+        if (currentUser.cohort) userProfile.cohort = currentUser.cohort;
+      }
+
+      const saved = localStorage.getItem('cit_user_profile');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          userProfile = { ...userProfile, ...parsed };
+        } catch (e) {}
+      }
+
+      try {
+        const emailParam = encodeURIComponent(userProfile.email || (currentUser && currentUser.email) || '');
+        if (emailParam) {
+          const res = await fetch(`/api/user/profile?email=${emailParam}`);
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.profile) {
+              userProfile = { ...userProfile, ...data.profile };
+            }
+          }
+        }
+      } catch (err) {}
+
+      syncProfileUI();
+    }
+
+    function syncProfileUI() {
+      const displayName = userProfile.name || (userProfile.email ? userProfile.email.split('@')[0] : 'Student');
+      const initials = (userProfile.name ? userProfile.name[0] : (userProfile.email ? userProfile.email[0] : 'S')).toUpperCase();
+
+      // Top Header Profile Pill
+      const headEmail = document.getElementById('user-display-email');
+      const headRole = document.getElementById('user-role-tag');
+      const headInitials = document.getElementById('header-avatar-initials');
+      const headImg = document.getElementById('header-avatar-img');
+
+      if (headEmail) headEmail.innerText = userProfile.name || userProfile.email || 'student@cit.ac.in';
+      if (headRole && currentUser && currentUser.role) headRole.innerText = currentUser.role.toUpperCase();
+
+      if (userProfile.avatar) {
+        if (headImg) {
+          headImg.src = userProfile.avatar;
+          headImg.style.display = 'block';
+        }
+        if (headInitials) headInitials.style.display = 'none';
+      } else {
+        if (headImg) headImg.style.display = 'none';
+        if (headInitials) {
+          headInitials.innerText = initials;
+          headInitials.style.display = 'inline';
+        }
+      }
+
+      // Sidebar in Profile Modal
+      const sideName = document.getElementById('prof-sidebar-name');
+      const sideRole = document.getElementById('prof-sidebar-role');
+      const sideCohort = document.getElementById('prof-sidebar-cohort');
+      const sideSem = document.getElementById('prof-sidebar-semester');
+      const sideEmail = document.getElementById('prof-sidebar-email');
+      const modalInitials = document.getElementById('prof-modal-avatar-initials');
+      const modalImg = document.getElementById('prof-modal-avatar-img');
+
+      if (sideName) sideName.innerText = displayName;
+      if (sideRole && currentUser && currentUser.role) sideRole.innerText = currentUser.role.toUpperCase();
+      if (sideCohort) sideCohort.innerText = userProfile.cohort || 'Y1-A';
+      if (sideSem) sideSem.innerText = userProfile.semester || '2nd Sem';
+      if (sideEmail) sideEmail.innerText = userProfile.email || 'student@cit.ac.in';
+
+      if (userProfile.avatar) {
+        if (modalImg) {
+          modalImg.src = userProfile.avatar;
+          modalImg.style.display = 'block';
+        }
+        if (modalInitials) modalInitials.style.display = 'none';
+      } else {
+        if (modalImg) modalImg.style.display = 'none';
+        if (modalInitials) {
+          modalInitials.innerText = initials;
+          modalInitials.style.display = 'inline';
+        }
+      }
+
+      // Modal Form Inputs
+      const inName = document.getElementById('prof-input-name');
+      const inEmail = document.getElementById('prof-input-email');
+      const inRoll = document.getElementById('prof-input-roll');
+      const inCourse = document.getElementById('prof-input-course');
+      const inPhone = document.getElementById('prof-input-phone');
+      const inCohort = document.getElementById('prof-input-cohort');
+      const inCampus = document.getElementById('prof-input-campus');
+      const inBio = document.getElementById('prof-input-bio');
+      const inGithub = document.getElementById('prof-input-github');
+      const inLinkedin = document.getElementById('prof-input-linkedin');
+
+      if (inName) inName.value = userProfile.name || '';
+      if (inEmail) inEmail.value = userProfile.email || '';
+      if (inRoll) inRoll.value = userProfile.rollNumber || '';
+      if (inCourse) inCourse.value = userProfile.course || '';
+      if (inPhone) inPhone.value = userProfile.phone || '';
+      if (inCohort) inCohort.value = userProfile.cohort || '';
+      if (inCampus) inCampus.value = userProfile.campus || 'Chilika Institute of Technology';
+      if (inBio) inBio.value = userProfile.bio || '';
+      if (inGithub) inGithub.value = userProfile.github || '';
+      if (inLinkedin) inLinkedin.value = userProfile.linkedin || '';
+    }
+
+    function openProfileModal(e) {
+      if (e) e.preventDefault();
+      closeSupportDropdown();
+      syncProfileUI();
+      const banner = document.getElementById('prof-alert-banner');
+      if (banner) banner.style.display = 'none';
+      const m = document.getElementById('modalProfile');
+      if (m) m.classList.add('show');
+    }
+
+    function closeProfileModal() {
+      const m = document.getElementById('modalProfile');
+      if (m) m.classList.remove('show');
+    }
+
+    function toggleEditProfile() {
+      const inName = document.getElementById('prof-input-name');
+      if (inName) inName.focus();
+    }
+
+    function cancelProfileEdit() {
+      syncProfileUI();
+      closeProfileModal();
+    }
+
+    async function handleProfileSave(e) {
+      e.preventDefault();
+      const btn = document.getElementById('prof-save-btn');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span>Saving...</span>';
+      }
+
+      userProfile.name = document.getElementById('prof-input-name').value.trim();
+      userProfile.email = document.getElementById('prof-input-email').value.trim();
+      userProfile.rollNumber = document.getElementById('prof-input-roll').value.trim();
+      userProfile.course = document.getElementById('prof-input-course').value.trim();
+      userProfile.phone = document.getElementById('prof-input-phone').value.trim();
+      userProfile.cohort = document.getElementById('prof-input-cohort').value.trim();
+      userProfile.campus = document.getElementById('prof-input-campus').value.trim();
+      userProfile.bio = document.getElementById('prof-input-bio').value.trim();
+      userProfile.github = document.getElementById('prof-input-github').value.trim();
+      userProfile.linkedin = document.getElementById('prof-input-linkedin').value.trim();
+
+      if (currentUser) {
+        if (userProfile.name) currentUser.name = userProfile.name;
+        if (userProfile.email) currentUser.email = userProfile.email;
+        if (userProfile.cohort) currentUser.cohort = userProfile.cohort;
+        localStorage.setItem('cit_session', JSON.stringify(currentUser));
+      }
+
+      localStorage.setItem('cit_user_profile', JSON.stringify(userProfile));
+
+      try {
+        await fetch('/api/user/profile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(userProfile)
+        });
+      } catch (err) {}
+
+      syncProfileUI();
+
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<span>Save Changes</span>';
+      }
+
+      const banner = document.getElementById('prof-alert-banner');
+      if (banner) {
+        banner.style.display = 'block';
+        banner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      showToast("Profile updated successfully!");
+    }
+
+    function handleAvatarUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      if (!file.type.startsWith('image/')) {
+        alert('Please select an image file (PNG, JPG, WebP).');
+        return;
+      }
+
+      if (file.size > 2 * 1024 * 1024) {
+        alert('Please select an image smaller than 2MB.');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = async function(e) {
+        const base64Data = e.target.result;
+        userProfile.avatar = base64Data;
+        localStorage.setItem('cit_user_profile', JSON.stringify(userProfile));
+        syncProfileUI();
+
+        try {
+          await fetch('/api/user/profile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(userProfile)
+          });
+        } catch (err) {}
+
+        showToast("Profile photo updated!");
+      };
+      reader.readAsDataURL(file);
+    }
+
     window.addEventListener("DOMContentLoaded", init);
   </script>
 
@@ -1787,6 +2459,164 @@
         </a>
       </div>
       <button class="btn-submit" onclick="closeModal('modalSocials')">Done</button>
+    </div>
+  </div>
+
+  <!-- My Profile Modal -->
+  <div class="modal-backdrop" id="modalProfile" onclick="if(event.target === this) closeProfileModal()">
+    <div class="profile-modal-box">
+      <!-- Modal Top Header -->
+      <div class="prof-modal-header">
+        <div class="prof-modal-header-left">
+          <div class="prof-cit-badge">CIT</div>
+          <div>
+            <div style="font-size: 10px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px;">ACCOUNT</div>
+            <div style="font-size: 17px; font-weight: 800; color: var(--primary);">My Profile</div>
+            <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 1px;">Manage your personal and academic details.</div>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span class="prof-status-pill">● ACTIVE</span>
+          <button class="modal-close-btn" style="position: static;" onclick="closeProfileModal()" aria-label="Close dialog">✕</button>
+        </div>
+      </div>
+
+      <!-- Modal Body (2 Columns) -->
+      <div class="prof-modal-body">
+        <!-- Left Sidebar Column -->
+        <div class="prof-sidebar-card">
+          <div class="prof-avatar-wrap">
+            <div class="prof-avatar-circle" id="prof-modal-avatar-circle">
+              <span id="prof-modal-avatar-initials">S</span>
+              <img id="prof-modal-avatar-img" src="" alt="Profile Photo" style="display: none;" />
+            </div>
+            <label for="prof-avatar-file-input" class="prof-upload-btn" title="Upload profile photo">
+              📷
+            </label>
+            <input type="file" id="prof-avatar-file-input" accept="image/*" style="display: none;" onchange="handleAvatarUpload(event)" />
+          </div>
+
+          <div class="prof-name" id="prof-sidebar-name">Student Account</div>
+          <div class="prof-role-badge mono" id="prof-sidebar-role">STUDENT</div>
+
+          <div class="prof-stat-grid">
+            <div class="prof-stat-box">
+              <div class="prof-stat-label">Cohort</div>
+              <div class="prof-stat-value mono" id="prof-sidebar-cohort">Y1-A</div>
+            </div>
+            <div class="prof-stat-box">
+              <div class="prof-stat-label">Semester</div>
+              <div class="prof-stat-value mono" id="prof-sidebar-semester">2nd Sem</div>
+            </div>
+          </div>
+
+          <div class="prof-meta-list">
+            <div class="prof-meta-item">
+              <span class="prof-meta-label">CIT Email</span>
+              <span class="prof-meta-val mono" id="prof-sidebar-email">student@cit.ac.in</span>
+            </div>
+            <div class="prof-meta-item">
+              <span class="prof-meta-label">Account Status</span>
+              <span style="color: #15803d; font-weight: 700; font-size: 11.5px;">● Active · Verified</span>
+            </div>
+            <div class="prof-meta-item">
+              <span class="prof-meta-label">Institute Clearance</span>
+              <span style="color: var(--text-main); font-weight: 600;">Full Access (UG)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Main Details Card -->
+        <div class="prof-main-card">
+          <div class="prof-main-top">
+            <div>
+              <div class="prof-section-tag">PROFILE DETAILS</div>
+              <div class="prof-section-title">Personal & Academic Records</div>
+              <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 2px;">Verify and update your contact and university details.</div>
+            </div>
+            <button type="button" class="prof-edit-toggle-btn" id="prof-edit-toggle-btn" onclick="toggleEditProfile()">
+              ✏️ Edit Profile
+            </button>
+          </div>
+
+          <!-- Live Alert Banner -->
+          <div id="prof-alert-banner" style="display: none; padding: 10px 14px; border-radius: 8px; font-size: 12.5px; margin-bottom: 16px; background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534;">
+            ✓ Profile saved successfully and synced with CIT Academic Records.
+          </div>
+
+          <form id="prof-details-form" onsubmit="handleProfileSave(event)">
+            <div class="prof-form-grid">
+              <!-- Full Name -->
+              <div class="prof-field">
+                <label class="prof-label" for="prof-input-name">Full Name</label>
+                <input type="text" id="prof-input-name" class="prof-input" placeholder="Enter your full name" required />
+              </div>
+
+              <!-- Email -->
+              <div class="prof-field">
+                <label class="prof-label" for="prof-input-email">Email Address</label>
+                <input type="email" id="prof-input-email" class="prof-input" placeholder="student@cit.ac.in" required />
+              </div>
+
+              <!-- Student ID / Roll No -->
+              <div class="prof-field">
+                <label class="prof-label" for="prof-input-roll">Student ID / Roll No</label>
+                <input type="text" id="prof-input-roll" class="prof-input mono" placeholder="e.g. CIT2024-CSE-042" />
+              </div>
+
+              <!-- Course / Branch -->
+              <div class="prof-field">
+                <label class="prof-label" for="prof-input-course">Course / Branch</label>
+                <input type="text" id="prof-input-course" class="prof-input" placeholder="e.g. B.Tech Computer Science & Engineering" />
+              </div>
+
+              <!-- Phone Number -->
+              <div class="prof-field">
+                <label class="prof-label" for="prof-input-phone">Phone Number</label>
+                <input type="text" id="prof-input-phone" class="prof-input" placeholder="e.g. +91 98765 43210" />
+              </div>
+
+              <!-- Academic Year / Semester -->
+              <div class="prof-field">
+                <label class="prof-label" for="prof-input-cohort">Cohort / Semester</label>
+                <input type="text" id="prof-input-cohort" class="prof-input mono" placeholder="e.g. Y1-A (Semester 2)" />
+              </div>
+
+              <!-- University Campus -->
+              <div class="prof-field prof-field-full">
+                <label class="prof-label" for="prof-input-campus">University Campus</label>
+                <input type="text" id="prof-input-campus" class="prof-input" placeholder="Chilika Institute of Technology" />
+              </div>
+
+              <!-- Bio -->
+              <div class="prof-field prof-field-full">
+                <label class="prof-label" for="prof-input-bio">Personal Headline & Bio</label>
+                <textarea id="prof-input-bio" class="prof-input" style="height: 64px; resize: vertical; padding-top: 8px;" placeholder="Tell us about your academic interests, projects, or clubs..."></textarea>
+              </div>
+
+              <!-- GitHub -->
+              <div class="prof-field">
+                <label class="prof-label" for="prof-input-github">GitHub Profile URL</label>
+                <input type="url" id="prof-input-github" class="prof-input" placeholder="https://github.com/username" />
+              </div>
+
+              <!-- LinkedIn -->
+              <div class="prof-field">
+                <label class="prof-label" for="prof-input-linkedin">LinkedIn Profile URL</label>
+                <input type="url" id="prof-input-linkedin" class="prof-input" placeholder="https://linkedin.com/in/username" />
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="prof-actions-bar" id="prof-actions-bar">
+              <button type="button" class="prof-btn-cancel" onclick="cancelProfileEdit()">Cancel</button>
+              <button type="submit" class="prof-btn-save" id="prof-save-btn">
+                <span>Save Changes</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   </div>
 </body>
