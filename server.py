@@ -29,7 +29,17 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
         url = urllib.parse.urlparse(self.path)
         
-        # Dedicated Login & Register route
+        # Dedicated Admin Login & Clearance Route (Separate from regular user login)
+        if url.path in ("/admin/login", "/admin/auth", "/admin-login", "/admin/signin"):
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            with open(os.path.join(BASE_DIR, "admin_login.html"), "rb") as f:
+                self.wfile.write(f.read())
+            return
+
+        # Dedicated User Login & Register route
         if url.path in ("/login", "/auth"):
             self.send_response(200)
             self.send_header("Content-Type", "text/html; charset=utf-8")

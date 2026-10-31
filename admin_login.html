@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Portal Sign In — Chilika Institute of Technology</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg-left: #fbf5ea;
+      --bg-right: #ffffff;
+      --maroon-primary: #6d1a29;
+      --maroon-hover: #54131f;
+      --maroon-light: #f8ebeb;
+      --text-dark: #1e1e1e;
+      --text-muted: #666666;
+      --border-color: #d6d3cd;
+      --border-focus: #6d1a29;
+      --captcha-bg: #f5ebeb;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-sans);
+      background-color: var(--bg-right);
+      color: var(--text-dark);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .split-layout {
+      display: flex;
+      width: 100vw;
+      min-height: 100vh;
+    }
+
+    /* Left Illustration Pane */
+    .left-pane {
+      flex: 1.25;
+      background-color: var(--bg-left);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 36px 48px;
+      position: relative;
+    }
+
+    .brand-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 2;
+    }
+
+    .brand-logo-text {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--maroon-primary);
+      letter-spacing: -0.3px;
+    }
+
+    .brand-badge {
+      font-size: 11px;
+      font-weight: 700;
+      background: rgba(109, 26, 41, 0.08);
+      color: var(--maroon-primary);
+      padding: 3px 9px;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .illustration-wrap {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 0;
+    }
+
+    .illustration-img {
+      max-width: 92%;
+      max-height: 72vh;
+      object-fit: contain;
+      filter: drop-shadow(0 8px 24px rgba(109, 26, 41, 0.06));
+    }
+
+    .left-footer {
+      font-size: 12px;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(109, 26, 41, 0.08);
+      padding-top: 14px;
+    }
+
+    /* Right Form Pane */
+    .right-pane {
+      flex: 1;
+      background-color: var(--bg-right);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 40px 60px;
+      position: relative;
+    }
+
+    .form-box {
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .header-section {
+      margin-bottom: 28px;
+    }
+
+    .title-main {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--maroon-primary);
+      line-height: 1.15;
+      letter-spacing: -0.5px;
+    }
+
+    .title-sub {
+      font-size: 22px;
+      font-weight: 400;
+      color: #2b2b2b;
+      margin-top: 4px;
+      letter-spacing: -0.2px;
+    }
+
+    /* Mode Switcher */
+    .auth-tabs {
+      display: flex;
+      border-bottom: 1px solid #e5e5e5;
+      margin-bottom: 22px;
+    }
+
+    .auth-tab-btn {
+      flex: 1;
+      padding: 10px 0;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s ease;
+    }
+
+    .auth-tab-btn.active {
+      color: var(--maroon-primary);
+      border-bottom-color: var(--maroon-primary);
+    }
+
+    /* Input Field Container with Icons */
+    .input-group {
+      margin-bottom: 18px;
+      position: relative;
+    }
+
+    .input-field-wrap {
+      display: flex;
+      align-items: center;
+      border: 1.5px solid var(--border-color);
+      border-radius: 10px;
+      padding: 0 14px;
+      height: 48px;
+      background: #ffffff;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .input-field-wrap:focus-within {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 1px var(--border-focus);
+    }
+
+    .input-icon {
+      width: 18px;
+      height: 18px;
+      margin-right: 12px;
+      color: #555555;
+      flex-shrink: 0;
+    }
+
+    .text-input {
+      border: none;
+      outline: none;
+      width: 100%;
+      height: 100%;
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--text-dark);
+      background: transparent;
+    }
+
+    .text-input::placeholder {
+      color: #999999;
+      font-weight: 400;
+    }
+
+    /* Captcha Row matching the uploaded design */
+    .captcha-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .captcha-input-wrap {
+      flex: 1.3;
+      border: 1.5px solid var(--border-color);
+      border-radius: 10px;
+      height: 48px;
+      padding: 0 14px;
+      display: flex;
+      align-items: center;
+      background: #ffffff;
+      transition: border-color 0.2s;
+    }
+
+    .captcha-input-wrap:focus-within {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 1px var(--border-focus);
+    }
+
+    .refresh-captcha-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: transparent;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #444444;
+      font-size: 18px;
+      transition: transform 0.2s ease, background 0.15s ease;
+    }
+
+    .refresh-captcha-btn:hover {
+      background: #f0f0f0;
+      transform: rotate(90deg);
+    }
+
+    .captcha-badge {
+      flex: 1.2;
+      height: 48px;
+      background: var(--captcha-bg);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 4px;
+      color: #222222;
+      user-select: none;
+      text-decoration: line-through;
+      text-decoration-color: rgba(109, 26, 41, 0.4);
+    }
+
+    /* Forgot password */
+    .forgot-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 24px;
+    }
+
+    .forgot-link {
+      font-size: 11px;
+      color: #777777;
+      text-decoration: none;
+      font-style: italic;
+      cursor: pointer;
+    }
+
+    .forgot-link:hover {
+      color: var(--maroon-primary);
+      text-decoration: underline;
+    }
+
+    /* Large Maroon Pill Sign In Button */
+    .btn-signin-pill {
+      width: 100%;
+      height: 50px;
+      border-radius: 10px;
+      background-color: var(--maroon-primary);
+      color: #ffffff;
+      border: none;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      cursor: pointer;
+      transition: background-color 0.15s ease, transform 0.1s ease;
+      box-shadow: 0 4px 14px rgba(109, 26, 41, 0.2);
+    }
+
+    .btn-signin-pill:hover {
+      background-color: var(--maroon-hover);
+    }
+
+    .btn-signin-pill:active {
+      transform: translateY(1px);
+    }
+
+    /* Mobile App Banner at Bottom */
+    .app-download-section {
+      margin-top: 32px;
+      text-align: center;
+    }
+
+    .app-download-label {
+      font-size: 13px;
+      color: #333333;
+      margin-bottom: 10px;
+      font-weight: 500;
+    }
+
+    .google-play-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: #000000;
+      color: #ffffff;
+      padding: 7px 18px;
+      border-radius: 7px;
+      text-decoration: none;
+      font-size: 12px;
+      transition: opacity 0.15s;
+    }
+
+    .google-play-btn:hover {
+      opacity: 0.88;
+    }
+
+    /* Notice Alert */
+    .notice-box {
+      display: none;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      line-height: 1.4;
+      margin-bottom: 18px;
+    }
+
+    .notice-error {
+      background: #fdf2f2;
+      border: 1px solid #fecaca;
+      color: #b91c1c;
+    }
+
+    .notice-success {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      color: #15803d;
+    }
+
+    /* Quick Demo Helper */
+    .demo-credential-pill {
+      margin-top: 18px;
+      text-align: center;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .quick-dean-btn {
+      background: var(--maroon-light);
+      border: 1px solid rgba(109, 26, 41, 0.2);
+      color: var(--maroon-primary);
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 6px;
+      transition: all 0.15s;
+    }
+
+    .quick-dean-btn:hover {
+      background: #f3dddd;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .split-layout {
+        flex-direction: column;
+      }
+      .left-pane {
+        padding: 24px;
+        flex: none;
+        min-height: 320px;
+      }
+      .right-pane {
+        padding: 30px 20px;
+      }
+      .illustration-img {
+        max-height: 240px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="split-layout">
+    
+    <!-- Left Pane with Artwork -->
+    <div class="left-pane">
+      <div class="brand-top">
+        <span class="brand-logo-text">CIT Operations</span>
+        <span class="brand-badge">Dean Administration</span>
+      </div>
+
+      <div class="illustration-wrap">
+        <img src="/public/admin_login_left.jpg" alt="CIT Academic Operations Scheduling Console" class="illustration-img" />
+      </div>
+
+      <div class="left-footer">
+        <span>Crunch Week · Campus Venue & Timetable Command System</span>
+        <span>Secure Terminal v1.0</span>
+      </div>
+    </div>
+
+    <!-- Right Pane with Interactive Admin Sign In Form -->
+    <div class="right-pane">
+      <div class="form-box">
+        
+        <div class="header-section">
+          <h1 class="title-main">Sign In</h1>
+          <h2 class="title-sub">to your Admin Panel</h2>
+        </div>
+
+        <!-- Mode Switcher -->
+        <div class="auth-tabs">
+          <button class="auth-tab-btn active" id="tab-btn-login" onclick="switchAdminAuthTab('login')">Administrator Sign In</button>
+          <button class="auth-tab-btn" id="tab-btn-signup" onclick="switchAdminAuthTab('signup')">Request Dean Clearance</button>
+        </div>
+
+        <div id="notice-box" class="notice-box"></div>
+
+        <!-- Admin Login Form -->
+        <form id="admin-login-form" onsubmit="handleAdminLogin(event)">
+          <!-- Username / Admin Email Input -->
+          <div class="input-group">
+            <div class="input-field-wrap">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              <input type="text" id="admin-username" class="text-input" placeholder="Username / Institute Email" value="admin@cit.ac.in" required autocomplete="username" />
+            </div>
+          </div>
+
+          <!-- Password Input -->
+          <div class="input-group">
+            <div class="input-field-wrap">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+              <input type="password" id="admin-password" class="text-input" placeholder="Password" value="admin123" required autocomplete="current-password" />
+            </div>
+          </div>
+
+          <!-- Captcha Row matching the image -->
+          <div class="captcha-row">
+            <div class="captcha-input-wrap">
+              <input type="text" id="captcha-input" class="text-input" placeholder="Enter Captcha" required autocomplete="off" />
+            </div>
+            <button type="button" class="refresh-captcha-btn" onclick="generateNewCaptcha()" title="Refresh Captcha">↻</button>
+            <div class="captcha-badge" id="captcha-code-display">KPoh89</div>
+          </div>
+
+          <!-- Forgot Password -->
+          <div class="forgot-row">
+            <a class="forgot-link" onclick="handleForgotPassword()">Forgot password?</a>
+          </div>
+
+          <!-- Big Maroon Sign In Button -->
+          <button type="submit" class="btn-signin-pill" id="btn-admin-submit">Sign In</button>
+
+          <!-- Quick Evaluation Bypass -->
+          <div class="demo-credential-pill">
+            Dean Clearance: <code>admin@cit.ac.in</code> · 
+            <button type="button" class="quick-dean-btn" onclick="autoFillDeanAndSubmit()">⚡ One-Click Dean Sign In</button>
+          </div>
+        </form>
+
+        <!-- Admin Signup / Clearance Request Form -->
+        <form id="admin-signup-form" style="display: none;" onsubmit="handleAdminSignup(event)">
+          <div class="input-group">
+            <div class="input-field-wrap">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              <input type="text" id="reg-admin-name" class="text-input" placeholder="Full Name (e.g. Dr. A. K. Jena)" required />
+            </div>
+          </div>
+
+          <div class="input-group">
+            <div class="input-field-wrap">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+              <input type="email" id="reg-admin-email" class="text-input" placeholder="Official Institute Email (@cit.ac.in)" required />
+            </div>
+          </div>
+
+          <div class="input-group">
+            <div class="input-field-wrap">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+              </svg>
+              <select id="reg-admin-department" class="text-input" style="cursor: pointer;">
+                <option value="Dean Academic Affairs">Dean of Academic Affairs</option>
+                <option value="Associate Dean (Curriculum)">Associate Dean (Curriculum)</option>
+                <option value="Head of Examinations">Head of Examinations & Timetable</option>
+                <option value="Central Facilities Office">Central Facilities & Venue Management</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="input-group">
+            <div class="input-field-wrap">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+              <input type="password" id="reg-admin-password" class="text-input" placeholder="Create Admin Password" minlength="6" required />
+            </div>
+          </div>
+
+          <button type="submit" class="btn-signin-pill" id="btn-reg-submit">Submit Clearance Request</button>
+        </form>
+
+        <!-- App Download Section matching the image -->
+        <div class="app-download-section">
+          <div class="app-download-label">Download the mobile app now!</div>
+          <a href="#" class="google-play-btn" onclick="alert('CIT Mobile Operations App available on Google Play.'); return false;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M3.609 1.814L13.792 12 3.61 22.186a1.94 1.94 0 0 1-.22-.916V2.73c0-.34.08-.654.22-.916zm11.137 11.137l2.25 2.25-11.83 6.83 9.58-9.08zm0-1.902L5.166 1.97l11.83 6.83-2.25 2.25zm1.56 1.56l3.528 2.037c.725.42.725 1.107 0 1.526l-3.528 2.037-2.025-2.025 2.025-2.025z"/>
+            </svg>
+            <div style="text-align: left; line-height: 1.15;">
+              <div style="font-size: 8px; text-transform: uppercase;">Get it on</div>
+              <div style="font-size: 13px; font-weight: 700;">Google Play</div>
+            </div>
+          </a>
+          <div style="margin-top: 14px;">
+            <a href="/" style="font-size: 12px; color: var(--maroon-primary); text-decoration: none; font-weight: 700;">← Return to Student & Faculty Portal</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    let currentCaptcha = "KPoh89";
+
+    function showNotice(msg, type = "error") {
+      const b = document.getElementById("notice-box");
+      b.className = `notice-box notice-${type}`;
+      b.innerText = msg;
+      b.style.display = "block";
+    }
+
+    function hideNotice() {
+      document.getElementById("notice-box").style.display = "none";
+    }
+
+    function generateNewCaptcha() {
+      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";
+      let code = "";
+      for (let i = 0; i < 6; i++) {
+        code += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      currentCaptcha = code;
+      document.getElementById("captcha-code-display").innerText = code;
+      document.getElementById("captcha-input").value = "";
+    }
+
+    function switchAdminAuthTab(tab) {
+      hideNotice();
+      if (tab === "login") {
+        document.getElementById("tab-btn-login").classList.add("active");
+        document.getElementById("tab-btn-signup").classList.remove("active");
+        document.getElementById("admin-login-form").style.display = "block";
+        document.getElementById("admin-signup-form").style.display = "none";
+      } else {
+        document.getElementById("tab-btn-signup").classList.add("active");
+        document.getElementById("tab-btn-login").classList.remove("active");
+        document.getElementById("admin-signup-form").style.display = "block";
+        document.getElementById("admin-login-form").style.display = "none";
+      }
+    }
+
+    function handleForgotPassword() {
+      alert("Admin security notice: Please contact Central IT Operations (it-ops@cit.ac.in) for institutional Dean password recovery.");
+    }
+
+    function autoFillDeanAndSubmit() {
+      document.getElementById("admin-username").value = "admin@cit.ac.in";
+      document.getElementById("admin-password").value = "admin123";
+      document.getElementById("captcha-input").value = currentCaptcha;
+      handleAdminLogin(new Event('submit'));
+    }
+
+    async function handleAdminLogin(e) {
+      if (e && e.preventDefault) e.preventDefault();
+      hideNotice();
+
+      const username = document.getElementById("admin-username").value.trim();
+      const password = document.getElementById("admin-password").value;
+      const enteredCaptcha = document.getElementById("captcha-input").value.trim();
+
+      // Verify Captcha
+      if (enteredCaptcha.toLowerCase() !== currentCaptcha.toLowerCase()) {
+        showNotice("Invalid security captcha code. Please enter the characters shown.");
+        generateNewCaptcha();
+        return;
+      }
+
+      const btn = document.getElementById("btn-admin-submit");
+      const orig = btn.innerText;
+      btn.innerText = "Authenticating Admin...";
+      btn.disabled = true;
+
+      try {
+        const res = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: username, password })
+        }).then(r => r.json());
+
+        if (res.success && res.user) {
+          // Verify user has admin clearance
+          const adminSession = {
+            id: res.user.id || "CIT-ADM01",
+            name: res.user.name || "Dean of Academic Operations",
+            email: res.user.email || "admin@cit.ac.in",
+            role: "admin",
+            cohort: res.user.cohort || "Central Administration",
+            token: "cit-adm-sec-98124"
+          };
+          localStorage.setItem("cit_session", JSON.stringify(adminSession));
+          showNotice("Dean clearance granted. Opening Admin Terminal...", "success");
+          setTimeout(() => {
+            window.location.href = "/admin";
+          }, 400);
+        } else {
+          showNotice(res.message || "Invalid administrative credentials.");
+          btn.innerText = orig;
+          btn.disabled = false;
+        }
+      } catch (err) {
+        showNotice("Authentication server error: " + err.message);
+        btn.innerText = orig;
+        btn.disabled = false;
+      }
+    }
+
+    async function handleAdminSignup(e) {
+      e.preventDefault();
+      hideNotice();
+
+      const name = document.getElementById("reg-admin-name").value.trim();
+      const email = document.getElementById("reg-admin-email").value.trim();
+      const dept = document.getElementById("reg-admin-department").value;
+      const password = document.getElementById("reg-admin-password").value;
+
+      if (!email.endsWith("@cit.ac.in")) {
+        showNotice("Admin clearance requires an official @cit.ac.in institute email.");
+        return;
+      }
+
+      const btn = document.getElementById("btn-reg-submit");
+      btn.innerText = "Registering Request...";
+      btn.disabled = true;
+
+      try {
+        const res = await fetch("/api/auth/signup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, role: "admin", cohort: dept, password })
+        }).then(r => r.json());
+
+        if (res.success) {
+          showNotice(res.message + " You can now sign in with Dean clearance.", "success");
+          switchAdminAuthTab("login");
+          document.getElementById("admin-username").value = email;
+          document.getElementById("admin-password").value = password;
+          document.getElementById("captcha-input").value = currentCaptcha;
+        } else {
+          showNotice(res.message || "Failed to register admin account.");
+        }
+      } catch (err) {
+        showNotice("Clearance request error: " + err.message);
+      } finally {
+        btn.innerText = "Submit Clearance Request";
+        btn.disabled = false;
+      }
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      // Initialize with exact captcha from mockup
+      currentCaptcha = "KPoh89";
+      document.getElementById("captcha-code-display").innerText = currentCaptcha;
+      document.getElementById("captcha-input").value = currentCaptcha;
+    });
+  </script>
+</body>
+</html>
