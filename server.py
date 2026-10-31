@@ -86,10 +86,23 @@ def load_persistent_db():
                     for u in saved["users"]:
                         if not any(x["email"].lower() == u["email"].lower() for x in USERS_DB):
                             USERS_DB.append(u)
+                        else:
+                            existing = next((x for x in USERS_DB if x["email"].lower() == u["email"].lower()), None)
+                            if existing and u.get("password_hash") and not existing.get("password_hash"):
+                                existing["password_hash"] = u["password_hash"]
                 if "credentials" in saved and isinstance(saved["credentials"], dict):
                     USER_CREDENTIALS.update(saved["credentials"])
                 if "profiles" in saved and isinstance(saved["profiles"], dict):
                     USER_PROFILES.update(saved["profiles"])
+
+                for u in USERS_DB:
+                    if u.get("password_hash") and u.get("email"):
+                        em = u["email"].lower()
+                        if em not in USER_CREDENTIALS or not USER_CREDENTIALS[em].get("hash"):
+                            USER_CREDENTIALS[em] = {
+                                "hash": u["password_hash"],
+                                "failed_attempts": USER_CREDENTIALS.get(em, {}).get("failed_attempts", 0)
+                            }
     except Exception:
         pass
 
@@ -471,13 +484,17 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
                                 "cohort": acc.get("cohort", "Y1-A"),
                                 "status": "Active",
                                 "last_active": "Just now",
-                                "avatar": acc.get("avatar", "")
+                                "avatar": acc.get("avatar", ""),
+                                "password_hash": acc.get("password_hash", "")
                             }
                             USERS_DB.append(user_entry)
-                        if acc.get("password_hash") and acc_email not in USER_CREDENTIALS:
+                        elif acc.get("password_hash") and not existing_user.get("password_hash"):
+                            existing_user["password_hash"] = acc["password_hash"]
+
+                        if acc.get("password_hash") and (acc_email not in USER_CREDENTIALS or not USER_CREDENTIALS[acc_email].get("hash")):
                             USER_CREDENTIALS[acc_email] = {
                                 "hash": acc["password_hash"],
-                                "failed_attempts": 0
+                                "failed_attempts": USER_CREDENTIALS.get(acc_email, {}).get("failed_attempts", 0)
                             }
 
             # Check bot protection status
@@ -486,7 +503,8 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
 
             # If user has >= 3 failed attempts, require human verification token
             if failed_attempts >= 3:
-                if not human_token or (human_token not in VALID_HUMAN_TOKENS and not str(human_token).startswith("cit_human_")):
+                is_valid_human = (human_token in VALID_HUMAN_TOKENS) or (isinstance(human_token, str) and human_token.startswith("cit_human_"))
+                if not human_token or not is_valid_human:
                     self.wfile.write(json.dumps({
                         "success": False,
                         "bot_protection_required": True,
@@ -496,14 +514,15 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
                     return
 
             # Check if Administrator
-            if "admin" in email or "dean" in email:
+            is_admin_login = (email in ("admin@cit.ac.in", "dean@cit.ac.in", "admin"))
+            if is_admin_login:
                 admin_valid = False
-                if user_cred and "hash" in user_cred:
-                    if user_cred["hash"] == hash_password(password):
-                        admin_valid = True
+                entered_hash = hash_password(password)
+                if user_cred and user_cred.get("hash") and user_cred["hash"] == entered_hash:
+                    admin_valid = True
                 elif email in DEMO_PASSWORDS and password in DEMO_PASSWORDS[email]:
                     admin_valid = True
-                elif password in ("admin123", "citadmin2026", "password", "password123"):
+                elif "admin@cit.ac.in" in DEMO_PASSWORDS and password in DEMO_PASSWORDS["admin@cit.ac.in"]:
                     admin_valid = True
 
                 if not admin_valid:
@@ -517,7 +536,7 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
                         "success": False,
                         "failed_attempts": new_attempts,
                         "bot_protection_required": (new_attempts >= 3),
-                        "message": f"Incorrect password for administrative access (Attempt {new_attempts})."
+                        "message": f"Incorrect administrator password. Attempt {new_attempts}." + (" Bot protection activated! Complete verification below." if new_attempts >= 3 else " Please check your password.")
                     }).encode("utf-8"))
                     return
 
@@ -538,74 +557,67 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
                 self.wfile.write(json.dumps(res).encode("utf-8"))
                 return
 
-            # Match in USERS_DB
+            # Regular account lookup
             matched = next((u for u in USERS_DB if u["email"].lower() == email), None)
+            account_exists = (matched is not None) or (email in USER_CREDENTIALS) or (email in DEMO_PASSWORDS)
+
+            if not account_exists:
+                new_attempts = failed_attempts + 1
+                if not user_cred:
+                    USER_CREDENTIALS[email] = {"failed_attempts": new_attempts}
+                else:
+                    user_cred["failed_attempts"] = new_attempts
+                save_persistent_db()
+                self.wfile.write(json.dumps({
+                    "success": False,
+                    "failed_attempts": new_attempts,
+                    "bot_protection_required": (new_attempts >= 3),
+                    "message": "No account found with this email. Please check your credentials or click 'Register' to create a new account."
+                }).encode("utf-8"))
+                return
 
             # Check if account has an established password to enforce
-            has_password = (user_cred and "hash" in user_cred and user_cred["hash"]) or (matched and matched.get("password_hash")) or (email in DEMO_PASSWORDS)
+            has_password = (user_cred and user_cred.get("hash")) or (matched and matched.get("password_hash")) or (email in DEMO_PASSWORDS)
 
-            if has_password:
-                pwd_valid = False
-                if user_cred and "hash" in user_cred and user_cred["hash"] == hash_password(password):
-                    pwd_valid = True
-                elif email in DEMO_PASSWORDS and password in DEMO_PASSWORDS[email]:
-                    pwd_valid = True
-                elif matched and matched.get("password_hash") and matched["password_hash"] == hash_password(password):
-                    pwd_valid = True
+            if not has_password:
+                self.wfile.write(json.dumps({
+                    "success": False,
+                    "failed_attempts": failed_attempts,
+                    "bot_protection_required": (failed_attempts >= 3),
+                    "message": "This account was registered via Google Sign-In. Please sign in with Google or use 'Forgot Password' to set an account password."
+                }).encode("utf-8"))
+                return
 
-                if not pwd_valid:
-                    new_attempts = failed_attempts + 1
-                    if not user_cred:
-                        USER_CREDENTIALS[email] = {"failed_attempts": new_attempts}
-                    else:
-                        user_cred["failed_attempts"] = new_attempts
-                    save_persistent_db()
-                    self.wfile.write(json.dumps({
-                        "success": False,
-                        "failed_attempts": new_attempts,
-                        "bot_protection_required": (new_attempts >= 3),
-                        "message": f"Incorrect password. Attempt {new_attempts}." + (" Bot protection activated! Complete verification below." if new_attempts >= 3 else " Please check your password.")
-                    }).encode("utf-8"))
-                    return
-            else:
-                # First time setting password for this Google or newly created account
-                new_hash = hash_password(password)
-                USER_CREDENTIALS[email] = {
-                    "hash": new_hash,
-                    "failed_attempts": 0
-                }
-                if matched:
-                    matched["password_hash"] = new_hash
+            # Strictly verify password
+            pwd_valid = False
+            entered_hash = hash_password(password)
+            if user_cred and user_cred.get("hash") and user_cred["hash"] == entered_hash:
+                pwd_valid = True
+            elif email in DEMO_PASSWORDS and password in DEMO_PASSWORDS[email]:
+                pwd_valid = True
+            elif matched and matched.get("password_hash") and matched["password_hash"] == entered_hash:
+                pwd_valid = True
 
-            # Successful login: reset failed attempts
+            if not pwd_valid:
+                new_attempts = failed_attempts + 1
+                if not user_cred:
+                    USER_CREDENTIALS[email] = {"failed_attempts": new_attempts}
+                else:
+                    user_cred["failed_attempts"] = new_attempts
+                save_persistent_db()
+                self.wfile.write(json.dumps({
+                    "success": False,
+                    "failed_attempts": new_attempts,
+                    "bot_protection_required": (new_attempts >= 3),
+                    "message": f"Incorrect password. Attempt {new_attempts}." + (" Bot protection activated! Complete verification below." if new_attempts >= 3 else " Please check your password.")
+                }).encode("utf-8"))
+                return
+
+            # Password is valid! Reset failed attempts
             if not user_cred:
-                USER_CREDENTIALS[email] = {"hash": hash_password(password), "failed_attempts": 0}
+                USER_CREDENTIALS[email] = {"hash": entered_hash, "failed_attempts": 0}
             else:
                 user_cred["failed_attempts"] = 0
-
-            # If user not in USERS_DB, create user entry
-            if not matched:
-                role = "student"
-                cohort = "Y1-A"
-                if "faculty" in email:
-                    role = "faculty"
-                    cohort = "Faculty Member"
-                elif "club" in email or "spectra" in email:
-                    role = "club"
-                    cohort = "Club Operations"
-                new_id = f"CIT-U{len(USERS_DB)+1:03d}"
-                matched = {
-                    "id": new_id,
-                    "name": email.split("@")[0].replace(".", " ").title(),
-                    "email": email,
-                    "role": role,
-                    "cohort": cohort,
-                    "status": "Active",
-                    "last_active": "Just now",
-                    "password_hash": hash_password(password)
-                }
-                USERS_DB.append(matched)
-
             save_persistent_db()
 
             user_id = matched.get("id") if (isinstance(matched, dict) and matched.get("id")) else f"CIT-U{len(USERS_DB):03d}"
@@ -618,6 +630,7 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
                     "role": matched.get("role", "student") if isinstance(matched, dict) else "student",
                     "cohort": matched.get("cohort", "Y1-A") if isinstance(matched, dict) else "Y1-A",
                     "avatar": matched.get("avatar", "") if isinstance(matched, dict) else "",
+                    "password_hash": entered_hash,
                     "token": f"cit-tok-{secrets.token_hex(16)}"
                 }
             }
@@ -679,6 +692,8 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
             save_persistent_db()
             res = {
                 "success": True,
+                "user_id": new_id,
+                "password_hash": pwd_hash,
                 "message": f"Account {new_id} ({email}) registered successfully."
             }
             self.wfile.write(json.dumps(res).encode("utf-8"))
@@ -756,6 +771,7 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
             save_persistent_db()
             res = {
                 "success": True,
+                "password_hash": new_hash,
                 "message": "Password reset successfully! You can now sign in with your new password."
             }
             self.wfile.write(json.dumps(res).encode("utf-8"))

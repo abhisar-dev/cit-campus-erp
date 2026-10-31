@@ -1125,6 +1125,10 @@
           const box = document.getElementById('bot-protection-box');
           if (box) box.style.display = 'none';
 
+          if (res.password_hash) {
+            saveAccountToVault({ email, password_hash: res.password_hash });
+          }
+
           document.getElementById('login-email').value = email;
           document.getElementById('login-password').value = newPassword;
           showAlert('✓ ' + (res.message || 'Password reset successfully! You can now sign in.'), 'success');
@@ -1171,15 +1175,18 @@
         if (!Array.isArray(vault)) vault = [];
         const cleanEmail = user.email.toLowerCase().trim();
         const idx = vault.findIndex(u => (u.email || '').toLowerCase().trim() === cleanEmail);
+        const existing = idx >= 0 ? vault[idx] : {};
         const entry = {
-          name: user.name || cleanEmail.split('@')[0],
+          id: user.id || existing.id || '',
+          name: user.name || existing.name || cleanEmail.split('@')[0],
           email: cleanEmail,
-          role: user.role || 'student',
-          cohort: user.cohort || 'Y1-A',
-          avatar: user.avatar || ''
+          role: user.role || existing.role || 'student',
+          cohort: user.cohort || existing.cohort || 'Y1-A',
+          avatar: user.avatar !== undefined ? user.avatar : (existing.avatar || ''),
+          password_hash: user.password_hash || existing.password_hash || ''
         };
         if (idx >= 0) {
-          vault[idx] = Object.assign({}, vault[idx], entry);
+          vault[idx] = Object.assign({}, existing, entry);
         } else {
           vault.push(entry);
         }
@@ -1290,7 +1297,7 @@
 
         if (res.success) {
           showAlert(res.message + ' You can now sign in.', 'success');
-          saveAccountToVault({ name, email, role, cohort });
+          saveAccountToVault({ id: res.user_id, name, email, role, cohort, password_hash: res.password_hash });
           sessionStorage.setItem('cit_show_privacy_popup', '1');
           switchTab('login');
           document.getElementById('login-email').value = email;
