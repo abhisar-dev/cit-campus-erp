@@ -1193,7 +1193,6 @@
       <button class="tab-item" onclick="switchUserTab('bookings', this)">Spectra Venue Bookings</button>
       <button class="tab-item" onclick="switchUserTab('ai', this)">AI Booking Assistant</button>
       <button class="tab-item" onclick="switchUserTab('exams', this)">Midsem Exams</button>
-      <button class="tab-item" onclick="openProfileModal()">👤 My Profile</button>
       <button class="tab-item" onclick="switchUserTab('privacy', this)">Privacy Policy</button>
       <button class="tab-item" onclick="switchUserTab('terms', this)">Terms & Conditions</button>
     </div>
@@ -1324,6 +1323,15 @@
         await loadUserProfile();
       } catch (profErr) {
         console.warn("Profile load non-fatal:", profErr);
+      }
+
+      // Check if Privacy Policy pop-up should appear upon login/signup
+      const userKey = currentUser && currentUser.email ? currentUser.email : 'user';
+      const showPrivacy = sessionStorage.getItem('cit_show_privacy_popup') === '1' || !localStorage.getItem('cit_privacy_accepted_' + userKey);
+      if (showPrivacy) {
+        setTimeout(() => {
+          openPrivacyPolicyModal();
+        }, 300);
       }
 
       try {
@@ -2332,6 +2340,27 @@
       reader.readAsDataURL(file);
     }
 
+    // Privacy Policy Pop-up Controls
+    function openPrivacyPolicyModal(e) {
+      if (e) e.preventDefault();
+      closeSupportDropdown();
+      const m = document.getElementById('modalPrivacyPolicy');
+      if (m) m.classList.add('show');
+    }
+
+    function closePrivacyPolicyModal() {
+      const m = document.getElementById('modalPrivacyPolicy');
+      if (m) m.classList.remove('show');
+      sessionStorage.removeItem('cit_show_privacy_popup');
+    }
+
+    function acceptPrivacyPolicy() {
+      const userKey = currentUser && currentUser.email ? currentUser.email : 'user';
+      localStorage.setItem('cit_privacy_accepted_' + userKey, 'true');
+      closePrivacyPolicyModal();
+      showToast('✓ Privacy Policy acknowledged');
+    }
+
     window.addEventListener("DOMContentLoaded", init);
   </script>
 
@@ -2616,6 +2645,60 @@
             </div>
           </form>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Privacy Policy Pop-up Modal -->
+  <div class="modal-backdrop" id="modalPrivacyPolicy" onclick="if(event.target === this) closePrivacyPolicyModal()">
+    <div class="modal-box" style="max-width: 640px; max-height: 90vh; overflow-y: auto;">
+      <button class="modal-close-btn" onclick="closePrivacyPolicyModal()" aria-label="Close dialog">✕</button>
+      <div class="modal-head">
+        <div style="font-size: 26px;">🛡️</div>
+        <div>
+          <div style="font-size: 10px; font-weight: 800; color: var(--gold-dark); background: var(--yellow-badge); border: 1px solid var(--yellow-border); padding: 2px 7px; border-radius: 4px; display: inline-block; margin-bottom: 3px;">
+            DPDP ACT 2023 · CAMPUS GOVERNANCE
+          </div>
+          <h3 class="modal-title" style="margin-top: 2px;">Institutional Privacy Policy</h3>
+          <p class="modal-subtitle">Chilika Institute of Technology · Academic Data Privacy Charter</p>
+        </div>
+      </div>
+
+      <div style="font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-bottom: 18px;">
+        <div style="background: var(--yellow-light); border: 1px solid var(--yellow-border); padding: 12px 14px; border-radius: 8px; margin-bottom: 14px; color: var(--text-main);">
+          <strong style="color: var(--gold-dark); font-size: 13px;">Zero Commercial Monetization Commitment:</strong>
+          <p style="margin-top: 4px; font-size: 12px; color: var(--text-main);">
+            CIT operates this autonomous scheduling platform solely for academic timetables, exam room seatings, and verified venue allocations. Your personal and academic records are strictly safeguarded and never tracked or sold.
+          </p>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 10px; font-size: 12px;">
+          <div style="background: var(--bg); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);">
+            <strong style="color: var(--primary);">1. Conflict-Free Scheduling (Rules H1–H14)</strong>
+            <div style="color: var(--text-muted); margin-top: 2px;">All timetable and venue allocations follow deterministic mathematical algorithms (OR-Tools CP-SAT) with zero hard clashes and complete cohort equity.</div>
+          </div>
+          <div style="background: var(--bg); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);">
+            <strong style="color: var(--primary);">2. Anti-Cheating & Exam Privacy (Rule H5)</strong>
+            <div style="color: var(--text-muted); margin-top: 2px;">Midsemester seating guarantees 50% capacity halving to ensure exam integrity via physical spacing, without invasive biometrics or webcam tracking.</div>
+          </div>
+          <div style="background: var(--bg); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);">
+            <strong style="color: var(--primary);">3. AI Booking Assistant & Query Confidentiality</strong>
+            <div style="color: var(--text-muted); margin-top: 2px;">Conversational Hinglish & English queries are parsed ephemerally on-premise. No prompts or user details are logged into external public LLMs.</div>
+          </div>
+          <div style="background: var(--bg); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);">
+            <strong style="color: var(--primary);">4. Local Session Authentication</strong>
+            <div style="color: var(--text-muted); margin-top: 2px;">Authentication is isolated locally (<code class="mono">cit_session</code>) without tracking cookies. Signing out instantly flushes stored keys.</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 16px; gap: 12px; flex-wrap: wrap;">
+        <a href="/privacy" target="_blank" style="font-size: 12px; color: var(--primary); font-weight: 700; text-decoration: underline;">
+          Read Full Legal Policy Document ↗
+        </a>
+        <button type="button" class="btn-submit" onclick="acceptPrivacyPolicy()" style="margin-top: 0; padding: 8px 20px; width: auto; font-size: 12.5px;">
+          Accept & Continue
+        </button>
       </div>
     </div>
   </div>

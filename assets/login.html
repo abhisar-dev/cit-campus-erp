@@ -256,6 +256,82 @@
       font-size: 11px;
       color: var(--text-muted);
     }
+
+    /* Modals in Login */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      padding: 20px;
+    }
+    .modal-backdrop.show {
+      display: flex;
+    }
+    .modal-box {
+      background: #ffffff;
+      border-radius: 14px;
+      width: 100%;
+      max-width: 520px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 24px;
+      position: relative;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border);
+      animation: modalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes modalPop {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .modal-close-btn {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: transparent;
+      border: none;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: var(--text-muted);
+      transition: all 0.15s ease;
+    }
+    .modal-close-btn:hover {
+      background: #f1f5f9;
+      color: var(--text-main);
+    }
+    .modal-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .modal-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+    .modal-subtitle {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
   </style>
 </head>
 <body>
@@ -374,7 +450,7 @@
         <div class="auth-footer">
           <p class="mono">Chilika Institute of Technology · Central Academic Services</p>
           <div style="margin-top: 8px; display: flex; justify-content: center; gap: 14px; font-size: 11px; flex-wrap: wrap;">
-            <a href="/privacy" style="color: var(--primary); text-decoration: underline; font-weight: 700;">Privacy Policy</a>
+            <a href="javascript:void(0)" onclick="openPrivacyModal(event)" style="color: var(--primary); text-decoration: underline; font-weight: 700;">Privacy Policy</a>
             <span style="color: var(--text-dim);">·</span>
             <a href="/terms" style="color: var(--primary); text-decoration: underline; font-weight: 700;">Terms & Conditions</a>
             <span style="color: var(--text-dim);">·</span>
@@ -387,10 +463,58 @@
     </div>
   </div>
 
+  <!-- Privacy Policy Pop-up Modal for Login & Registration -->
+  <div class="modal-backdrop" id="modalPrivacy" onclick="if(event.target === this) closePrivacyModal()">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="closePrivacyModal()" aria-label="Close dialog">✕</button>
+      <div class="modal-head">
+        <div style="font-size: 24px;">🛡️</div>
+        <div>
+          <div style="font-size: 9.5px; font-weight: 800; color: #92400e; background: #fef3c7; border: 1px solid #fcd34d; padding: 2px 6px; border-radius: 3px; display: inline-block; margin-bottom: 2px;">
+            DPDP ACT 2023 · ACADEMIC GOVERNANCE
+          </div>
+          <h3 class="modal-title">CIT Institutional Privacy Policy</h3>
+          <p class="modal-subtitle">Chilika Institute of Technology · Academic Data Charter</p>
+        </div>
+      </div>
+      <div style="font-size: 12.5px; color: var(--text-muted); line-height: 1.6; margin-bottom: 16px;">
+        <div style="background: #fbf5ea; border: 1px solid #e6dfd5; padding: 10px 12px; border-radius: 6px; margin-bottom: 12px; color: var(--text-main);">
+          <strong style="color: var(--primary);">Academic Data Privacy Commitment:</strong>
+          <p style="margin-top: 3px; font-size: 11.5px;">
+            Your student details, cohort schedules, and venue reservations are protected under CIT Academic Regulations. No personal data is ever tracked, sold, or shared with commercial advertising brokers.
+          </p>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 8px; font-size: 11.5px;">
+          <div style="border: 1px solid #e6dfd5; border-radius: 6px; padding: 8px 10px; background: #fff;">
+            <strong style="color: var(--primary);">● OR-Tools Algorithmic Fairness:</strong> Conflict-free timetables calculated mathematically without bias (Rules H1–H14).
+          </div>
+          <div style="border: 1px solid #e6dfd5; border-radius: 6px; padding: 8px 10px; background: #fff;">
+            <strong style="color: var(--primary);">● Anti-Cheating Seating (H5):</strong> 50% capacity physical distancing without invasive biometric or webcam surveillance.
+          </div>
+          <div style="border: 1px solid #e6dfd5; border-radius: 6px; padding: 8px 10px; background: #fff;">
+            <strong style="color: var(--primary);">● Private AI Parsing:</strong> Hinglish booking requests are processed ephemerally on-premise without external logging.
+          </div>
+          <div style="border: 1px solid #e6dfd5; border-radius: 6px; padding: 8px 10px; background: #fff;">
+            <strong style="color: var(--primary);">● Local Browser Storage:</strong> Session tokens are securely isolated in your browser without tracking cookies.
+          </div>
+        </div>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 14px; gap: 10px; flex-wrap: wrap;">
+        <a href="/privacy" target="_blank" style="font-size: 11.5px; color: var(--primary); font-weight: 700; text-decoration: underline;">
+          Read Full Legal Document ↗
+        </a>
+        <button type="button" class="btn-submit" id="btn-privacy-modal-action" onclick="confirmPrivacyAndProceed()" style="width: auto; padding: 7px 18px; margin-top: 0; font-size: 12px;">
+          I Agree & Continue
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script>
     // Get query params if any redirect was requested
     const urlParams = new URLSearchParams(window.location.search);
     const redirectUrl = urlParams.get('redirect');
+    let pendingRegistrationData = null;
 
     function showAlert(msg, type = 'danger') {
       const b = document.getElementById('alert-box');
@@ -436,6 +560,26 @@
       }
     }
 
+    function openPrivacyModal(e) {
+      if (e) e.preventDefault();
+      const m = document.getElementById('modalPrivacy');
+      if (m) m.classList.add('show');
+    }
+
+    function closePrivacyModal() {
+      const m = document.getElementById('modalPrivacy');
+      if (m) m.classList.remove('show');
+    }
+
+    function confirmPrivacyAndProceed() {
+      closePrivacyModal();
+      localStorage.setItem('cit_privacy_accepted', 'true');
+      sessionStorage.setItem('cit_show_privacy_popup', '1');
+      if (pendingRegistrationData) {
+        executeRegistration();
+      }
+    }
+
     async function handleLoginSubmit(e) {
       e.preventDefault();
       hideAlert();
@@ -466,6 +610,8 @@
         if (res.success && res.user) {
           // Store session securely in localStorage
           localStorage.setItem('cit_session', JSON.stringify(res.user));
+          // Signal to portal to display Privacy Policy popup
+          sessionStorage.setItem('cit_show_privacy_popup', '1');
           
           if (forcedRedirect) {
             window.location.href = forcedRedirect;
@@ -487,7 +633,7 @@
       }
     }
 
-    async function handleRegisterSubmit(e) {
+    function handleRegisterSubmit(e) {
       e.preventDefault();
       hideAlert();
 
@@ -502,6 +648,15 @@
         return;
       }
 
+      pendingRegistrationData = { name, email, role, cohort, password };
+      openPrivacyModal();
+    }
+
+    async function executeRegistration() {
+      if (!pendingRegistrationData) return;
+      const { name, email, role, cohort, password } = pendingRegistrationData;
+      pendingRegistrationData = null;
+
       const btn = document.getElementById('btn-reg-text');
       btn.innerText = 'Creating account...';
       btn.disabled = true;
@@ -515,6 +670,7 @@
 
         if (res.success) {
           showAlert(res.message + ' You can now sign in.', 'success');
+          sessionStorage.setItem('cit_show_privacy_popup', '1');
           switchTab('login');
           document.getElementById('login-email').value = email;
           document.getElementById('login-password').value = '';
