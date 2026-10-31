@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" rx="14" fill="#600f1c"/>
+  <rect x="2" y="2" width="60" height="60" rx="12" fill="none" stroke="#f59e0b" stroke-width="2" stroke-opacity="0.6"/>
+  <path d="M32 14 L50 23 L32 32 L14 23 Z" fill="#ffffff"/>
+  <path d="M22 28.5 L22 41 C22 44.5 26.5 47 32 47 C37.5 47 42 44.5 42 41 L42 28.5 L32 33.5 Z" fill="#fef3c7"/>
+  <path d="M48 24.5 L48 37 C48 38 49 39 50 39 C51 39 52 38 52 37 L52 25 Z" fill="#f59e0b"/>
+  <text x="32" y="58" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="9" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="1.5">CIT</text>
+</svg>
