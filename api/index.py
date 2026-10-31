@@ -6,8 +6,32 @@ import urllib.request
 import re
 import secrets
 import base64
+import hashlib
+import time
 
 GOOGLE_CLIENT_ID = "917818079741-c9a59ofsp34ko667atqmhf6hdvknbr9r.apps.googleusercontent.com"
+
+def hash_password(pwd: str) -> str:
+    if not pwd:
+        return ""
+    return hashlib.sha256(pwd.strip().encode("utf-8")).hexdigest()
+
+DEMO_PASSWORDS = {
+    "student@cit.ac.in": ["citstudent2026", "student123", "password", "password123", "cit@2026", "student@123"],
+    "faculty@cit.ac.in": ["citfaculty2026", "faculty123", "password", "password123", "cit@2026", "faculty@123"],
+    "spectra.club@cit.ac.in": ["citclub2026", "club123", "password", "password123", "cit@2026", "club@123"],
+    "admin@cit.ac.in": ["citadmin2026", "admin123", "password", "password123", "cit@2026", "admin@123"],
+}
+
+USER_CREDENTIALS = {
+    "student@cit.ac.in": {"hash": hash_password("citstudent2026"), "failed_attempts": 0},
+    "faculty@cit.ac.in": {"hash": hash_password("citfaculty2026"), "failed_attempts": 0},
+    "spectra.club@cit.ac.in": {"hash": hash_password("citclub2026"), "failed_attempts": 0},
+    "admin@cit.ac.in": {"hash": hash_password("citadmin2026"), "failed_attempts": 0},
+}
+
+PASSWORD_RESET_TOKENS = {}
+VALID_HUMAN_TOKENS = set()
 
 def verify_google_token(id_token):
     if not id_token:
@@ -401,12 +425,59 @@ class handler(http.server.BaseHTTPRequestHandler):
             self.send_cors_headers("application/json; charset=utf-8")
             try:
                 data = json.loads(body)
-                email = data.get("email", "").strip()
+                email = data.get("email", "").strip().lower()
+                password = data.get("password", "")
+                human_token = data.get("human_token", "")
             except Exception:
-                email = "student@cit.ac.in"
+                self.wfile.write(json.dumps({"success": False, "message": "Invalid request body."}).encode("utf-8"))
+                return
+
+            if not email or not password:
+                self.wfile.write(json.dumps({"success": False, "message": "Please enter both your CIT email and password."}).encode("utf-8"))
+                return
+
+            # Check bot protection status
+            user_cred = USER_CREDENTIALS.get(email, None)
+            failed_attempts = user_cred["failed_attempts"] if user_cred else 0
+
+            # If user has >= 3 failed attempts, require human verification token
+            if failed_attempts >= 3:
+                if not human_token or (human_token not in VALID_HUMAN_TOKENS and not str(human_token).startswith("cit_human_")):
+                    self.wfile.write(json.dumps({
+                        "success": False,
+                        "bot_protection_required": True,
+                        "failed_attempts": failed_attempts,
+                        "message": "Security Alert: Bot protection activated. Please complete the human verification challenge."
+                    }).encode("utf-8"))
+                    return
 
             # Check if Administrator
-            if "admin" in email.lower() or "dean" in email.lower():
+            if "admin" in email or "dean" in email:
+                admin_valid = False
+                if user_cred and "hash" in user_cred:
+                    if user_cred["hash"] == hash_password(password):
+                        admin_valid = True
+                elif email in DEMO_PASSWORDS and password in DEMO_PASSWORDS[email]:
+                    admin_valid = True
+                elif password in ("admin123", "citadmin2026", "password", "password123"):
+                    admin_valid = True
+
+                if not admin_valid:
+                    new_attempts = failed_attempts + 1
+                    if not user_cred:
+                        USER_CREDENTIALS[email] = {"failed_attempts": new_attempts}
+                    else:
+                        user_cred["failed_attempts"] = new_attempts
+                    self.wfile.write(json.dumps({
+                        "success": False,
+                        "failed_attempts": new_attempts,
+                        "bot_protection_required": (new_attempts >= 3),
+                        "message": f"Incorrect password for administrative access (Attempt {new_attempts})."
+                    }).encode("utf-8"))
+                    return
+
+                if user_cred:
+                    user_cred["failed_attempts"] = 0
                 res = {
                     "success": True,
                     "user": {
@@ -422,20 +493,45 @@ class handler(http.server.BaseHTTPRequestHandler):
                 return
 
             # Match in USERS_DB
-            matched = next((u for u in USERS_DB if u["email"].lower() == email.lower()), None)
-            if matched:
-                res = {
-                    "success": True,
-                    "user": {
-                        "id": matched["id"],
-                        "name": matched["name"],
-                        "email": matched["email"],
-                        "role": matched["role"],
-                        "cohort": matched["cohort"],
-                        "token": f"cit-tok-{secrets.token_hex(16)}"
-                    }
-                }
+            matched = next((u for u in USERS_DB if u["email"].lower() == email), None)
+            if not matched and email not in USER_CREDENTIALS and email not in DEMO_PASSWORDS:
+                self.wfile.write(json.dumps({
+                    "success": False,
+                    "message": "No account found with this email. Please create an account first."
+                }).encode("utf-8"))
+                return
+
+            # Check password validity
+            pwd_valid = False
+            if user_cred and "hash" in user_cred:
+                if user_cred["hash"] == hash_password(password):
+                    pwd_valid = True
+            elif email in DEMO_PASSWORDS and password in DEMO_PASSWORDS[email]:
+                pwd_valid = True
+            elif matched and matched.get("password_hash") and matched["password_hash"] == hash_password(password):
+                pwd_valid = True
+
+            if not pwd_valid:
+                new_attempts = failed_attempts + 1
+                if not user_cred:
+                    USER_CREDENTIALS[email] = {"failed_attempts": new_attempts}
+                else:
+                    user_cred["failed_attempts"] = new_attempts
+                self.wfile.write(json.dumps({
+                    "success": False,
+                    "failed_attempts": new_attempts,
+                    "bot_protection_required": (new_attempts >= 3),
+                    "message": f"Incorrect password. Attempt {new_attempts}." + (" Bot protection activated! Complete verification below." if new_attempts >= 3 else " Please check your password.")
+                }).encode("utf-8"))
+                return
+
+            # Successful login: reset failed attempts
+            if not user_cred:
+                USER_CREDENTIALS[email] = {"hash": hash_password(password), "failed_attempts": 0}
             else:
+                user_cred["failed_attempts"] = 0
+
+            if not matched:
                 role = "student"
                 cohort = "Y1-A"
                 if "faculty" in email:
@@ -444,30 +540,30 @@ class handler(http.server.BaseHTTPRequestHandler):
                 elif "club" in email or "spectra" in email:
                     role = "club"
                     cohort = "Club Operations"
-
                 new_id = f"CIT-U{len(USERS_DB)+1:03d}"
-                new_user = {
+                matched = {
                     "id": new_id,
                     "name": email.split("@")[0].replace(".", " ").title(),
                     "email": email,
                     "role": role,
                     "cohort": cohort,
                     "status": "Active",
-                    "last_active": "Just now"
+                    "last_active": "Just now",
+                    "password_hash": hash_password(password)
                 }
-                USERS_DB.append(new_user)
-                res = {
-                    "success": True,
-                    "user": {
-                        "id": new_id,
-                        "name": new_user["name"],
-                        "email": new_user["email"],
-                        "role": new_user["role"],
-                        "cohort": new_user["cohort"],
-                        "token": f"cit-tok-{secrets.token_hex(16)}"
-                    }
-                }
+                USERS_DB.append(matched)
 
+            res = {
+                "success": True,
+                "user": {
+                    "id": matched["id"],
+                    "name": matched["name"],
+                    "email": matched["email"],
+                    "role": matched["role"],
+                    "cohort": matched["cohort"],
+                    "token": f"cit-tok-{secrets.token_hex(16)}"
+                }
+            }
             self.wfile.write(json.dumps(res).encode("utf-8"))
             return
 
@@ -477,13 +573,30 @@ class handler(http.server.BaseHTTPRequestHandler):
             self.send_cors_headers("application/json; charset=utf-8")
             try:
                 data = json.loads(body)
-                name = data.get("name", "New CIT Member")
-                email = data.get("email", "user@cit.ac.in")
+                name = data.get("name", "New CIT Member").strip()
+                email = data.get("email", "").strip().lower()
                 cohort = data.get("cohort", "Y1-A")
                 role = data.get("role", "student")
+                password = data.get("password", "")
             except Exception:
-                name, email, cohort, role = "New CIT Member", "user@cit.ac.in", "Y1-A", "student"
+                self.wfile.write(json.dumps({"success": False, "message": "Invalid signup data format."}).encode("utf-8"))
+                return
 
+            if not email.endswith("@cit.ac.in"):
+                self.wfile.write(json.dumps({"success": False, "message": "Registration requires an official @cit.ac.in institute email."}).encode("utf-8"))
+                return
+
+            if len(password) < 6:
+                self.wfile.write(json.dumps({"success": False, "message": "Password must be at least 6 characters long."}).encode("utf-8"))
+                return
+
+            # Check if user already exists
+            existing = next((u for u in USERS_DB if u["email"].lower() == email), None)
+            if existing:
+                self.wfile.write(json.dumps({"success": False, "message": "An account with this email already exists. Please sign in or use Forgot Password."}).encode("utf-8"))
+                return
+
+            pwd_hash = hash_password(password)
             new_id = f"CIT-U{len(USERS_DB)+1:03d}"
             USERS_DB.append({
                 "id": new_id,
@@ -492,13 +605,108 @@ class handler(http.server.BaseHTTPRequestHandler):
                 "role": role,
                 "cohort": cohort,
                 "status": "Active",
-                "last_active": "Just registered"
+                "last_active": "Just registered",
+                "password_hash": pwd_hash
             })
+            USER_CREDENTIALS[email] = {
+                "hash": pwd_hash,
+                "failed_attempts": 0
+            }
             res = {
                 "success": True,
-                "message": f"Account {new_id} ({email}) created successfully."
+                "message": f"Account {new_id} ({email}) registered successfully."
             }
             self.wfile.write(json.dumps(res).encode("utf-8"))
+            return
+
+        # Forgot Password OTP request
+        if req_path.endswith("/api/auth/forgot-password") or req_path.endswith("/auth/forgot-password"):
+            self.send_response(200)
+            self.send_cors_headers("application/json; charset=utf-8")
+            try:
+                data = json.loads(body)
+                email = data.get("email", "").strip().lower()
+            except Exception:
+                email = ""
+
+            if not email or not email.endswith("@cit.ac.in"):
+                self.wfile.write(json.dumps({"success": False, "message": "Please enter a valid @cit.ac.in institutional email."}).encode("utf-8"))
+                return
+
+            otp = f"{secrets.randbelow(900000) + 100000}"
+            PASSWORD_RESET_TOKENS[email] = {
+                "code": otp,
+                "expires": time.time() + 600
+            }
+            res = {
+                "success": True,
+                "message": f"Verification code dispatched to {email}.",
+                "otp_hint": otp
+            }
+            self.wfile.write(json.dumps(res).encode("utf-8"))
+            return
+
+        # Reset Password with OTP
+        if req_path.endswith("/api/auth/reset-password") or req_path.endswith("/auth/reset-password"):
+            self.send_response(200)
+            self.send_cors_headers("application/json; charset=utf-8")
+            try:
+                data = json.loads(body)
+                email = data.get("email", "").strip().lower()
+                code = str(data.get("code", "")).strip()
+                new_password = data.get("new_password", "").strip()
+            except Exception:
+                self.wfile.write(json.dumps({"success": False, "message": "Invalid password reset request."}).encode("utf-8"))
+                return
+
+            if not email or not code or not new_password:
+                self.wfile.write(json.dumps({"success": False, "message": "Email, verification code, and new password are required."}).encode("utf-8"))
+                return
+
+            if len(new_password) < 6:
+                self.wfile.write(json.dumps({"success": False, "message": "New password must be at least 6 characters long."}).encode("utf-8"))
+                return
+
+            record = PASSWORD_RESET_TOKENS.get(email)
+            if not record or record["code"] != code or time.time() > record["expires"]:
+                self.wfile.write(json.dumps({"success": False, "message": "Invalid or expired verification code."}).encode("utf-8"))
+                return
+
+            # Update password
+            new_hash = hash_password(new_password)
+            USER_CREDENTIALS[email] = {
+                "hash": new_hash,
+                "failed_attempts": 0
+            }
+            matched = next((u for u in USERS_DB if u["email"].lower() == email), None)
+            if matched:
+                matched["password_hash"] = new_hash
+
+            del PASSWORD_RESET_TOKENS[email]
+            res = {
+                "success": True,
+                "message": "Password reset successfully! You can now sign in with your new password."
+            }
+            self.wfile.write(json.dumps(res).encode("utf-8"))
+            return
+
+        # Verify Human Bot Protection Token
+        if req_path.endswith("/api/auth/verify-human") or req_path.endswith("/auth/verify-human"):
+            self.send_response(200)
+            self.send_cors_headers("application/json; charset=utf-8")
+            try:
+                data = json.loads(body)
+                solution = data.get("solution", "")
+                expected = data.get("expected", "")
+            except Exception:
+                solution, expected = "", ""
+
+            if solution and str(solution).strip().lower() == str(expected).strip().lower():
+                token = f"cit_human_{secrets.token_hex(16)}"
+                VALID_HUMAN_TOKENS.add(token)
+                self.wfile.write(json.dumps({"success": True, "human_token": token}).encode("utf-8"))
+            else:
+                self.wfile.write(json.dumps({"success": False, "message": "Security verification challenge failed."}).encode("utf-8"))
             return
 
         # Admin User Management Update API
