@@ -1634,20 +1634,26 @@
 
       // Normalize all bookings
       const allList = [];
+      let bookingOverrides = {};
+      try {
+        bookingOverrides = JSON.parse(localStorage.getItem('cit_booking_overrides') || '{}');
+      } catch(e) {}
 
       // Add user custom bookings first (they appear at the top)
       customBookings.forEach(cb => {
+        const id = cb.request_id || cb.id;
+        const ovr = bookingOverrides[id] || {};
         allList.push({
-          request_id: cb.request_id || cb.id,
+          request_id: id,
           title: cb.title,
           requester: cb.requester,
           role: cb.role,
-          room_id: cb.room_id,
+          room_id: ovr.room_id || cb.room_id,
           day: cb.day,
           start_period: cb.start_period,
           end_period: cb.end_period,
-          status: cb.status || 'approved',
-          reason: cb.reason || 'Verified zero-clash institutional allocation',
+          status: ovr.status || cb.status || 'approved',
+          reason: ovr.reason || cb.reason || 'Verified zero-clash institutional allocation',
           is_custom: true
         });
       });
@@ -1655,17 +1661,18 @@
       // Add fest week baseline bookings
       festBookings.forEach(b => {
         const req = (DATA.booking_requests || []).find(r => r.id === b.request_id);
+        const ovr = bookingOverrides[b.request_id] || {};
         allList.push({
           request_id: b.request_id,
           title: req ? req.title : 'Official Campus Event',
           requester: req ? req.requester : 'Campus Desk',
           role: req ? req.role : 'Operations',
-          room_id: b.room_id,
+          room_id: ovr.room_id || b.room_id,
           day: b.day,
           start_period: b.start_period,
           end_period: b.end_period,
-          status: b.status,
-          reason: b.reason,
+          status: ovr.status || b.status,
+          reason: ovr.reason || b.reason,
           is_custom: false
         });
       });

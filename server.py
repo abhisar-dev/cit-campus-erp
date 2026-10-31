@@ -73,11 +73,27 @@ USERS_DB = [
 ]
 
 USER_PROFILES = {}
+CUSTOM_BOOKINGS = []
+BOOKING_OVERRIDES = {}
+AUDIT_LOGS = [
+    {"id": "AUD-101", "user": "Dean of Academic Operations", "email": "admin@cit.ac.in", "role": "admin", "action": "Initialized CIT Admin OS Root Telemetry", "module": "System", "status": "Success", "timestamp": "12m ago", "online": True},
+    {"id": "AUD-102", "user": "Spectra Tech Club", "email": "spectra.club@cit.ac.in", "role": "club", "action": "Submitted venue booking request BR-26 for RoboCIT Autonomous Challenge", "module": "Venue Bookings", "status": "Under Review", "timestamp": "18m ago", "online": True},
+    {"id": "AUD-103", "user": "Aarav Sharma", "email": "student@cit.ac.in", "role": "student", "action": "Viewed Friday conflict-free timetable for Cohort Y1-A", "module": "Timetable", "status": "Success", "timestamp": "25m ago", "online": True},
+    {"id": "AUD-104", "user": "Dr. Ramesh Chandra", "email": "faculty@cit.ac.in", "role": "faculty", "action": "Logged in via Institutional Google Workspace SSO", "module": "Authentication", "status": "Success", "timestamp": "34m ago", "online": False},
+    {"id": "AUD-105", "user": "Cultural Committee", "email": "cultural@cit.ac.in", "role": "club", "action": "Requested Audi-1 for Spectra Fest Cultural Night (BR-01)", "module": "Venue Bookings", "status": "Approved", "timestamp": "1h ago", "online": False},
+    {"id": "AUD-106", "user": "Office of Academic Affairs", "email": "admin@cit.ac.in", "role": "admin", "action": "Executed OR-Tools CP-SAT solver constraint validation (0 hard violations)", "module": "Academic Engine", "status": "Success", "timestamp": "2h ago", "online": True}
+]
+WEBSITE_SETTINGS = {
+    "announcement": "Welcome to Chilika Institute of Technology (CIT) Campus ERP · Conflict-Free Timetable & Venue Services Active",
+    "maintenance": False,
+    "allow_signup": True,
+    "ai_assistant": True
+}
 
 DB_FILE = "/tmp/cit_users_db.json" if os.path.exists("/tmp") else os.path.join(BASE_DIR, "users_store.json")
 
 def load_persistent_db():
-    global USERS_DB, USER_CREDENTIALS, USER_PROFILES
+    global USERS_DB, USER_CREDENTIALS, USER_PROFILES, CUSTOM_BOOKINGS, BOOKING_OVERRIDES, AUDIT_LOGS, WEBSITE_SETTINGS
     try:
         if os.path.exists(DB_FILE):
             with open(DB_FILE, "r", encoding="utf-8") as f:
@@ -94,6 +110,14 @@ def load_persistent_db():
                     USER_CREDENTIALS.update(saved["credentials"])
                 if "profiles" in saved and isinstance(saved["profiles"], dict):
                     USER_PROFILES.update(saved["profiles"])
+                if "custom_bookings" in saved and isinstance(saved["custom_bookings"], list):
+                    CUSTOM_BOOKINGS = saved["custom_bookings"]
+                if "booking_overrides" in saved and isinstance(saved["booking_overrides"], dict):
+                    BOOKING_OVERRIDES.update(saved["booking_overrides"])
+                if "audit_logs" in saved and isinstance(saved["audit_logs"], list) and len(saved["audit_logs"]) > 0:
+                    AUDIT_LOGS = saved["audit_logs"]
+                if "settings" in saved and isinstance(saved["settings"], dict):
+                    WEBSITE_SETTINGS.update(saved["settings"])
 
                 for u in USERS_DB:
                     if u.get("password_hash") and u.get("email"):
@@ -112,7 +136,11 @@ def save_persistent_db():
             json.dump({
                 "users": USERS_DB,
                 "credentials": USER_CREDENTIALS,
-                "profiles": USER_PROFILES
+                "profiles": USER_PROFILES,
+                "custom_bookings": CUSTOM_BOOKINGS,
+                "booking_overrides": BOOKING_OVERRIDES,
+                "audit_logs": AUDIT_LOGS,
+                "settings": WEBSITE_SETTINGS
             }, f, indent=2)
     except Exception:
         pass
@@ -307,6 +335,43 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
             self.send_header("Access-Control-Allow-Origin", "*")
             self.end_headers()
             self.wfile.write(json.dumps(USERS_DB).encode("utf-8"))
+            return
+
+        if url.path == "/api/admin/bookings":
+            load_persistent_db()
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(json.dumps({
+                "success": True,
+                "custom_bookings": CUSTOM_BOOKINGS,
+                "overrides": BOOKING_OVERRIDES
+            }).encode("utf-8"))
+            return
+
+        if url.path == "/api/admin/audit-logs":
+            load_persistent_db()
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(json.dumps({
+                "success": True,
+                "logs": AUDIT_LOGS
+            }).encode("utf-8"))
+            return
+
+        if url.path == "/api/admin/settings":
+            load_persistent_db()
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(json.dumps({
+                "success": True,
+                "settings": WEBSITE_SETTINGS
+            }).encode("utf-8"))
             return
 
         if url.path == "/api/user/profile":
@@ -816,6 +881,122 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
             except Exception:
                 pass
             self.wfile.write(json.dumps({"success": True, "users": USERS_DB}).encode("utf-8"))
+            return
+
+        if url.path == "/api/admin/bookings/update":
+            load_persistent_db()
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            try:
+                data = json.loads(body)
+                bid = data.get("id") or data.get("request_id")
+                new_status = data.get("status", "approved")
+                reason = data.get("reason", "")
+                alt_room = data.get("room_id") or data.get("alternative_room", "")
+                
+                for cb in CUSTOM_BOOKINGS:
+                    if (cb.get("id") == bid) or (cb.get("request_id") == bid):
+                        cb["status"] = new_status
+                        if reason: cb["reason"] = reason
+                        if alt_room: cb["room_id"] = alt_room
+                        break
+                
+                BOOKING_OVERRIDES[bid] = {
+                    "status": new_status,
+                    "reason": reason,
+                    "room_id": alt_room,
+                    "updated_at": "Just now"
+                }
+
+                AUDIT_LOGS.insert(0, {
+                    "id": f"AUD-{len(AUDIT_LOGS)+101}",
+                    "user": "Dean of Academic Operations",
+                    "email": "admin@cit.ac.in",
+                    "role": "admin",
+                    "action": f"Admin {new_status.title()} venue booking request {bid}" + (f" ({reason})" if reason else ""),
+                    "module": "Request Management",
+                    "status": "Success",
+                    "timestamp": "Just now",
+                    "online": True
+                })
+                save_persistent_db()
+            except Exception:
+                pass
+            self.wfile.write(json.dumps({"success": True, "overrides": BOOKING_OVERRIDES}).encode("utf-8"))
+            return
+
+        if url.path == "/api/bookings/create":
+            load_persistent_db()
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            data = {}
+            try:
+                data = json.loads(body)
+                bid = data.get("id") or f"BR-{26 + len(CUSTOM_BOOKINGS)}"
+                data["id"] = bid
+                data["request_id"] = bid
+                if "status" not in data:
+                    data["status"] = "pending"
+                CUSTOM_BOOKINGS.insert(0, data)
+                AUDIT_LOGS.insert(0, {
+                    "id": f"AUD-{len(AUDIT_LOGS)+101}",
+                    "user": data.get("requester", "Campus Member"),
+                    "email": data.get("email", "student@cit.ac.in"),
+                    "role": data.get("role", "student"),
+                    "action": f"Submitted venue booking request {bid} for '{data.get('title', 'Campus Event')}' in {data.get('room_id', 'Venue')}",
+                    "module": "Venue Bookings",
+                    "status": "Under Review",
+                    "timestamp": "Just now",
+                    "online": True
+                })
+                save_persistent_db()
+            except Exception:
+                pass
+            self.wfile.write(json.dumps({"success": True, "booking": data}).encode("utf-8"))
+            return
+
+        if url.path == "/api/admin/audit-logs":
+            load_persistent_db()
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            try:
+                data = json.loads(body)
+                AUDIT_LOGS.insert(0, {
+                    "id": f"AUD-{len(AUDIT_LOGS)+101}",
+                    "user": data.get("user", "Campus User"),
+                    "email": data.get("email", ""),
+                    "role": data.get("role", "student"),
+                    "action": data.get("action", "Performed action"),
+                    "module": data.get("module", "System"),
+                    "status": data.get("status", "Success"),
+                    "timestamp": "Just now",
+                    "online": data.get("online", True)
+                })
+                save_persistent_db()
+            except Exception:
+                pass
+            self.wfile.write(json.dumps({"success": True}).encode("utf-8"))
+            return
+
+        if url.path == "/api/admin/settings":
+            load_persistent_db()
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            try:
+                data = json.loads(body)
+                WEBSITE_SETTINGS.update(data)
+                save_persistent_db()
+            except Exception:
+                pass
+            self.wfile.write(json.dumps({"success": True, "settings": WEBSITE_SETTINGS}).encode("utf-8"))
             return
 
         if url.path == "/api/parse-nlp":
