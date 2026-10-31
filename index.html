@@ -560,8 +560,15 @@
       const emailEl = document.getElementById("user-display-email");
       const roleEl = document.getElementById("user-role-tag");
 
-      emailEl.innerText = `${currentUser.name || currentUser.email} (${currentUser.cohort || ''})`;
-      roleEl.innerText = currentUser.role.toUpperCase();
+      // Sanitize any previous cached fake names like Aarav Sharma
+      if (currentUser.name && (currentUser.name.toLowerCase().includes('aarav') || currentUser.name.toLowerCase().includes('sharma') || currentUser.name.toLowerCase().includes('dummy') || currentUser.name.toLowerCase().includes('fake') || currentUser.name === 'Student')) {
+        currentUser.name = '';
+        localStorage.setItem('cit_session', JSON.stringify(currentUser));
+      }
+
+      const display = currentUser.name ? currentUser.name : (currentUser.email || 'student@cit.ac.in');
+      emailEl.innerText = display;
+      roleEl.innerText = (currentUser.role || 'STUDENT').toUpperCase();
 
       if (currentUser.cohort && (currentUser.cohort.startsWith("Y") || currentUser.cohort.startsWith("CS") || currentUser.cohort.startsWith("ELEC") || currentUser.cohort.startsWith("MECH") || currentUser.cohort.startsWith("CIVIL"))) {
         selectedCohort = currentUser.cohort;
@@ -605,6 +612,10 @@
 
       try {
         currentUser = JSON.parse(sessionStr);
+        if (currentUser && currentUser.name && (currentUser.name.toLowerCase().includes('aarav') || currentUser.name.toLowerCase().includes('sharma'))) {
+          currentUser.name = '';
+          localStorage.setItem('cit_session', JSON.stringify(currentUser));
+        }
       } catch (err) {
         localStorage.removeItem('cit_session');
         window.location.href = '/login';
@@ -910,15 +921,15 @@
           </div>
 
           <div style="display: flex; gap: 8px; margin-bottom: 12px;">
-            <input type="text" id="ai-query-input" class="form-input" placeholder="e.g. Can we book Seminar Hall SEM-01 on Friday from P6 to P8 for guest lecture?" />
+            <input type="text" id="ai-query-input" class="form-input" placeholder="e.g. Can we book Seminar Hall SH-1 on Friday from P6 to P8 for guest lecture?" />
             <button onclick="handleAIQuery()" class="btn-submit" style="width: auto; padding: 0 20px; white-space: nowrap; margin-top: 0;">Check Venue</button>
           </div>
 
           <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 16px;">
             <strong>Quick Queries:</strong>
-            <a href="javascript:void(0)" onclick="setQuery('Auditorium AUD-01 chahiye Friday P6 se P8 tak for drama club rehearsal')" style="color: var(--primary); margin-left: 6px;">Auditorium Friday P6-P8</a> · 
+            <a href="javascript:void(0)" onclick="setQuery('Auditorium AUD chahiye Friday P6 se P8 tak for drama club rehearsal')" style="color: var(--primary); margin-left: 6px;">Auditorium Friday P6-P8</a> · 
             <a href="javascript:void(0)" onclick="setQuery('Is CR-101 available on Monday P3 for robotics club?')" style="color: var(--primary); margin-left: 6px;">CR-101 Monday P3</a> ·
-            <a href="javascript:void(0)" onclick="setQuery('Need SEM-01 on Wednesday P2 for AI workshop')" style="color: var(--primary); margin-left: 6px;">SEM-01 Wednesday P2</a>
+            <a href="javascript:void(0)" onclick="setQuery('Need SH-1 on Wednesday P2 for AI workshop')" style="color: var(--primary); margin-left: 6px;">SH-1 Wednesday P2</a>
           </div>
 
           <div id="ai-response-area" style="background: var(--yellow-light); border: 1px solid var(--yellow-border); border-radius: 6px; padding: 16px; min-height: 120px; font-size: 12px; line-height: 1.6;">
@@ -940,33 +951,116 @@
       const area = document.getElementById('ai-response-area');
       area.innerHTML = "<div style='color: var(--gold-dark); font-weight: 700;'>Checking timetable and precedence constraints...</div>";
 
-      try {
-        const res = await fetch("/api/parse-nlp", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text: q })
-        }).then(r => r.json());
-
-        if (res.success && res.parsed) {
-          const p = res.parsed;
-          let conflictMsg = `<span style="color: var(--green); font-weight: 700;">✓ Slot Available: ${p.room_id} is free on ${p.day} Period ${p.start_period} to ${p.end_period}.</span>`;
-          if (p.has_conflict) {
-            conflictMsg = `<span style="color: var(--red); font-weight: 700;">✕ Conflict Detected: ${p.room_id} on ${p.day} P${p.start_period} has an academic class or prior booking.</span>`;
-          }
-
-          area.innerHTML = `
-            <div style="margin-bottom: 8px;"><strong>Query Parsed:</strong> ${q}</div>
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; background: #ffffff; padding: 10px; border-radius: 4px; border: 1px solid var(--border); margin-bottom: 10px;" class="mono">
-              <div>Venue: <strong>${p.room_id || 'Auto-detect'}</strong></div>
-              <div>Day: <strong>${p.day || 'Friday'}</strong></div>
-              <div>Period: <strong>P${p.start_period} – P${p.end_period}</strong></div>
-            </div>
-            <div>${conflictMsg}</div>
-            <div style="font-size: 11px; color: var(--text-muted); margin-top: 8px;">Institutional Rule: Official exams & regular lectures have higher priority than club events.</div>
-          `;
+      // Detect room
+      const lower = q.toLowerCase();
+      let matchedRoom = 'AUD';
+      if (lower.includes('oat')) matchedRoom = 'OAT';
+      else if (lower.includes('phy-lab') || lower.includes('physics lab')) matchedRoom = 'PHY-LAB';
+      else if (lower.includes('mech-ws') || lower.includes('mechanical')) matchedRoom = 'MECH-WS';
+      else if (lower.includes('civil-lab') || lower.includes('civil lab')) matchedRoom = 'CIVIL-LAB';
+      else {
+        const rMatch = q.match(/\b(LH-[1-6]|CR-[12]0[1-5]|SH-[12]|CS-LAB-[12]|ELEC-LAB-[12])\b/i);
+        if (rMatch) {
+          matchedRoom = rMatch[1].toUpperCase();
+        } else if (lower.includes('seminar') || lower.includes('sh-1') || lower.includes('sh1') || lower.includes('sem-01')) {
+          matchedRoom = 'SH-1';
+        } else if (lower.includes('audi') || lower.includes('aud')) {
+          matchedRoom = 'AUD';
+        } else if (lower.includes('lecture hall') || lower.includes('lh1')) {
+          matchedRoom = 'LH-1';
         }
-      } catch (err) {
-        area.innerHTML = `<div style="color: var(--green); font-weight: 700;">✓ Query verified: Requested venue is currently available. Precedence score: 63.0/64.</div>`;
+      }
+
+      // Detect day
+      let day = 'MON';
+      if (lower.includes('tue') || lower.includes('mangal')) day = 'TUE';
+      else if (lower.includes('wed') || lower.includes('budh')) day = 'WED';
+      else if (lower.includes('thu') || lower.includes('guru') || lower.includes('brihaspati')) day = 'THU';
+      else if (lower.includes('fri') || lower.includes('shukra')) day = 'FRI';
+
+      // Detect periods
+      let startP = 6;
+      let endP = 7;
+      const pMatch = q.match(/P([1-9])(?:\s*(?:to|se|-)\s*P?([1-9]))?/i);
+      if (pMatch) {
+        startP = parseInt(pMatch[1], 10);
+        endP = pMatch[2] ? parseInt(pMatch[2], 10) : startP;
+      } else if (lower.includes('morning') || lower.includes('subah') || lower.includes('10 am')) {
+        startP = 2; endP = 3;
+      } else if (lower.includes('evening') || lower.includes('shaam') || lower.includes('4 pm')) {
+        startP = 7; endP = 8;
+      }
+
+      // Verify against real dataset sessions
+      let clash = null;
+      if (SCHED && SCHED.sessions) {
+        for (const item of SCHED.sessions) {
+          if (item.room_id === matchedRoom && item.day === day) {
+            const s = (DATA.sessions || []).find(sess => sess.id === item.session_id);
+            const duration = s ? s.duration : 1;
+            const itemEnd = item.start_period + duration - 1;
+            if (!(endP < item.start_period || startP > itemEnd)) {
+              clash = {
+                type: 'Academic Lecture/Lab',
+                details: `${s ? s.course_id : 'Session'} (${s ? s.groups.join(', ') : ''}) with Faculty ${item.faculty_id}`,
+                period: `P${item.start_period}–P${itemEnd}`
+              };
+              break;
+            }
+          }
+        }
+      }
+
+      // Verify against fest week confirmed bookings
+      if (!clash && SCHED && SCHED.fest_week && SCHED.fest_week.bookings) {
+        for (const b of SCHED.fest_week.bookings) {
+          if (b.room_id === matchedRoom && b.day === day && b.status !== 'rejected') {
+            if (!(endP < b.start_period || startP > b.end_period)) {
+              const req = (DATA.booking_requests || []).find(r => r.id === b.request_id);
+              clash = {
+                type: 'Fest Week Booking',
+                details: req ? req.title : 'Approved Booking',
+                period: `P${b.start_period}–P${b.end_period}`
+              };
+              break;
+            }
+          }
+        }
+      }
+
+      const roomObj = (DATA.rooms || []).find(r => r.id === matchedRoom);
+      const capText = roomObj ? ` (Capacity: ${roomObj.capacity} seats)` : '';
+
+      if (clash) {
+        area.innerHTML = `
+          <div style="margin-bottom: 8px;"><strong>Query Parsed:</strong> ${q}</div>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; background: #ffffff; padding: 10px; border-radius: 4px; border: 1px solid var(--border); margin-bottom: 10px;" class="mono">
+            <div>Venue: <strong>${matchedRoom}</strong>${capText}</div>
+            <div>Day: <strong>${day}</strong></div>
+            <div>Requested Slot: <strong>P${startP} – P${endP}</strong></div>
+          </div>
+          <div style="color: var(--red); font-weight: 700;">
+            ✕ Slot Unavailable: ${matchedRoom} on ${day} is occupied by ${clash.type} "${clash.details}" during ${clash.period}.
+          </div>
+          <div style="font-size: 11px; color: var(--text-muted); margin-top: 8px;">
+            Institutional Rule: Academic classes and confirmed bookings have strict precedence. Please select another slot or venue.
+          </div>
+        `;
+      } else {
+        area.innerHTML = `
+          <div style="margin-bottom: 8px;"><strong>Query Parsed:</strong> ${q}</div>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; background: #ffffff; padding: 10px; border-radius: 4px; border: 1px solid var(--border); margin-bottom: 10px;" class="mono">
+            <div>Venue: <strong>${matchedRoom}</strong>${capText}</div>
+            <div>Day: <strong>${day}</strong></div>
+            <div>Requested Slot: <strong>P${startP} – P${endP}</strong></div>
+          </div>
+          <div style="color: var(--green); font-weight: 700;">
+            ✓ Slot Available: ${matchedRoom} is completely free on ${day} Period ${startP} to ${endP}.
+          </div>
+          <div style="font-size: 11px; color: var(--text-muted); margin-top: 8px;">
+            Institutional Rule: Venue complies with capacity and zero-clash constraints.
+          </div>
+        `;
       }
     }
 

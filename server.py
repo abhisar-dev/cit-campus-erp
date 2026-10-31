@@ -10,12 +10,9 @@ PORT = int(os.environ.get("PORT", 8000))
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 USERS_DB = [
-    {"id": "CIT-U001", "name": "Aarav Sharma", "email": "student@cit.ac.in", "role": "student", "cohort": "Y1-A", "status": "Active", "last_active": "Just now"},
-    {"id": "CIT-U002", "name": "Prof. S. R. Mohanty", "email": "faculty.f19@cit.ac.in", "role": "faculty", "cohort": "Faculty F19 (Physics)", "status": "Active", "last_active": "12m ago"},
-    {"id": "CIT-U003", "name": "Rohan Jena (Spectra Lead)", "email": "spectra.club@cit.ac.in", "role": "club", "cohort": "Robotics & AI Club", "status": "Active", "last_active": "1h ago"},
-    {"id": "CIT-U004", "name": "Priya Nair", "email": "priya.nair@cit.ac.in", "role": "student", "cohort": "CSE-2", "status": "Active", "last_active": "Yesterday"},
-    {"id": "CIT-U005", "name": "Dr. K. Patnaik", "email": "faculty.f07@cit.ac.in", "role": "faculty", "cohort": "Faculty F07 (Leave/Disruption)", "status": "Medical Leave", "last_active": "3d ago"},
-    {"id": "CIT-U006", "name": "Ananya Sen", "email": "ananya.sen@cit.ac.in", "role": "student", "cohort": "Y1-B", "status": "Active", "last_active": "4h ago"}
+    {"id": "CIT-U001", "name": "", "email": "student@cit.ac.in", "role": "student", "cohort": "Y1-A", "status": "Active", "last_active": "Just now"},
+    {"id": "CIT-U002", "name": "", "email": "faculty@cit.ac.in", "role": "faculty", "cohort": "Faculty Member", "status": "Active", "last_active": "12m ago"},
+    {"id": "CIT-U003", "name": "", "email": "spectra.club@cit.ac.in", "role": "club", "cohort": "Club Operations", "status": "Active", "last_active": "1h ago"}
 ]
 
 class ThreadingHTTPServer(socketserver.ThreadingMixIn, http.server.HTTPServer):

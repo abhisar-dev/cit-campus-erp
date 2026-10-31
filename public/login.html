@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Campus Portal — Chilika Institute of Technology</title>
+  <link rel="preload" as="image" href="/assets/cit_login_bg.webp" type="image/webp" fetchpriority="high" />
   <style>
     *, *::before, *::after {
       box-sizing: border-box;
@@ -55,13 +55,19 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      background-image: url('/assets/cit_login_bg.jpg'), url('/public/cit_login_bg.jpg');
+      background-color: #fbf5ea;
+      background-image: image-set(
+        url('/assets/cit_login_bg.webp') type('image/webp'),
+        url('/assets/cit_login_bg.jpg') type('image/jpeg')
+      );
+      background-image: url('/assets/cit_login_bg.webp');
       background-size: 100% 100%;
       background-position: center center;
       background-repeat: no-repeat;
-      opacity: 1; /* Whole background 100% visible */
+      opacity: 1;
       z-index: 0;
       pointer-events: none;
+      will-change: transform;
     }
 
     /* Page Wrapper positioned to align auth box to the RIGHT and shifted slightly DOWN */
@@ -662,7 +668,7 @@
         <form id="form-register" style="display: none;" onsubmit="handleRegisterSubmit(event)">
           <div class="form-group">
             <label class="form-label" for="reg-name">Full Name</label>
-            <input type="text" id="reg-name" class="form-input" placeholder="e.g. Aarav Sharma" required />
+            <input type="text" id="reg-name" class="form-input" placeholder="e.g. Full Name" required />
           </div>
 
           <div class="form-group">
