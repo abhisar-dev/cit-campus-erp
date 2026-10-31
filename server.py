@@ -5,6 +5,7 @@ import os
 import subprocess
 import urllib.parse
 import re
+import secrets
 
 PORT = int(os.environ.get("PORT", 8000))
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -181,7 +182,7 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
                         "email": "admin@cit.ac.in" if "@" not in email else email,
                         "role": "admin",
                         "cohort": "Central Administration",
-                        "token": "cit-adm-sec-98124"
+                        "token": f"cit-adm-{secrets.token_hex(16)}"
                     }
                 }
                 self.wfile.write(json.dumps(res).encode("utf-8"))
@@ -198,7 +199,7 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
                         "email": matched["email"],
                         "role": matched["role"],
                         "cohort": matched["cohort"],
-                        "token": f"cit-tok-{matched['id']}"
+                        "token": f"cit-tok-{secrets.token_hex(16)}"
                     }
                 }
             else:
@@ -231,7 +232,7 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
                         "email": new_user["email"],
                         "role": new_user["role"],
                         "cohort": new_user["cohort"],
-                        "token": f"cit-tok-{new_id}"
+                        "token": f"cit-tok-{secrets.token_hex(16)}"
                     }
                 }
 

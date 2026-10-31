@@ -3,6 +3,7 @@ import json
 import os
 import urllib.parse
 import re
+import secrets
 
 MIME_TYPES = {
     ".html": "text/html; charset=utf-8",
@@ -221,7 +222,7 @@ class handler(http.server.BaseHTTPRequestHandler):
                         "email": "admin@cit.ac.in" if "@" not in email else email,
                         "role": "admin",
                         "cohort": "Central Administration",
-                        "token": "cit-adm-sec-98124"
+                        "token": f"cit-adm-{secrets.token_hex(16)}"
                     }
                 }
                 self.wfile.write(json.dumps(res).encode("utf-8"))
@@ -238,7 +239,7 @@ class handler(http.server.BaseHTTPRequestHandler):
                         "email": matched["email"],
                         "role": matched["role"],
                         "cohort": matched["cohort"],
-                        "token": f"cit-tok-{matched['id']}"
+                        "token": f"cit-tok-{secrets.token_hex(16)}"
                     }
                 }
             else:
@@ -270,7 +271,7 @@ class handler(http.server.BaseHTTPRequestHandler):
                         "email": new_user["email"],
                         "role": new_user["role"],
                         "cohort": new_user["cohort"],
-                        "token": f"cit-tok-{new_id}"
+                        "token": f"cit-tok-{secrets.token_hex(16)}"
                     }
                 }
 

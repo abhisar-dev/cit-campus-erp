@@ -278,12 +278,12 @@
         <form id="form-login" onsubmit="handleLoginSubmit(event)">
           <div class="form-group">
             <label class="form-label" for="login-email">CIT Email Address / Username</label>
-            <input type="text" id="login-email" class="form-input" placeholder="e.g. student@cit.ac.in" autocomplete="username" value="student@cit.ac.in" required />
+            <input type="text" id="login-email" class="form-input" placeholder="e.g. user@cit.ac.in" autocomplete="username" required />
           </div>
 
           <div class="form-group">
             <label class="form-label" for="login-password">Password</label>
-            <input type="password" id="login-password" class="form-input" placeholder="••••••••" autocomplete="current-password" value="password123" required />
+            <input type="password" id="login-password" class="form-input" placeholder="••••••••" autocomplete="current-password" required />
           </div>
 
           <button type="submit" class="btn-submit" id="btn-login-text">Sign In to Campus Portal</button>
@@ -385,22 +385,6 @@
     // Get query params if any redirect was requested
     const urlParams = new URLSearchParams(window.location.search);
     const redirectUrl = urlParams.get('redirect');
-
-    if (redirectUrl === '/admin') {
-      document.getElementById('login-email').value = 'admin@cit.ac.in';
-    }
-
-    function quickLoginAs(role) {
-      if (role === 'admin') {
-        document.getElementById('login-email').value = 'admin@cit.ac.in';
-        document.getElementById('login-password').value = 'admin123';
-        performLogin('admin@cit.ac.in', 'admin123', '/admin');
-      } else {
-        document.getElementById('login-email').value = 'student@cit.ac.in';
-        document.getElementById('login-password').value = 'password123';
-        performLogin('student@cit.ac.in', 'password123', '/portal');
-      }
-    }
 
     function showAlert(msg, type = 'danger') {
       const b = document.getElementById('alert-box');
