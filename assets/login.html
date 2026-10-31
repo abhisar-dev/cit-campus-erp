@@ -34,6 +34,9 @@
   <meta name="twitter:description" content="Secure authentication portal for students, faculty, and campus clubs at Chilika Institute of Technology." />
   <meta name="twitter:image" content="/public/social-preview.png" />
   <meta name="twitter:image:alt" content="Chilika Institute of Technology (CIT) Campus ERP & Student Portal" />
+
+  <!-- Google Identity Services -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
     *, *::before, *::after {
       box-sizing: border-box;
@@ -437,6 +440,34 @@
           <button type="submit" class="btn-submit" id="btn-reg-text">Register Account</button>
         </form>
 
+        <!-- Google Authentication Block -->
+        <div id="section-google-auth" style="margin-top: 14px;">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+            <div style="flex: 1; height: 1px; background: var(--border);"></div>
+            <span style="font-size: 11px; color: var(--text-dim); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Or continue with</span>
+            <div style="flex: 1; height: 1px; background: var(--border);"></div>
+          </div>
+
+          <div id="google-btn-container" style="display: flex; justify-content: center; width: 100%; min-height: 44px;">
+            <div id="g_id_onload"
+                 data-client_id="917818079741-c9a59ofsp34ko667atqmhf6hdvknbr9r.apps.googleusercontent.com"
+                 data-context="signin"
+                 data-ux_mode="popup"
+                 data-callback="handleGoogleCredentialResponse"
+                 data-auto_prompt="false">
+            </div>
+            <div class="g_id_signin"
+                 data-type="standard"
+                 data-shape="rectangular"
+                 data-theme="outline"
+                 data-text="signin_with"
+                 data-size="large"
+                 data-logo_alignment="left"
+                 data-width="340">
+            </div>
+          </div>
+        </div>
+
         <!-- Dedicated Support Section inside Login Card -->
         <div id="section-support" style="display: none;">
           <div style="background: var(--yellow-light); border: 1px solid var(--yellow-border); padding: 12px; border-radius: 8px; margin-bottom: 14px;">
@@ -564,16 +595,57 @@
       document.getElementById('form-register').style.display = 'none';
       const secSupport = document.getElementById('section-support');
       if (secSupport) secSupport.style.display = 'none';
+      const secGoogle = document.getElementById('section-google-auth');
 
       if (tab === 'login') {
         document.getElementById('tab-login').classList.add('active');
         document.getElementById('form-login').style.display = 'block';
+        if (secGoogle) secGoogle.style.display = 'block';
       } else if (tab === 'register') {
         document.getElementById('tab-register').classList.add('active');
         document.getElementById('form-register').style.display = 'block';
+        if (secGoogle) secGoogle.style.display = 'block';
       } else if (tab === 'support') {
         if (tabSupport) tabSupport.classList.add('active');
         if (secSupport) secSupport.style.display = 'block';
+        if (secGoogle) secGoogle.style.display = 'none';
+      }
+    }
+
+    async function handleGoogleCredentialResponse(response) {
+      if (!response || !response.credential) {
+        showAlert('Google authentication did not return a valid credential.');
+        return;
+      }
+      
+      showAlert('Verifying Google credentials with CIT Portal...', 'success');
+
+      try {
+        const res = await fetch('/api/auth/google', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: response.credential })
+        }).then(r => r.json());
+
+        if (res.success && res.user) {
+          localStorage.setItem('cit_session', JSON.stringify(res.user));
+          if (res.user.avatar) {
+            let prof = {};
+            try {
+              prof = JSON.parse(localStorage.getItem('cit_user_profile') || '{}');
+            } catch(e) {}
+            prof.avatar = res.user.avatar;
+            prof.name = res.user.name || prof.name;
+            prof.email = res.user.email || prof.email;
+            localStorage.setItem('cit_user_profile', JSON.stringify(prof));
+          }
+          sessionStorage.setItem('cit_show_privacy_popup', '1');
+          window.location.href = '/portal';
+        } else {
+          showAlert(res.message || 'Google sign-in could not be completed.');
+        }
+      } catch (err) {
+        showAlert('Network error during Google sign-in: ' + err.message);
       }
     }
 

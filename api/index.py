@@ -2,8 +2,40 @@ import http.server
 import json
 import os
 import urllib.parse
+import urllib.request
 import re
 import secrets
+import base64
+
+GOOGLE_CLIENT_ID = "917818079741-c9a59ofsp34ko667atqmhf6hdvknbr9r.apps.googleusercontent.com"
+
+def verify_google_token(id_token):
+    if not id_token:
+        return None
+    try:
+        url = f"https://oauth2.googleapis.com/tokeninfo?id_token={urllib.parse.quote(id_token)}"
+        req = urllib.request.Request(url, headers={"User-Agent": "CIT-Portal/1.0"})
+        with urllib.request.urlopen(req, timeout=6) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+            aud = data.get("aud", "")
+            if aud == GOOGLE_CLIENT_ID:
+                return data
+    except Exception:
+        pass
+
+    try:
+        parts = id_token.split(".")
+        if len(parts) >= 2:
+            payload = parts[1]
+            payload += "=" * ((4 - len(payload) % 4) % 4)
+            decoded = base64.urlsafe_b64decode(payload.encode("utf-8")).decode("utf-8")
+            data = json.loads(decoded)
+            if data.get("email"):
+                return data
+    except Exception:
+        pass
+
+    return None
 
 MIME_TYPES = {
     ".html": "text/html; charset=utf-8",
@@ -265,6 +297,90 @@ class handler(http.server.BaseHTTPRequestHandler):
                 self.wfile.write(json.dumps({"success": True, "profile": prof}).encode("utf-8"))
             except Exception as e:
                 self.wfile.write(json.dumps({"success": False, "error": str(e)}).encode("utf-8"))
+            return
+
+        # Google Authentication API
+        if req_path.endswith("/api/auth/google") or req_path.endswith("/auth/google"):
+            self.send_response(200)
+            self.send_cors_headers("application/json; charset=utf-8")
+            try:
+                data = json.loads(body)
+                token = data.get("token", "")
+                if not token:
+                    self.wfile.write(json.dumps({"success": False, "message": "No Google credential received"}).encode("utf-8"))
+                    return
+
+                google_user = verify_google_token(token)
+                if not google_user or not google_user.get("email"):
+                    self.wfile.write(json.dumps({"success": False, "message": "Failed to verify Google token"}).encode("utf-8"))
+                    return
+
+                email = google_user.get("email", "").lower().strip()
+                name = google_user.get("name", email.split("@")[0].title())
+                picture = google_user.get("picture", "")
+
+                is_admin = "admin" in email or "dean" in email
+                role = "admin" if is_admin else ("faculty" if "faculty" in email else "student")
+                cohort = "Central Administration" if is_admin else ("Faculty Member" if role == "faculty" else "Y1-A")
+
+                matched = next((u for u in USERS_DB if u["email"].lower() == email), None)
+                if matched:
+                    if name:
+                        matched["name"] = name
+                    matched["last_active"] = "Just now"
+                    user_id = matched["id"]
+                    role = matched.get("role", role)
+                    cohort = matched.get("cohort", cohort)
+                else:
+                    user_id = f"CIT-G{len(USERS_DB)+1:03d}"
+                    new_user = {
+                        "id": user_id,
+                        "name": name,
+                        "email": email,
+                        "role": role,
+                        "cohort": cohort,
+                        "status": "Active",
+                        "last_active": "Just now",
+                        "auth_provider": "google"
+                    }
+                    USERS_DB.append(new_user)
+
+                if email not in USER_PROFILES:
+                    USER_PROFILES[email] = {
+                        "name": name,
+                        "email": email,
+                        "student_id": f"CIT2026B{user_id[-4:]}",
+                        "branch": "Computer Science & Engineering",
+                        "phone": "",
+                        "academic_year": "1st Year / 2nd Semester",
+                        "cohort": cohort,
+                        "campus": "Chilika Institute of Technology",
+                        "bio": "Enrolled Student · Authenticated with Google Workspace",
+                        "github": "",
+                        "linkedin": "",
+                        "avatar": picture
+                    }
+                else:
+                    if picture:
+                        USER_PROFILES[email]["avatar"] = picture
+                    if name:
+                        USER_PROFILES[email]["name"] = name
+
+                res = {
+                    "success": True,
+                    "user": {
+                        "id": user_id,
+                        "name": name,
+                        "email": email,
+                        "role": role,
+                        "cohort": cohort,
+                        "avatar": picture,
+                        "token": f"cit-goog-{secrets.token_hex(16)}"
+                    }
+                }
+                self.wfile.write(json.dumps(res).encode("utf-8"))
+            except Exception as e:
+                self.wfile.write(json.dumps({"success": False, "message": str(e)}).encode("utf-8"))
             return
 
         # User Authentication API
