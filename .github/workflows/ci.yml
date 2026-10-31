@@ -1,0 +1,32 @@
+name: ChronoCIT CI & Constraint Validation
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run Crunch Week Official Validator (Baseline Schedule)
+        run: |
+          python validator.py --data assets/cit_public.json --schedule exports/schedule.json --json report_baseline.json
+
+      - name: Run Crunch Week Official Validator (Disrupted Schedule)
+        run: |
+          python validator.py --data assets/cit_public.json --schedule exports/schedule_after.json --disruption assets/sample_disruption.json --baseline exports/schedule.json --json report_after.json
+
+      - name: Verify 0 Hard Violations
+        run: |
+          python -c "import json; r = json.load(open('report_baseline.json')); assert r['hard_violation_count'] == 0, 'Found hard violations!'"
+          python -c "import json; r = json.load(open('report_after.json')); assert r['hard_violation_count'] == 0, 'Found hard violations in disrupted schedule!'"
