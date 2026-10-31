@@ -1407,24 +1407,478 @@
     a[title*="Print" i], a[title*="Export" i] {
       display: none !important;
     }
+
+    /* ========================================================
+       CodeClash / Invertis University Theme Styles
+       ======================================================== */
+    .top-ticker-bar {
+      background: #f59e0b; /* Vibrant amber / golden orange */
+      color: #000000;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      font-size: 11.5px;
+      font-weight: 600;
+      overflow: hidden;
+      border-bottom: 1px solid #d97706;
+      position: relative;
+      z-index: 50;
+    }
+    .ticker-badge {
+      background: #0f172a;
+      color: #ffffff;
+      font-size: 9.5px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.6px;
+      white-space: nowrap;
+      margin-right: 14px;
+      flex-shrink: 0;
+    }
+    .ticker-scroll-wrap {
+      flex: 1;
+      overflow: hidden;
+      white-space: nowrap;
+      position: relative;
+    }
+    .ticker-scroll-track {
+      display: inline-block;
+      white-space: nowrap;
+      animation: tickerAnimation 35s linear infinite;
+    }
+    .ticker-scroll-track:hover {
+      animation-play-state: paused;
+    }
+    @keyframes tickerAnimation {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .ticker-item {
+      display: inline-block;
+      padding: 0 8px;
+      color: #18181b;
+      font-weight: 600;
+    }
+    .ticker-sep {
+      display: inline-block;
+      margin: 0 10px;
+      opacity: 0.55;
+    }
+    .ticker-online-pill {
+      margin-left: 14px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10.5px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      color: #0f172a;
+      background: rgba(255, 255, 255, 0.5);
+      padding: 3px 10px;
+      border-radius: 9999px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+    }
+    .pulse-green-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #15803d;
+      box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.25);
+      display: inline-block;
+      animation: pulseGreen 1.8s infinite;
+    }
+    @keyframes pulseGreen {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.3); opacity: 0.7; }
+    }
+
+    /* Brand Logo & Invertis Badge */
+    .brand-logo-text {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .logo-main {
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: -0.4px;
+      color: #0f172a;
+    }
+    .badge-invertis {
+      font-size: 9px;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: #fef3c7;
+      color: #92400e;
+      border: 1px solid #fde68a;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+    .badge-invertis-sm {
+      font-size: 8.5px;
+      font-weight: 800;
+      padding: 1px 6px;
+      border-radius: 3px;
+      background: #fef3c7;
+      color: #92400e;
+      border: 1px solid #fde68a;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+    }
+
+    /* Tab Pills Theme */
+    .user-nav {
+      background: #ffffff;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 8px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+    .nav-list {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .tab-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: transparent;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #475569;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .tab-item:hover {
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+    .tab-item.active {
+      background: #0f172a !important;
+      color: #ffffff !important;
+      font-weight: 700;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.15);
+    }
+    .tab-item.active::after {
+      display: none !important;
+    }
+    .pill-badge {
+      font-size: 9px;
+      font-weight: 800;
+      padding: 1px 6px;
+      border-radius: 9999px;
+      letter-spacing: 0.3px;
+      line-height: 1.2;
+    }
+    .pill-live {
+      background: #dcfce7;
+      color: #15803d;
+      border: 1px solid #bbf7d0;
+    }
+    .tab-item.active .pill-live {
+      background: #166534;
+      color: #bbf7d0;
+      border-color: #22c55e;
+    }
+    .pill-new {
+      background: #ffedd5;
+      color: #c2410c;
+      border: 1px solid #fed7aa;
+    }
+    .tab-item.active .pill-new {
+      background: #9a3412;
+      color: #fed7aa;
+      border-color: #ea580c;
+    }
+    .pill-h5 {
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid #e2e8f0;
+    }
+    .tab-item.active .pill-h5 {
+      background: #334155;
+      color: #f1f5f9;
+      border-color: #475569;
+    }
+
+    /* Cyan Find Match / Book Venue Button from Screenshot */
+    .btn-cyan-action {
+      background: #38bdf8;
+      color: #0f172a;
+      border: none;
+      border-radius: 9999px;
+      padding: 6px 16px;
+      font-size: 11.5px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(56, 189, 248, 0.3);
+      transition: all 0.15s ease;
+    }
+    .btn-cyan-action:hover {
+      background: #0ea5e9;
+      transform: translateY(-1px);
+    }
+
+    /* Social icons in header */
+    .header-social-link {
+      color: #64748b;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      transition: all 0.15s;
+      text-decoration: none;
+    }
+    .header-social-link:hover {
+      color: #0f172a;
+      background: #f1f5f9;
+    }
+
+    /* 3-Column Theme Footer Matching Screenshot */
+    .theme-footer {
+      background: #fcfbfa;
+      border-top: 1px solid #e7e5e4;
+      padding: 38px 24px 24px;
+      margin-top: 40px;
+      color: #1c1917;
+    }
+    .theme-footer-inner {
+      max-width: 1240px;
+      margin: 0 auto;
+    }
+    .theme-footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1.5fr 1.2fr;
+      gap: 36px;
+      align-items: flex-start;
+    }
+    @media (max-width: 860px) {
+      .theme-footer-grid {
+        grid-template-columns: 1fr;
+        gap: 26px;
+      }
+    }
+    .footer-brand-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .footer-orange-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ea580c;
+      display: inline-block;
+    }
+    .footer-brand-title {
+      font-size: 14px;
+      font-weight: 900;
+      letter-spacing: 0.4px;
+      color: #0f172a;
+    }
+    .footer-brand-bio {
+      font-size: 12px;
+      color: #64748b;
+      line-height: 1.65;
+      max-width: 360px;
+    }
+    .theme-footer-heading {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: #0f172a;
+      margin-bottom: 14px;
+      text-transform: uppercase;
+    }
+    .theme-footer-links {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      font-size: 12px;
+      color: #64748b;
+    }
+    .theme-footer-links a {
+      color: #64748b;
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .theme-footer-links a:hover {
+      color: #0f172a;
+      text-decoration: underline;
+    }
+    .link-fairplay {
+      color: #be185d !important;
+      font-weight: 700 !important;
+      text-decoration: none !important;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .link-fairplay:hover {
+      color: #9d174d !important;
+      text-decoration: underline !important;
+    }
+    .theme-footer-bottom {
+      border-top: 1px solid #f0ede8;
+      margin-top: 32px;
+      padding-top: 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11.5px;
+      color: #94a3b8;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .theme-footer-copy {
+      color: #64748b;
+    }
+    .theme-footer-tag {
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .footer-green-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #22c55e;
+      display: inline-block;
+    }
+    .footer-active-season {
+      color: #b45309;
+      font-weight: 800;
+    }
   </style>
 </head>
 <body>
 
+  <!-- Top Theme Announcement Bar (Matching Invertis / CodeClash Theme) -->
+  <div class="top-ticker-bar">
+    <div class="ticker-badge">LIVE UPDATES</div>
+    <div class="ticker-scroll-wrap">
+      <div class="ticker-scroll-track">
+        <span class="ticker-item">Announcement 1: Academic Classes Resume in Slot Mode (P1–P9)</span>
+        <span class="ticker-sep">•</span>
+        <span class="ticker-item">Announcement 2: Daily Campus Challenge: Conflict-Free Timetable (Rules H1–H14) Certified Active</span>
+        <span class="ticker-sep">•</span>
+        <span class="ticker-item">Announcement 3: Spectra Fest Venue Reservations Open for University Clubs</span>
+        <span class="ticker-sep">•</span>
+        <span class="ticker-item">Announcement 4: Midsem Seating 50% Desk Halving Integrity Guarantee Active</span>
+      </div>
+    </div>
+    <div class="ticker-online-pill">
+      <span class="pulse-green-dot"></span>
+      <span><strong id="live-top-online-count">14</strong> STUDENTS ONLINE</span>
+    </div>
+  </div>
+
   <!-- Top Header -->
   <header>
     <div class="brand-wrap">
-      <div class="brand-icon mono" style="overflow: hidden; padding: 3px; display: flex; align-items: center; justify-content: center;">
-        <img src="/public/favicon.svg" alt="Chilika Institute of Technology Crest" width="26" height="26" style="display: block;" onerror="this.style.display='none'; this.parentNode.innerText='CIT';" />
-      </div>
-      <div>
-        <div class="brand-name">Chilika Institute of Technology</div>
-        <div style="font-size: 11px; color: var(--text-muted);">Campus Academic Scheduling & Venue Portal</div>
+      <div class="brand-logo-text">
+        <span class="logo-main">CIT CAMPUS</span>
+        <span class="badge-invertis">INVERTIS</span>
       </div>
     </div>
 
     <div class="user-actions">
-      <div id="user-profile-badge" style="display: flex; align-items: center; gap: 10px;">
+      <!-- Social Quick Links Matching Screenshot -->
+      <a href="https://linkedin.com" target="_blank" rel="noopener" class="header-social-link" title="CIT LinkedIn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/>
+        </svg>
+      </a>
+      <a href="https://instagram.com" target="_blank" rel="noopener" class="header-social-link" title="CIT Instagram">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+          <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+          <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+        </svg>
+      </a>
+      <a href="https://github.com/abhisar-dev/cit-campus-erp" target="_blank" rel="noopener" class="header-social-link" title="CIT ERP GitHub">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.1-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/>
+        </svg>
+      </a>
+
+      <!-- Support Dropdown Button -->
+      <div class="support-dropdown-container" id="supportContainer">
+        <button type="button" class="support-btn" id="supportToggleBtn" onclick="toggleSupportDropdown(event)" aria-expanded="false" title="Help & Support Desk">
+          <span>Support</span>
+          <svg class="support-chevron" id="supportChevron" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+
+        <!-- Dropdown Floating Menu -->
+        <div class="support-dropdown-menu" id="supportDropdownMenu">
+          <a href="javascript:void(0)" class="support-menu-item" onclick="openContactModal(event)">
+            <div class="support-icon-box">✉️</div>
+            <div class="support-text-box">
+              <div class="support-item-title">Contact Helpdesk</div>
+              <div class="support-item-sub">Official emails & campus phone</div>
+            </div>
+          </a>
+
+          <a href="javascript:void(0)" class="support-menu-item" onclick="openBugModal(event)">
+            <div class="support-icon-box">🪲</div>
+            <div class="support-text-box">
+              <div class="support-item-title">Report an Issue</div>
+              <div class="support-item-sub">Submit ticket to IT cell</div>
+            </div>
+          </a>
+
+          <a href="/support" target="_blank" class="support-menu-item">
+            <div class="support-icon-box">📖</div>
+            <div class="support-text-box">
+              <div class="support-item-title">Support Portal ↗</div>
+              <div class="support-item-sub">FAQs, knowledge base & guides</div>
+            </div>
+          </a>
+
+          <a href="javascript:void(0)" class="support-menu-item" onclick="openAboutModal(event)">
+            <div class="support-icon-box">ℹ️</div>
+            <div class="support-text-box">
+              <div class="support-item-title">About CIT ERP</div>
+              <div class="support-item-sub">Google OR-Tools solver & rules</div>
+            </div>
+          </a>
+
+          <div class="support-menu-divider"></div>
+
+          <a href="javascript:void(0)" class="support-menu-item" onclick="openSocialsModal(event)">
+            <div class="support-icon-box">🔗</div>
+            <div class="support-text-box">
+              <div class="support-item-title">Institute Socials</div>
+              <div class="support-item-sub">GitHub, LinkedIn & social links</div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <div id="user-profile-badge" style="display: flex; align-items: center; gap: 8px;">
         <!-- Interactive Profile Button -->
         <button type="button" class="header-profile-btn" onclick="openProfileModal()" title="View and edit your CIT profile">
           <div class="header-avatar-circle" id="header-avatar-circle">
@@ -1437,82 +1891,44 @@
           </div>
         </button>
 
-        <!-- Support Dropdown Button -->
-        <div class="support-dropdown-container" id="supportContainer">
-          <button type="button" class="support-btn" id="supportToggleBtn" onclick="toggleSupportDropdown(event)" aria-expanded="false" title="Help & Support Desk">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-              <line x1="12" y1="17" x2="12.01" y2="17"></line>
-            </svg>
-            <span>Support</span>
-            <svg class="support-chevron" id="supportChevron" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="6 9 12 15 18 9"></polyline>
-            </svg>
-          </button>
-
-          <!-- Dropdown Floating Menu -->
-          <div class="support-dropdown-menu" id="supportDropdownMenu">
-            <a href="javascript:void(0)" class="support-menu-item" onclick="openContactModal(event)">
-              <div class="support-icon-box">✉️</div>
-              <div class="support-text-box">
-                <div class="support-item-title">Contact Helpdesk</div>
-                <div class="support-item-sub">Official emails & campus phone</div>
-              </div>
-            </a>
-
-            <a href="javascript:void(0)" class="support-menu-item" onclick="openBugModal(event)">
-              <div class="support-icon-box">🪲</div>
-              <div class="support-text-box">
-                <div class="support-item-title">Report a Bug</div>
-                <div class="support-item-sub">Submit an issue ticket to IT Cell</div>
-              </div>
-            </a>
-
-            <a href="/support" target="_blank" class="support-menu-item">
-              <div class="support-icon-box">📖</div>
-              <div class="support-text-box">
-                <div class="support-item-title">Support Portal ↗</div>
-                <div class="support-item-sub">FAQs, knowledge base & guides</div>
-              </div>
-            </a>
-
-            <a href="javascript:void(0)" class="support-menu-item" onclick="openAboutModal(event)">
-              <div class="support-icon-box">ℹ️</div>
-              <div class="support-text-box">
-                <div class="support-item-title">About CIT ERP</div>
-                <div class="support-item-sub">Google OR-Tools engine & rules</div>
-              </div>
-            </a>
-
-            <div class="support-menu-divider"></div>
-
-            <a href="javascript:void(0)" class="support-menu-item" onclick="openSocialsModal(event)">
-              <div class="support-icon-box">🔗</div>
-              <div class="support-text-box">
-                <div class="support-item-title">Institute Socials</div>
-                <div class="support-item-sub">GitHub, LinkedIn & social links</div>
-              </div>
-            </a>
-          </div>
-        </div>
-
-        <button onclick="logout()" style="background: transparent; border: 1px solid var(--border); padding: 5px 12px; border-radius: 4px; font-size: 11px; cursor: pointer; color: var(--primary); font-weight: 600;">
+        <button onclick="logout()" style="background: transparent; border: 1px solid var(--border); padding: 5px 12px; border-radius: 4px; font-size: 11px; cursor: pointer; color: var(--text-muted); font-weight: 600;">
           Sign Out
         </button>
       </div>
     </div>
   </header>
 
-  <!-- User Navigation Sub-bar -->
+  <!-- User Navigation Sub-bar with CodeClash Pill Theme -->
   <nav class="user-nav">
     <div class="nav-list">
-      <button class="tab-item active" onclick="switchUserTab('timetable', this)">Weekly Timetable</button>
-      <button class="tab-item" onclick="switchUserTab('bookings', this)">Spectra Venue Bookings</button>
-      <button class="tab-item" onclick="switchUserTab('ai', this)">AI Booking Assistant</button>
-      <button class="tab-item" onclick="switchUserTab('exams', this)">Midsem Exams</button>
-      <button class="tab-item" onclick="switchUserTab('privacy', this)">Privacy Policy</button>
-      <button class="tab-item" onclick="switchUserTab('terms', this)">Terms & Conditions</button>
+      <button class="tab-item active" onclick="switchUserTab('timetable', this)">
+        <span>Timetable</span>
+      </button>
+      <button class="tab-item" onclick="switchUserTab('bookings', this)">
+        <span>Venue Bookings</span>
+        <span class="pill-badge pill-live">LIVE</span>
+      </button>
+      <button class="tab-item" onclick="switchUserTab('ai', this)">
+        <span>AI Assistant</span>
+        <span class="pill-badge pill-new">NEW</span>
+      </button>
+      <button class="tab-item" onclick="switchUserTab('exams', this)">
+        <span>Midsem Exams</span>
+        <span class="pill-badge pill-h5">H5</span>
+      </button>
+      <button class="tab-item" onclick="switchUserTab('privacy', this)">
+        <span>Privacy</span>
+      </button>
+      <button class="tab-item" onclick="switchUserTab('terms', this)">
+        <span>Terms</span>
+      </button>
+    </div>
+
+    <!-- Quick Action Button from Screenshot (Cyan Find Match -> Book Venue) -->
+    <div class="nav-right-actions">
+      <button type="button" class="btn-cyan-action" onclick="triggerCtaAction()">
+        <span>⚡</span> Book Venue
+      </button>
     </div>
   </nav>
 
@@ -1521,23 +1937,53 @@
     <!-- Rendered dynamically -->
   </main>
 
-  <footer>
-    <div style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap;">
-      <span>Chilika Institute of Technology · Central Academic Services</span>
-      <span>·</span>
-      <a href="/privacy" style="color: var(--primary); text-decoration: none; font-weight: 700;">Privacy Policy</a>
-      <span>·</span>
-      <a href="/terms" style="color: var(--primary); text-decoration: none; font-weight: 700;">Terms & Conditions</a>
-      <span>·</span>
-      <a href="/support" style="color: var(--primary); text-decoration: none; font-weight: 700;">Support Desk</a>
-      <span>·</span>
-      <a href="javascript:void(0)" onclick="if(window.CITCookies)window.CITCookies.openPreferences()" style="color: var(--primary); text-decoration: none; font-weight: 700;">Cookie Preferences</a>
-      <span>·</span>
-      <a href="/login" style="color: var(--text-muted); text-decoration: none;">Sign In</a>
-      <span>·</span>
-      <a href="/admin/login" style="color: var(--text-muted); text-decoration: none;">Admin Access</a>
+  <!-- 3-Column Theme Footer (Matching Invertis / CodeClash Theme) -->
+  <footer class="theme-footer">
+    <div class="theme-footer-inner">
+      <div class="theme-footer-grid">
+        <!-- Column 1: Brand & Bio -->
+        <div class="theme-footer-col footer-col-brand">
+          <div class="footer-brand-row">
+            <span class="footer-orange-dot"></span>
+            <span class="footer-brand-title">CIT CAMPUS</span>
+            <span class="badge-invertis-sm">INVERTIS</span>
+          </div>
+          <p class="footer-brand-bio">
+            The real-time autonomous scheduling & venue allocation platform designed for conflict-free academic timetables, exam room seatings, and high-stakes campus operations.
+          </p>
+        </div>
+
+        <!-- Column 2: Academic Departments -->
+        <div class="theme-footer-col">
+          <h4 class="theme-footer-heading">ACADEMIC DEPARTMENTS</h4>
+          <ul class="theme-footer-links">
+            <li>Faculty of Computer Applications (BCA / MCA)</li>
+            <li>Faculty of Engineering & Technology (B.Tech CSE)</li>
+            <li>Invertis University Campus, Bareilly [UP]</li>
+          </ul>
+        </div>
+
+        <!-- Column 3: Integrations & Legal -->
+        <div class="theme-footer-col">
+          <h4 class="theme-footer-heading">INTEGRATIONS & LEGAL</h4>
+          <ul class="theme-footer-links">
+            <li><a href="/privacy">Privacy Policy</a></li>
+            <li><a href="/terms">Terms and Conditions</a></li>
+            <li><a href="javascript:void(0)" onclick="openBugModal(event)" class="link-fairplay">Report Fair-Play Violation</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Bottom Sub-Footer Bar -->
+      <div class="theme-footer-bottom">
+        <div class="theme-footer-copy">
+          © 2026 CIT Campus ERP · Built for Invertis University Contestants & Students.
+        </div>
+        <div class="theme-footer-tag">
+          Bareilly Campus Invitational · <span class="footer-green-dot"></span> <span class="footer-active-season">Active Season</span>
+        </div>
+      </div>
     </div>
-    <span class="mono">Engine: cit-public-v1 · Certified 0 Hard Clashes</span>
   </footer>
 
   <div id="toast"></div>
