@@ -94,7 +94,7 @@ ANALYTICS_STORE = {
         "Timetable Perspective": 38,
         "AI Assistant": 19,
         "Grievance Ticket": 6,
-        "Export Download": 12
+        "Venue Interactions": 12
     },
     "device_breakdown": {
         "desktop": 94,

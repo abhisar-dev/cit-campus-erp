@@ -1401,6 +1401,12 @@
         max-width: 100%;
       }
     }
+    /* Explicit suppression of any print or export triggers */
+    .btn-export, .btn-print, [data-action="export"], [data-action="print"],
+    button[title*="Print" i], button[title*="Export" i],
+    a[title*="Print" i], a[title*="Export" i] {
+      display: none !important;
+    }
   </style>
 </head>
 <body>
