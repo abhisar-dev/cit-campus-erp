@@ -516,7 +516,6 @@
 
     <div class="nav-actions">
       <span class="mono" style="font-size: 11px; color: var(--gold-dark); font-weight: 700;" id="admin-user-email">admin@cit.ac.in</span>
-      <a href="/portal" class="btn-link">View Student Portal</a>
       <button class="btn-danger" onclick="resetState()">↺ Reset Baseline State</button>
       <button class="btn-link" onclick="logoutAdmin()" style="color: var(--red); border-color: var(--red-border);">Sign Out</button>
     </div>
@@ -612,17 +611,10 @@
         if (sessionStr) session = JSON.parse(sessionStr);
       } catch (e) {}
 
-      // If no admin session, direct to dedicated admin login route
+      // Strict Clearance: Only authenticated Admin can access /admin
       if (!session || session.role !== 'admin') {
-        session = {
-          id: "CIT-ADM01",
-          name: "Dean of Academic Operations",
-          email: "admin@cit.ac.in",
-          role: "admin",
-          cohort: "Central Administration",
-          token: "cit-adm-sec-98124"
-        };
-        localStorage.setItem('cit_session', JSON.stringify(session));
+        window.location.href = '/admin/login';
+        return;
       }
 
       document.getElementById("admin-user-email").innerText = `${session.name || 'Dean'} (${session.email})`;
