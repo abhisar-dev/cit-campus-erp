@@ -639,12 +639,13 @@
       <div class="auth-card">
         <div class="card-header">
           <h2 class="card-title">Campus Operations Portal</h2>
-          <p class="card-subtitle">Sign in to access your timetable & venue management</p>
+          <p class="card-subtitle">Sign in to access your campus dashboard & venue operations</p>
         </div>
 
-        <div class="tab-group">
+        <div class="tab-group" style="display: grid; grid-template-columns: 1fr 1fr 1fr;">
           <button class="tab-btn active" id="tab-login" onclick="switchTab('login')">Sign In</button>
-          <button class="tab-btn" id="tab-register" onclick="switchTab('register')">Register Account</button>
+          <button class="tab-btn" id="tab-register" onclick="switchTab('register')">Register</button>
+          <button class="tab-btn" id="tab-support" onclick="switchTab('support')">Support</button>
         </div>
 
         <div id="alert-box" class="alert-banner"></div>
@@ -680,7 +681,7 @@
           <div class="form-group">
             <label class="form-label" for="reg-role">Account Type</label>
             <select id="reg-role" class="form-select" onchange="handleRoleChange(this.value)">
-              <option value="student">Student (Timetable & Venue Booking)</option>
+              <option value="student">Student (Academics & Venue Booking)</option>
               <option value="faculty">Faculty Member (Teaching & Leaves)</option>
               <option value="club">Student Club Lead (Spectra Requests)</option>
             </select>
@@ -705,6 +706,40 @@
 
           <button type="submit" class="btn-submit" id="btn-reg-text">Register Account</button>
         </form>
+
+        <!-- Dedicated Support Section inside Login Card -->
+        <div id="section-support" style="display: none;">
+          <div style="background: var(--yellow-light); border: 1px solid var(--yellow-border); padding: 12px; border-radius: 8px; margin-bottom: 14px;">
+            <div style="font-weight: 700; color: var(--gold-dark); font-size: 13px;">Campus Operations Helpdesk</div>
+            <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 3px;">
+              Immediate assistance for students, faculty & staff during Crunch Week operations.
+            </div>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 8px; font-size: 12px; margin-bottom: 16px;">
+            <div style="background: #ffffff; border: 1px solid var(--border); border-radius: 6px; padding: 10px;">
+              <strong style="color: var(--primary);">Academic Operations Desk:</strong><br/>
+              <a href="mailto:academic.support@cit.ac.in" style="color: var(--primary); font-weight: 700;">academic.support@cit.ac.in</a>
+            </div>
+            <div style="background: #ffffff; border: 1px solid var(--border); border-radius: 6px; padding: 10px;">
+              <strong style="color: var(--primary);">Spectra Venue Booking Desk:</strong><br/>
+              <a href="mailto:spectra.support@cit.ac.in" style="color: var(--primary); font-weight: 700;">spectra.support@cit.ac.in</a>
+            </div>
+            <div style="background: #ffffff; border: 1px solid var(--border); border-radius: 6px; padding: 10px;">
+              <strong style="color: var(--primary);">Campus Helpline:</strong><br/>
+              <span class="mono">+91 (06756) 220-100 (Ext. 104) · Room AD-204</span>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 6px;">
+            <button type="button" class="btn-submit" onclick="openBugModal(event)" style="background: #ffffff; color: var(--primary); border: 1px solid var(--primary); font-size: 12px; height: 38px; margin-top: 0;">
+              Report an Issue
+            </button>
+            <a href="/support" class="btn-submit" style="display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 12px; height: 38px; margin-top: 0;">
+              Full Help Center →
+            </a>
+          </div>
+        </div>
 
         <div class="auth-footer">
           <p class="mono">Chilika Institute of Technology · Central Academic Services</p>
@@ -756,16 +791,25 @@
 
     function switchTab(tab) {
       hideAlert();
+      document.getElementById('tab-login').classList.remove('active');
+      document.getElementById('tab-register').classList.remove('active');
+      const tabSupport = document.getElementById('tab-support');
+      if (tabSupport) tabSupport.classList.remove('active');
+
+      document.getElementById('form-login').style.display = 'none';
+      document.getElementById('form-register').style.display = 'none';
+      const secSupport = document.getElementById('section-support');
+      if (secSupport) secSupport.style.display = 'none';
+
       if (tab === 'login') {
         document.getElementById('tab-login').classList.add('active');
-        document.getElementById('tab-register').classList.remove('active');
         document.getElementById('form-login').style.display = 'block';
-        document.getElementById('form-register').style.display = 'none';
-      } else {
+      } else if (tab === 'register') {
         document.getElementById('tab-register').classList.add('active');
-        document.getElementById('tab-login').classList.remove('active');
         document.getElementById('form-register').style.display = 'block';
-        document.getElementById('form-login').style.display = 'none';
+      } else if (tab === 'support') {
+        if (tabSupport) tabSupport.classList.add('active');
+        if (secSupport) secSupport.style.display = 'block';
       }
     }
 
