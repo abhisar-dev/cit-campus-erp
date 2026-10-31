@@ -464,6 +464,208 @@
       background: #ffffff;
       margin-top: auto;
     }
+
+    /* Support Dropdown Pill & Container */
+    .support-dropdown-container {
+      position: relative;
+    }
+
+    .support-btn {
+      background: #1c1917;
+      color: #ffffff;
+      border: 1px solid #292524;
+      padding: 5px 13px;
+      border-radius: 9999px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: inherit;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+      transition: background 0.15s ease, transform 0.1s ease;
+    }
+
+    .support-btn:hover {
+      background: #292524;
+      transform: translateY(-1px);
+    }
+
+    .support-btn.active {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .support-chevron {
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .support-btn.active .support-chevron {
+      transform: rotate(180deg);
+    }
+
+    /* Floating Dropdown Card */
+    .support-dropdown-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      width: 275px;
+      background: #ffffff;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      box-shadow: 0 16px 36px -6px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.04);
+      padding: 8px;
+      display: none;
+      z-index: 1000;
+      animation: supportFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .support-dropdown-menu.show {
+      display: block;
+    }
+
+    @keyframes supportFadeIn {
+      from { opacity: 0; transform: translateY(-4px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .support-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 9px 12px;
+      border-radius: 9px;
+      text-decoration: none;
+      color: var(--text-main);
+      transition: background-color 0.12s ease;
+      cursor: pointer;
+    }
+
+    .support-menu-item:hover {
+      background: var(--yellow-light);
+    }
+
+    .support-icon-box {
+      font-size: 16px;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #faf7f2;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .support-text-box {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .support-item-title {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1.25;
+    }
+
+    .support-item-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.2;
+      margin-top: 2px;
+    }
+
+    .support-menu-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 6px 0;
+    }
+
+    /* Modals */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      padding: 20px;
+    }
+
+    .modal-backdrop.show {
+      display: flex;
+    }
+
+    .modal-box {
+      background: #ffffff;
+      border-radius: 14px;
+      width: 100%;
+      max-width: 480px;
+      padding: 26px;
+      position: relative;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border);
+      animation: modalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes modalPop {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .modal-close-btn {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: transparent;
+      border: none;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: var(--text-muted);
+      transition: all 0.15s ease;
+    }
+
+    .modal-close-btn:hover {
+      background: #f1f5f9;
+      color: var(--text-main);
+    }
+
+    .modal-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .modal-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .modal-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
   </style>
 </head>
 <body>
@@ -482,6 +684,67 @@
       <div id="user-profile-badge" style="display: flex; align-items: center; gap: 10px;">
         <span id="user-display-email" style="font-weight: 600; font-size: 12px; color: var(--text-main);">student@cit.ac.in</span>
         <span id="user-role-tag" class="mono" style="font-size: 10px; background: var(--yellow-badge); color: var(--gold-dark); border: 1px solid var(--yellow-border); padding: 2px 7px; border-radius: 3px; font-weight: 700;">STUDENT</span>
+
+        <!-- Support Dropdown Button -->
+        <div class="support-dropdown-container" id="supportContainer">
+          <button type="button" class="support-btn" id="supportToggleBtn" onclick="toggleSupportDropdown(event)" aria-expanded="false" title="Help & Support Desk">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+            <span>Support</span>
+            <svg class="support-chevron" id="supportChevron" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+
+          <!-- Dropdown Floating Menu -->
+          <div class="support-dropdown-menu" id="supportDropdownMenu">
+            <a href="javascript:void(0)" class="support-menu-item" onclick="openContactModal(event)">
+              <div class="support-icon-box">✉️</div>
+              <div class="support-text-box">
+                <div class="support-item-title">Contact Helpdesk</div>
+                <div class="support-item-sub">Official emails & campus phone</div>
+              </div>
+            </a>
+
+            <a href="javascript:void(0)" class="support-menu-item" onclick="openBugModal(event)">
+              <div class="support-icon-box">🪲</div>
+              <div class="support-text-box">
+                <div class="support-item-title">Report a Bug</div>
+                <div class="support-item-sub">Submit an issue ticket to IT Cell</div>
+              </div>
+            </a>
+
+            <a href="/support" target="_blank" class="support-menu-item">
+              <div class="support-icon-box">📖</div>
+              <div class="support-text-box">
+                <div class="support-item-title">Support Portal ↗</div>
+                <div class="support-item-sub">FAQs, knowledge base & guides</div>
+              </div>
+            </a>
+
+            <a href="javascript:void(0)" class="support-menu-item" onclick="openAboutModal(event)">
+              <div class="support-icon-box">ℹ️</div>
+              <div class="support-text-box">
+                <div class="support-item-title">About CIT ERP</div>
+                <div class="support-item-sub">Google OR-Tools engine & rules</div>
+              </div>
+            </a>
+
+            <div class="support-menu-divider"></div>
+
+            <a href="javascript:void(0)" class="support-menu-item" onclick="openSocialsModal(event)">
+              <div class="support-icon-box">🔗</div>
+              <div class="support-text-box">
+                <div class="support-item-title">Institute Socials</div>
+                <div class="support-item-sub">GitHub, LinkedIn & social links</div>
+              </div>
+            </a>
+          </div>
+        </div>
+
         <button onclick="logout()" style="background: transparent; border: 1px solid var(--border); padding: 5px 12px; border-radius: 4px; font-size: 11px; cursor: pointer; color: var(--primary); font-weight: 600;">
           Sign Out
         </button>
@@ -498,7 +761,6 @@
       <button class="tab-item" onclick="switchUserTab('exams', this)">Midsem Exams</button>
       <button class="tab-item" onclick="switchUserTab('privacy', this)">Privacy Policy</button>
       <button class="tab-item" onclick="switchUserTab('terms', this)">Terms & Conditions</button>
-      <button class="tab-item" onclick="switchUserTab('support', this)">Support Desk</button>
     </div>
   </nav>
 
@@ -647,7 +909,6 @@
       else if (currentTab === 'exams') renderExams(content);
       else if (currentTab === 'privacy') renderPrivacy(content);
       else if (currentTab === 'terms') renderTerms(content);
-      else if (currentTab === 'support') renderSupport(content);
     }
 
     // 1. WEEKLY TIMETABLE VIEW (POLISHED & CLEAR WITH GREEN / GREY / RED CODING)
@@ -1286,68 +1547,241 @@
       `;
     }
 
-    // 7. SUPPORT & HELPDESK VIEW
-    function renderSupport(content) {
-      content.innerHTML = `
-        <div class="content-card" style="max-width: 950px; margin: 0 auto;">
-          <div class="card-title-row">
-            <div>
-              <div class="title-text">CIT Academic Support & Technical Helpdesk</div>
-              <div class="subtitle-text">Assistance with timetable clashes, room bookings, and exam hall seating</div>
-            </div>
-            <span class="mono" style="font-size: 11px; background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); padding: 3px 8px; border-radius: 4px; font-weight: 700;">
-              Helpdesk Active
-            </span>
-          </div>
+    // Support Dropdown & Helpdesk Interactions
+    function toggleSupportDropdown(e) {
+      if (e) e.stopPropagation();
+      const menu = document.getElementById('supportDropdownMenu');
+      const btn = document.getElementById('supportToggleBtn');
+      const isOpen = menu.classList.contains('show');
 
-          <div style="display: flex; flex-direction: column; gap: 20px; font-size: 13px; line-height: 1.7;">
-            <div style="background: var(--yellow-light); border: 1px solid var(--yellow-border); padding: 16px; border-radius: 6px;">
-              <strong style="color: var(--gold-dark); font-size: 13px;">Immediate Assistance Channels:</strong>
-              <p style="margin-top: 6px; color: var(--text-main);">
-                If you encounter conflicting lecture periods, unexpected venue reallocations, or login anomalies, contact the academic coordination cell immediately. During Crunch Week, high-priority issues are resolved in under 2 hours.
-              </p>
-            </div>
+      if (isOpen) {
+        closeSupportDropdown();
+      } else {
+        menu.classList.add('show');
+        btn.classList.add('active');
+        btn.setAttribute('aria-expanded', 'true');
+      }
+    }
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px;">
-              <div style="border: 1px solid var(--border); border-radius: 6px; padding: 14px; background: #fff;">
-                <strong style="color: var(--primary); font-size: 13px;">✉️ Academic Operations Desk</strong>
-                <p style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">
-                  Timetable clashes, cohort swaps, and faculty leave inquiries:<br/>
-                  <a href="mailto:academic.support@cit.ac.in" style="color: var(--primary); font-weight: 700;">academic.support@cit.ac.in</a>
-                </p>
-              </div>
+    function closeSupportDropdown() {
+      const menu = document.getElementById('supportDropdownMenu');
+      const btn = document.getElementById('supportToggleBtn');
+      if (menu) menu.classList.remove('show');
+      if (btn) {
+        btn.classList.remove('active');
+        btn.setAttribute('aria-expanded', 'false');
+      }
+    }
 
-              <div style="border: 1px solid var(--border); border-radius: 6px; padding: 14px; background: #fff;">
-                <strong style="color: var(--primary); font-size: 13px;">🎭 Spectra Venue Reservations</strong>
-                <p style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">
-                  Club event hall bookings, equipment, and Rule H6 status:<br/>
-                  <a href="mailto:spectra.support@cit.ac.in" style="color: var(--primary); font-weight: 700;">spectra.support@cit.ac.in</a>
-                </p>
-              </div>
+    document.addEventListener('click', function(e) {
+      const container = document.getElementById('supportContainer');
+      if (container && !container.contains(e.target)) {
+        closeSupportDropdown();
+      }
+    });
 
-              <div style="border: 1px solid var(--border); border-radius: 6px; padding: 14px; background: #fff;">
-                <strong style="color: var(--primary); font-size: 13px;">📞 Central Campus Helpline</strong>
-                <p style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">
-                  General Helpline: <strong class="mono">+91 (06756) 220-100</strong><br/>
-                  Crunch Week Emergency: <strong class="mono">+91 (06756) 220-111</strong>
-                </p>
-              </div>
-            </div>
+    // Modals Controls
+    function openModal(id) {
+      closeSupportDropdown();
+      const modal = document.getElementById(id);
+      if (modal) modal.classList.add('show');
+    }
 
-            <div style="border-top: 1px solid var(--border); padding-top: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-              <div style="font-size: 11px; color: var(--text-muted);">
-                Central Administrative Complex · Room AD-204 · Chilika Campus
-              </div>
-              <a href="/support" class="btn-submit" style="width: auto; text-decoration: none; padding: 7px 16px; font-size: 12px; margin-top: 0;">
-                Open Full Help & Support Center &rarr;
-              </a>
-            </div>
-          </div>
-        </div>
-      `;
+    function closeModal(id) {
+      const modal = document.getElementById(id);
+      if (modal) modal.classList.remove('show');
+    }
+
+    function openContactModal(e) {
+      if (e) e.preventDefault();
+      openModal('modalContact');
+    }
+
+    function openBugModal(e) {
+      if (e) e.preventDefault();
+      openModal('modalBug');
+    }
+
+    function openAboutModal(e) {
+      if (e) e.preventDefault();
+      openModal('modalAbout');
+    }
+
+    function openSocialsModal(e) {
+      if (e) e.preventDefault();
+      openModal('modalSocials');
+    }
+
+    function handleBugModalSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('modal-bug-name').value.trim();
+      const email = document.getElementById('modal-bug-email').value.trim();
+      const cat = document.getElementById('modal-bug-cat').value;
+      const desc = document.getElementById('modal-bug-desc').value.trim();
+      const btn = document.getElementById('btn-modal-bug-submit');
+      const alert = document.getElementById('modal-bug-alert');
+
+      btn.disabled = true;
+      btn.innerText = 'Submitting report...';
+
+      setTimeout(() => {
+        const ticketId = 'CIT-BUG-' + Math.floor(10000 + Math.random() * 90000);
+        const tickets = JSON.parse(localStorage.getItem('cit_support_tickets') || '[]');
+        tickets.unshift({
+          id: ticketId,
+          name,
+          email,
+          category: cat,
+          message: desc,
+          timestamp: new Date().toISOString(),
+          status: 'Under Investigation'
+        });
+        localStorage.setItem('cit_support_tickets', JSON.stringify(tickets));
+
+        alert.style.display = 'block';
+        alert.style.padding = '10px 12px';
+        alert.style.background = '#f0fdf4';
+        alert.style.border = '1px solid #bbf7d0';
+        alert.style.borderRadius = '6px';
+        alert.style.color = '#166534';
+        alert.style.fontSize = '12px';
+        alert.style.marginBottom = '12px';
+        alert.innerHTML = `✓ <strong>Ticket Logged: ${ticketId}</strong><br/>Thank you. Our academic IT cell has received your report.`;
+
+        btn.disabled = false;
+        btn.innerText = 'Submit Another Issue';
+        document.getElementById('modal-bug-desc').value = '';
+      }, 500);
     }
 
     window.addEventListener("DOMContentLoaded", init);
   </script>
+
+  <!-- Contact Modal -->
+  <div class="modal-backdrop" id="modalContact" onclick="if(event.target === this) closeModal('modalContact')">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="closeModal('modalContact')" aria-label="Close dialog">✕</button>
+      <div class="modal-head">
+        <div style="font-size: 24px;">✉️</div>
+        <div>
+          <h3 class="modal-title">Contact Helpdesk</h3>
+          <p class="modal-subtitle">Official Chilika Institute of Technology Support</p>
+        </div>
+      </div>
+      <div style="font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-bottom: 16px;">
+        <div style="background: var(--bg); padding: 12px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 10px;">
+          <strong style="color: var(--text-main);">Academic Operations & Timetable</strong><br/>
+          <a href="mailto:academic.support@cit.ac.in" style="color: var(--primary); font-weight: 700;">academic.support@cit.ac.in</a>
+        </div>
+        <div style="background: var(--bg); padding: 12px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 10px;">
+          <strong style="color: var(--text-main);">Spectra Venue Booking Desk</strong><br/>
+          <a href="mailto:spectra.support@cit.ac.in" style="color: var(--primary); font-weight: 700;">spectra.support@cit.ac.in</a>
+        </div>
+        <div style="background: var(--bg); padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+          <strong style="color: var(--text-main);">Central Campus Telephone</strong><br/>
+          <span>+91 (06756) 220-100 (Ext. 104) · Room AD-204</span>
+        </div>
+      </div>
+      <a href="/support#contact" target="_blank" class="btn-submit" style="display: block; text-align: center; text-decoration: none; padding-top: 11px;">
+        Open Full Support Portal →
+      </a>
+    </div>
+  </div>
+
+  <!-- Report a Bug Modal -->
+  <div class="modal-backdrop" id="modalBug" onclick="if(event.target === this) closeModal('modalBug')">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="closeModal('modalBug')" aria-label="Close dialog">✕</button>
+      <div class="modal-head">
+        <div style="font-size: 24px;">🪲</div>
+        <div>
+          <h3 class="modal-title">Report a Bug</h3>
+          <p class="modal-subtitle">Found something broken? Tell the CIT ERP team.</p>
+        </div>
+      </div>
+      <form onsubmit="handleBugModalSubmit(event)">
+        <div id="modal-bug-alert" style="display: none;"></div>
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label class="form-label" for="modal-bug-name">Full Name</label>
+          <input type="text" id="modal-bug-name" class="form-input" placeholder="e.g. Student Name" required />
+        </div>
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label class="form-label" for="modal-bug-email">CIT Email</label>
+          <input type="email" id="modal-bug-email" class="form-input" placeholder="student@cit.ac.in" required />
+        </div>
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label class="form-label" for="modal-bug-cat">Issue Category</label>
+          <select id="modal-bug-cat" class="form-input">
+            <option value="timetable">Timetable / Slot Overlap</option>
+            <option value="venue">Venue Booking / Spectra Precedence</option>
+            <option value="login">Authentication / Credential Glitch</option>
+            <option value="mobile">Mobile Layout / Display Issue</option>
+            <option value="other">Other System Anomaly</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom: 14px;">
+          <label class="form-label" for="modal-bug-desc">What happened?</label>
+          <textarea id="modal-bug-desc" class="form-input" style="height: 70px; resize: vertical; padding-top: 8px;" placeholder="Please describe the glitch or error..." required></textarea>
+        </div>
+        <button type="submit" class="btn-submit" id="btn-modal-bug-submit">Submit Bug Report</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- About Modal -->
+  <div class="modal-backdrop" id="modalAbout" onclick="if(event.target === this) closeModal('modalAbout')">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="closeModal('modalAbout')" aria-label="Close dialog">✕</button>
+      <div class="modal-head">
+        <div style="font-size: 24px;">ℹ️</div>
+        <div>
+          <h3 class="modal-title">About CIT Campus ERP</h3>
+          <p class="modal-subtitle">Autonomous Academic Operations & Scheduling System</p>
+        </div>
+      </div>
+      <div style="font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-bottom: 18px;">
+        <p style="margin-bottom: 10px;">
+          The CIT Campus ERP platform orchestrates conflict-free timetable schedules, faculty leaves, and venue bookings for the Chilika Institute of Technology.
+        </p>
+        <div style="background: var(--bg); padding: 12px; border-radius: 8px; border: 1px solid var(--border);" class="mono">
+          <div>Edition: <strong>v2.4.0 (Crunch Week Production)</strong></div>
+          <div style="margin-top: 4px;">Engine: <strong>Google OR-Tools CP-SAT</strong></div>
+          <div style="margin-top: 4px;">Compliance: <strong>DPDP Act 2023 · Rule H5 · Rule H6</strong></div>
+        </div>
+      </div>
+      <a href="/support#about" target="_blank" class="btn-submit" style="display: block; text-align: center; text-decoration: none; padding-top: 11px;">
+        Read Architecture & Governance →
+      </a>
+    </div>
+  </div>
+
+  <!-- Socials Modal -->
+  <div class="modal-backdrop" id="modalSocials" onclick="if(event.target === this) closeModal('modalSocials')">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="closeModal('modalSocials')" aria-label="Close dialog">✕</button>
+      <div class="modal-head">
+        <div style="font-size: 24px;">🔗</div>
+        <div>
+          <h3 class="modal-title">Institute Socials & Community</h3>
+          <p class="modal-subtitle">Stay connected with CIT updates & developer repository</p>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px;">
+        <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; text-decoration: none; color: var(--text-main); font-weight: 600; font-size: 13px;">
+          <span style="font-size: 16px;">💼</span> LinkedIn · Chilika Institute of Technology
+        </a>
+        <a href="https://github.com/abhisar-dev/cit-campus-erp" target="_blank" rel="noopener noreferrer" style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; text-decoration: none; color: var(--text-main); font-weight: 600; font-size: 13px;">
+          <span style="font-size: 16px;">🐙</span> GitHub · abhisar-dev / cit-campus-erp
+        </a>
+        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; text-decoration: none; color: var(--text-main); font-weight: 600; font-size: 13px;">
+          <span style="font-size: 16px;">📸</span> Instagram · @cit_campus_life
+        </a>
+        <a href="https://cit.ac.in" target="_blank" rel="noopener noreferrer" style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; text-decoration: none; color: var(--text-main); font-weight: 600; font-size: 13px;">
+          <span style="font-size: 16px;">🌐</span> Official Website · cit.ac.in
+        </a>
+      </div>
+      <button class="btn-submit" onclick="closeModal('modalSocials')">Done</button>
+    </div>
+  </div>
 </body>
 </html>
