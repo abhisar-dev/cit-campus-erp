@@ -1133,18 +1133,32 @@
               </thead>
               <tbody>
                 ${exams.map(ex => {
-                  const room = DATA.rooms.find(r => r.id === ex.room_id);
-                  const cap = room ? room.capacity : 60;
-                  const halfCap = Math.floor(cap / 2);
+                  const meta = (DATA.exams || []).find(e => e.id === ex.exam_id) || {};
+                  const courseCode = (meta.course_ids && meta.course_ids.length > 0) ? meta.course_ids.join(', ') : (ex.course_code || ex.exam_id || 'EXAM');
+                  const cohorts = (meta.groups && meta.groups.length > 0) ? meta.groups.join(', ') : (ex.student_groups ? ex.student_groups.join(', ') : 'All Enrolled');
+                  const roomsList = ex.rooms ? (Array.isArray(ex.rooms) ? ex.rooms.join(', ') : ex.rooms) : (ex.room_id || 'TBD');
+                  const periodBlock = ex.session ? (ex.session === 'AM' ? 'P2–P4 (10:00–13:00)' : 'P6–P8 (14:00–17:00)') : (ex.start_period ? `P${ex.start_period} – P${ex.end_period}` : 'Standard Session');
+                  let totalCap = 0;
+                  if (ex.rooms && Array.isArray(ex.rooms)) {
+                    ex.rooms.forEach(rid => {
+                      const r = (DATA.rooms || []).find(rm => rm.id === rid);
+                      if (r) totalCap += r.capacity;
+                    });
+                  } else if (ex.room_id) {
+                    const r = (DATA.rooms || []).find(rm => rm.id === ex.room_id);
+                    if (r) totalCap = r.capacity;
+                  }
+                  if (totalCap === 0) totalCap = meta.size || 120;
+                  const halfCap = Math.floor(totalCap / 2);
                   return `
                     <tr>
-                      <td class="mono" style="font-weight: 700; color: var(--primary);">${ex.course_code}</td>
+                      <td class="mono" style="font-weight: 700; color: var(--primary);">${courseCode}</td>
                       <td>${ex.day}</td>
-                      <td class="mono" style="font-weight: 600;">P${ex.start_period} – P${ex.end_period}</td>
-                      <td class="mono" style="font-weight: 700; color: var(--gold-dark);">${ex.room_id}</td>
-                      <td class="mono">${cap} seats</td>
+                      <td class="mono" style="font-weight: 600;">${periodBlock}</td>
+                      <td class="mono" style="font-weight: 700; color: var(--gold-dark);">${roomsList}</td>
+                      <td class="mono">${totalCap} seats</td>
                       <td class="mono" style="color: var(--green); font-weight: 700;">${halfCap} seats max (50%)</td>
-                      <td>${ex.student_groups.join(', ')}</td>
+                      <td>${cohorts}</td>
                       <td><span class="status-tag green">● Confirmed</span></td>
                     </tr>
                   `;
