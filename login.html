@@ -12,9 +12,9 @@
     }
 
     :root {
-      --bg: #f8f5f0;
-      --surface: #ffffff;
-      --border: #e6dfd5;
+      --bg: #f8f4ee;
+      --surface: rgba(255, 255, 255, 0.82);
+      --border: rgba(230, 223, 213, 0.85);
       --border-focus: #600f1c;
       --text-main: #1c1917;
       --text-muted: #57534e;
@@ -28,10 +28,14 @@
       --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
-    body {
+    html, body {
+      width: 100%;
+      height: 100%;
       margin: 0;
       padding: 0;
-      min-height: 100vh;
+    }
+
+    body {
       background-color: var(--bg);
       color: var(--text-main);
       font-family: var(--font-sans);
@@ -44,7 +48,7 @@
       font-family: var(--font-mono);
     }
 
-    /* 85% Opacity Background Image Layer */
+    /* 85% Opacity Background Artwork - Scaled 100% to Fit Screen Without Overflow */
     .bg-image-layer {
       position: fixed;
       top: 0;
@@ -52,15 +56,15 @@
       width: 100vw;
       height: 100vh;
       background-image: url('/public/cit_login_bg.jpg');
-      background-size: cover;
-      background-position: center left;
+      background-size: 100% 100%;
+      background-position: center center;
       background-repeat: no-repeat;
       opacity: 0.85;
       z-index: 0;
       pointer-events: none;
     }
 
-    /* Page Wrapper positioned to align auth box to the RIGHT */
+    /* Page Wrapper positioned to align auth box comfortably to the RIGHT */
     .page-wrapper {
       position: relative;
       z-index: 1;
@@ -68,69 +72,65 @@
       display: flex;
       justify-content: flex-end;
       align-items: center;
-      padding: 40px 90px 40px 24px;
+      padding: 24px 50px 24px 20px;
     }
 
-    @media (max-width: 1080px) {
-      .page-wrapper {
-        padding: 30px 40px 30px 20px;
-      }
-    }
-
-    @media (max-width: 860px) {
+    @media (max-width: 900px) {
       .page-wrapper {
         justify-content: center;
-        padding: 24px 16px;
+        padding: 20px 16px;
       }
     }
 
-    /* Auth Container */
+    /* Compact Auth Container to Avoid Covering Text or Artwork */
     .auth-container {
       width: 100%;
-      max-width: 420px;
+      max-width: 350px;
     }
 
-    /* Card */
+    /* Frosted Translucent Card */
     .auth-card {
       background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 20px 40px -8px rgba(96, 15, 28, 0.12);
-      padding: 32px 28px;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.95);
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(96, 15, 28, 0.12), 0 1px 3px rgba(0, 0, 0, 0.05);
+      padding: 22px 22px 18px 22px;
     }
 
     .card-header {
-      margin-bottom: 22px;
+      margin-bottom: 14px;
     }
 
     .card-title {
-      font-size: 20px;
+      font-size: 17px;
       font-weight: 700;
-      color: var(--text-main);
-      letter-spacing: -0.3px;
+      color: var(--primary);
+      letter-spacing: -0.2px;
     }
 
     .card-subtitle {
-      font-size: 12px;
+      font-size: 11px;
       color: var(--text-muted);
-      margin-top: 4px;
+      margin-top: 2px;
     }
 
-    /* Tabs */
+    /* Compact Tabs */
     .tab-group {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      background: #f5f0eb;
-      padding: 3px;
-      border-radius: 6px;
-      margin-bottom: 22px;
+      background: rgba(245, 240, 235, 0.85);
+      padding: 2px;
+      border-radius: 5px;
+      margin-bottom: 14px;
     }
 
     .tab-btn {
       background: transparent;
       border: none;
-      padding: 9px 12px;
-      font-size: 12px;
+      padding: 6px 10px;
+      font-size: 11px;
       font-weight: 600;
       color: var(--text-muted);
       border-radius: 4px;
@@ -141,12 +141,12 @@
     .tab-btn.active {
       background: #ffffff;
       color: var(--primary);
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
     }
 
-    /* Form Fields */
+    /* Compact Form Fields */
     .form-group {
-      margin-bottom: 16px;
+      margin-bottom: 11px;
     }
 
     .form-label {
@@ -154,26 +154,27 @@
       font-size: 11px;
       font-weight: 600;
       color: var(--text-main);
-      margin-bottom: 6px;
-      letter-spacing: 0.2px;
+      margin-bottom: 4px;
+      letter-spacing: 0.1px;
     }
 
     .form-input, .form-select {
       width: 100%;
-      height: 40px;
-      padding: 0 12px;
-      font-size: 13px;
+      height: 36px;
+      padding: 0 10px;
+      font-size: 12px;
       font-family: inherit;
       color: var(--text-main);
-      background: #ffffff;
+      background: rgba(255, 255, 255, 0.9);
       border: 1px solid var(--border);
-      border-radius: 6px;
+      border-radius: 5px;
       outline: none;
       transition: border-color 0.15s ease, box-shadow 0.15s ease;
     }
 
     .form-input:focus, .form-select:focus {
       border-color: var(--border-focus);
+      background: #ffffff;
       box-shadow: 0 0 0 1px var(--border-focus);
     }
 
@@ -182,23 +183,23 @@
     }
 
     .form-hint {
-      font-size: 11px;
+      font-size: 10px;
       color: var(--text-muted);
-      margin-top: 4px;
+      margin-top: 2px;
     }
 
     /* Primary Submit Button */
     .btn-submit {
       width: 100%;
-      height: 42px;
+      height: 38px;
       background: var(--primary);
       color: #ffffff;
       border: none;
-      border-radius: 6px;
-      font-size: 13px;
+      border-radius: 5px;
+      font-size: 12px;
       font-weight: 600;
       cursor: pointer;
-      margin-top: 8px;
+      margin-top: 6px;
       transition: background 0.15s ease;
     }
 
@@ -213,11 +214,11 @@
     /* Feedback Banner */
     .alert-banner {
       display: none;
-      padding: 10px 12px;
-      border-radius: 6px;
-      font-size: 12px;
-      margin-bottom: 16px;
-      line-height: 1.4;
+      padding: 8px 10px;
+      border-radius: 5px;
+      font-size: 11px;
+      margin-bottom: 12px;
+      line-height: 1.35;
     }
 
     .alert-danger {
@@ -235,15 +236,15 @@
     /* Footer Security Note */
     .auth-footer {
       text-align: center;
-      margin-top: 20px;
-      font-size: 11px;
+      margin-top: 14px;
+      font-size: 10px;
       color: var(--text-muted);
     }
   </style>
 </head>
 <body>
 
-  <!-- 85% Opacity Background Artwork Layer -->
+  <!-- 85% Opacity Background Artwork (100% Fit, 0 Out of Screen) -->
   <div class="bg-image-layer"></div>
 
   <!-- Page Wrapper with Right-Aligned Box -->
@@ -252,12 +253,12 @@
       <div class="auth-card">
         <div class="card-header">
           <h2 class="card-title">Campus Operations Portal</h2>
-          <p class="card-subtitle">Sign in with your institute credentials to continue</p>
+          <p class="card-subtitle">Sign in to access your timetable & bookings</p>
         </div>
 
         <div class="tab-group">
           <button class="tab-btn active" id="tab-login" onclick="switchTab('login')">Sign In</button>
-          <button class="tab-btn" id="tab-register" onclick="switchTab('register')">Register Account</button>
+          <button class="tab-btn" id="tab-register" onclick="switchTab('register')">Register</button>
         </div>
 
         <div id="alert-box" class="alert-banner"></div>
@@ -270,9 +271,7 @@
           </div>
 
           <div class="form-group">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-              <label class="form-label" for="login-password" style="margin-bottom: 0;">Password</label>
-            </div>
+            <label class="form-label" for="login-password">Password</label>
             <input type="password" id="login-password" class="form-input" placeholder="••••••••" autocomplete="current-password" value="password123" required />
           </div>
 
@@ -288,7 +287,7 @@
 
           <div class="form-group">
             <label class="form-label" for="reg-email">Institute Email</label>
-            <input type="email" id="reg-email" class="form-input" placeholder="e.g. rollno@cit.ac.in" required />
+            <input type="email" id="reg-email" class="form-input" placeholder="user@cit.ac.in" required />
             <div class="form-hint">Must end in @cit.ac.in</div>
           </div>
 
@@ -322,7 +321,7 @@
         </form>
 
         <div class="auth-footer">
-          <p class="mono" style="font-size: 11px;">Chilika Institute of Technology · Central Academic Services</p>
+          <p class="mono">Chilika Institute of Technology · Central Academic Services</p>
         </div>
       </div>
     </div>
