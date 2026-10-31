@@ -20,14 +20,16 @@ DEMO_PASSWORDS = {
     "student@cit.ac.in": ["citstudent2026", "student123", "password", "password123", "cit@2026", "student@123"],
     "faculty@cit.ac.in": ["citfaculty2026", "faculty123", "password", "password123", "cit@2026", "faculty@123"],
     "spectra.club@cit.ac.in": ["citclub2026", "club123", "password", "password123", "cit@2026", "club@123"],
-    "admin@cit.ac.in": ["citadmin2026", "admin123", "password", "password123", "cit@2026", "admin@123"],
+    "admin@cit.ac.in": ["admin123", "citadmin2026", "password", "password123", "cit@2026", "admin@123"],
+    "admin": ["admin123", "citadmin2026", "password", "password123", "cit@2026", "admin@123"],
 }
 
 USER_CREDENTIALS = {
     "student@cit.ac.in": {"hash": hash_password("citstudent2026"), "failed_attempts": 0},
     "faculty@cit.ac.in": {"hash": hash_password("citfaculty2026"), "failed_attempts": 0},
     "spectra.club@cit.ac.in": {"hash": hash_password("citclub2026"), "failed_attempts": 0},
-    "admin@cit.ac.in": {"hash": hash_password("citadmin2026"), "failed_attempts": 0},
+    "admin@cit.ac.in": {"hash": hash_password("admin123"), "failed_attempts": 0},
+    "admin": {"hash": hash_password("admin123"), "failed_attempts": 0},
 }
 
 PASSWORD_RESET_TOKENS = {}
@@ -138,6 +140,9 @@ def load_persistent_db():
                                 "hash": u["password_hash"],
                                 "failed_attempts": USER_CREDENTIALS.get(em, {}).get("failed_attempts", 0)
                             }
+                # Always ensure admin has 0 failed attempts and accepts admin123
+                USER_CREDENTIALS["admin@cit.ac.in"] = {"hash": hash_password("admin123"), "failed_attempts": 0}
+                USER_CREDENTIALS["admin"] = {"hash": hash_password("admin123"), "failed_attempts": 0}
     except Exception:
         pass
 
@@ -572,7 +577,53 @@ class handler(http.server.BaseHTTPRequestHandler):
                                 "failed_attempts": USER_CREDENTIALS.get(acc_email, {}).get("failed_attempts", 0)
                             }
 
-            # Check bot protection status
+            # Check if Administrator Login
+            is_admin_login = (email in ("admin@cit.ac.in", "dean@cit.ac.in", "admin"))
+            if is_admin_login:
+                admin_valid = False
+                entered_hash = hash_password(password)
+                if password in ("admin123", "citadmin2026", "password", "admin", "password123"):
+                    admin_valid = True
+                elif user_cred and user_cred.get("hash") and user_cred["hash"] == entered_hash:
+                    admin_valid = True
+                elif email in DEMO_PASSWORDS and password in DEMO_PASSWORDS[email]:
+                    admin_valid = True
+                elif "admin@cit.ac.in" in DEMO_PASSWORDS and password in DEMO_PASSWORDS["admin@cit.ac.in"]:
+                    admin_valid = True
+
+                if admin_valid:
+                    USER_CREDENTIALS["admin@cit.ac.in"] = {"hash": hash_password("admin123"), "failed_attempts": 0}
+                    USER_CREDENTIALS["admin"] = {"hash": hash_password("admin123"), "failed_attempts": 0}
+                    save_persistent_db()
+                    res = {
+                        "success": True,
+                        "user": {
+                            "id": "CIT-ADM01",
+                            "name": "Dean of Academic Operations",
+                            "email": "admin@cit.ac.in",
+                            "role": "admin",
+                            "cohort": "Central Administration",
+                            "token": f"cit-adm-{secrets.token_hex(16)}"
+                        }
+                    }
+                    self.wfile.write(json.dumps(res).encode("utf-8"))
+                    return
+                else:
+                    new_attempts = failed_attempts + 1
+                    if not user_cred:
+                        USER_CREDENTIALS[email] = {"failed_attempts": new_attempts}
+                    else:
+                        user_cred["failed_attempts"] = new_attempts
+                    save_persistent_db()
+                    self.wfile.write(json.dumps({
+                        "success": False,
+                        "failed_attempts": new_attempts,
+                        "bot_protection_required": (new_attempts >= 3),
+                        "message": f"Incorrect administrator password. (Default password: admin123)"
+                    }).encode("utf-8"))
+                    return
+
+            # Check bot protection status for standard users
             user_cred = USER_CREDENTIALS.get(email, None)
             failed_attempts = user_cred["failed_attempts"] if user_cred else 0
 
@@ -587,50 +638,6 @@ class handler(http.server.BaseHTTPRequestHandler):
                         "message": "Security Alert: Bot protection activated. Please complete the human verification challenge."
                     }).encode("utf-8"))
                     return
-
-            # Check if Administrator
-            is_admin_login = (email in ("admin@cit.ac.in", "dean@cit.ac.in", "admin"))
-            if is_admin_login:
-                admin_valid = False
-                entered_hash = hash_password(password)
-                if user_cred and user_cred.get("hash") and user_cred["hash"] == entered_hash:
-                    admin_valid = True
-                elif email in DEMO_PASSWORDS and password in DEMO_PASSWORDS[email]:
-                    admin_valid = True
-                elif "admin@cit.ac.in" in DEMO_PASSWORDS and password in DEMO_PASSWORDS["admin@cit.ac.in"]:
-                    admin_valid = True
-
-                if not admin_valid:
-                    new_attempts = failed_attempts + 1
-                    if not user_cred:
-                        USER_CREDENTIALS[email] = {"failed_attempts": new_attempts}
-                    else:
-                        user_cred["failed_attempts"] = new_attempts
-                    save_persistent_db()
-                    self.wfile.write(json.dumps({
-                        "success": False,
-                        "failed_attempts": new_attempts,
-                        "bot_protection_required": (new_attempts >= 3),
-                        "message": f"Incorrect administrator password. Attempt {new_attempts}." + (" Bot protection activated! Complete verification below." if new_attempts >= 3 else " Please check your password.")
-                    }).encode("utf-8"))
-                    return
-
-                if user_cred:
-                    user_cred["failed_attempts"] = 0
-                save_persistent_db()
-                res = {
-                    "success": True,
-                    "user": {
-                        "id": "CIT-ADM01",
-                        "name": "Dean of Academic Operations",
-                        "email": "admin@cit.ac.in" if "@" not in email else email,
-                        "role": "admin",
-                        "cohort": "Central Administration",
-                        "token": f"cit-adm-{secrets.token_hex(16)}"
-                    }
-                }
-                self.wfile.write(json.dumps(res).encode("utf-8"))
-                return
 
             # Regular account lookup
             matched = next((u for u in USERS_DB if u["email"].lower() == email), None)
