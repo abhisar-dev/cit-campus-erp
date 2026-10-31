@@ -4,9 +4,14 @@ import json
 import os
 import subprocess
 import urllib.parse
+import re
 
 PORT = 8000
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+class ThreadingHTTPServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
+    daemon_threads = True
+    allow_reuse_address = True
 
 class ERPHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
@@ -14,36 +19,57 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
 
     def do_GET(self):
         url = urllib.parse.urlparse(self.path)
-        if url.path == "/api/data":
+        
+        # User portal routes
+        if url.path in ("/", "/index.html", "/login", "/timetable", "/bookings"):
             self.send_response(200)
-            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Type", "text/html; charset=utf-8")
             self.send_header("Access-Control-Allow-Origin", "*")
             self.end_headers()
-            with open(os.path.join(BASE_DIR, "public", "cit_public.json"), encoding="utf-8") as f:
-                self.wfile.write(f.read().encode("utf-8"))
+            with open(os.path.join(BASE_DIR, "index.html"), "rb") as f:
+                self.wfile.write(f.read())
+            return
+
+        # Separate Admin Terminal route
+        if url.path in ("/admin", "/admin.html"):
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            with open(os.path.join(BASE_DIR, "admin.html"), "rb") as f:
+                self.wfile.write(f.read())
+            return
+
+        if url.path == "/api/data":
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            with open(os.path.join(BASE_DIR, "public", "cit_public.json"), "rb") as f:
+                self.wfile.write(f.read())
             return
 
         if url.path == "/api/schedule":
             self.send_response(200)
-            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Type", "application/json; charset=utf-8")
             self.send_header("Access-Control-Allow-Origin", "*")
             self.end_headers()
-            with open(os.path.join(BASE_DIR, "exports", "schedule.json"), encoding="utf-8") as f:
-                self.wfile.write(f.read().encode("utf-8"))
+            with open(os.path.join(BASE_DIR, "exports", "schedule.json"), "rb") as f:
+                self.wfile.write(f.read())
             return
 
         if url.path == "/api/schedule_after":
             self.send_response(200)
-            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Type", "application/json; charset=utf-8")
             self.send_header("Access-Control-Allow-Origin", "*")
             self.end_headers()
-            with open(os.path.join(BASE_DIR, "exports", "schedule_after.json"), encoding="utf-8") as f:
-                self.wfile.write(f.read().encode("utf-8"))
+            with open(os.path.join(BASE_DIR, "exports", "schedule_after.json"), "rb") as f:
+                self.wfile.write(f.read())
             return
 
         if url.path == "/api/validate":
             self.send_response(200)
-            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Type", "application/json; charset=utf-8")
             self.send_header("Access-Control-Allow-Origin", "*")
             self.end_headers()
             rep_path = os.path.join(BASE_DIR, "report.json")
@@ -56,10 +82,10 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
             ]
             subprocess.run(cmd, capture_output=True, text=True)
             if os.path.exists(rep_path):
-                with open(rep_path, encoding="utf-8") as f:
-                    self.wfile.write(f.read().encode("utf-8"))
+                with open(rep_path, "rb") as f:
+                    self.wfile.write(f.read())
             else:
-                self.wfile.write(json.dumps({"error": "Failed to run validator"}).encode("utf-8"))
+                self.wfile.write(b'{"error": "Failed to run validator"}')
             return
 
         return super().do_GET()
@@ -69,15 +95,62 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
         content_length = int(self.headers.get("Content-Length", 0))
         body = self.rfile.read(content_length).decode("utf-8") if content_length > 0 else "{}"
         
-        if url.path == "/api/parse-nlp":
+        # User Authentication API
+        if url.path == "/api/auth/login":
             self.send_response(200)
-            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Type", "application/json; charset=utf-8")
             self.send_header("Access-Control-Allow-Origin", "*")
             self.end_headers()
-            req = json.loads(body)
+            try:
+                data = json.loads(body)
+                email = data.get("email", "").strip()
+            except Exception:
+                email = "user@cit.ac.in"
+            
+            # Determine role from username or default
+            role = "student"
+            cohort = "Y1-A"
+            if "faculty" in email:
+                role = "faculty"
+                cohort = "All Groups"
+            elif "club" in email or "spectra" in email:
+                role = "club"
+            
+            res = {
+                "success": True,
+                "user": {
+                    "email": email or "student@cit.ac.in",
+                    "role": role,
+                    "cohort": cohort,
+                    "institution": "Chilika Institute of Technology"
+                }
+            }
+            self.wfile.write(json.dumps(res).encode("utf-8"))
+            return
+
+        if url.path == "/api/auth/signup":
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            res = {
+                "success": True,
+                "message": "Account registered successfully. You may now log in."
+            }
+            self.wfile.write(json.dumps(res).encode("utf-8"))
+            return
+
+        if url.path == "/api/parse-nlp":
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            try:
+                req = json.loads(body)
+            except Exception:
+                req = {}
             raw = req.get("text", "").lower()
 
-            # Intelligent bilingual (English + Hinglish) NLP parsing engine
             res = {
                 "attendance": 50,
                 "duration_periods": 2,
@@ -89,13 +162,11 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
                 "confidence": 0.95
             }
 
-            # Parse attendance specifically looking for keywords first
-            import re
+            # Parse attendance specifically
             att_match = re.search(r"(\d+)\s*(?:people|log|students|participants|members|pax)", raw)
             if att_match:
                 res["attendance"] = int(att_match.group(1))
             else:
-                # Fallback to general count
                 gen_match = re.search(r"(?:for|around|about|seating|capacity)?\s*(\d+)\s*(?:people|log|students|participants|members)?", raw)
                 if gen_match and int(gen_match.group(1)) not in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13):
                     res["attendance"] = int(gen_match.group(1))
@@ -120,12 +191,12 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
             elif "oat" in raw or "open air" in raw or "outdoor" in raw:
                 res["room_types"] = ["outdoor"]
 
-            # Parse duration (e.g. "2 ghante", "3-hour", "2 hour")
-            dur_match = re.search(r"(\d+)\s*(hour|ghante|hr)", raw)
+            # Parse duration
+            dur_match = re.search(r"(\d+)\s*(?:hour|ghante|hr)", raw)
             if dur_match:
                 res["duration_periods"] = int(dur_match.group(1))
 
-            # Parse days (e.g. "tuesday", "friday", "kal", "wednesday", "tomorrow")
+            # Parse day
             day_map = {
                 "mon": "MON", "monday": "MON", "somwar": "MON",
                 "tue": "TUE", "tuesday": "TUE", "mangalwar": "TUE",
@@ -135,15 +206,15 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
             }
             found_day = "MON"
             if "kal" in raw or "tomorrow" in raw:
-                found_day = "TUE" # resolved to next weekday
+                found_day = "TUE"
             else:
                 for k, v in day_map.items():
                     if k in raw:
                         found_day = v
                         break
 
-            # Parse timings (e.g. "6 to 8 pm", "shaam 6 baje", "10 am", "afternoon", "evening")
-            from_p = 10 # 18:00 (6 PM)
+            # Parse timings
+            from_p = 10
             if "6 to 8 pm" in raw or "6 baje" in raw or "6 pm" in raw or "evening" in raw or "shaam" in raw:
                 from_p = 10
             elif "10 am" in raw or "morning" in raw or "subah" in raw:
@@ -154,10 +225,6 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
             to_p = min(13, from_p + res["duration_periods"] - 1)
             res["windows"] = [{"day": found_day, "from_period": from_p, "to_period": to_p}]
 
-            # Check ambiguity / follow up
-            if not att_match and ("maybe" in raw or "around" in raw or "some" in raw):
-                res["follow_up"] = "Please specify approximate number of attendees."
-
             self.wfile.write(json.dumps(res).encode("utf-8"))
             return
 
@@ -165,6 +232,6 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
         self.end_headers()
 
 if __name__ == "__main__":
-    print(f"Starting ChronoCIT ERP Server on http://localhost:{PORT}")
-    with socketserver.TCPServer(("", PORT), ERPHandler) as httpd:
-        httpd.serve_forever()
+    print(f"ChronoCIT Multi-Threaded Server running on http://localhost:{PORT}")
+    httpd = ThreadingHTTPServer(("", PORT), ERPHandler)
+    httpd.serve_forever()

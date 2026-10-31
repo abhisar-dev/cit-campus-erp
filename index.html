@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Chilika Institute of Technology — Campus Scheduling & Venue Portal</title>
+  <title>CIT Campus Portal — Academic Timetable & Venue Services</title>
   <style>
     /*
-     * Chilika Institute of Technology (CIT)
-     * Campus Scheduling & Venue Management Portal
-     * Clean, functional, authentic university academic layout
+     * CIT User Portal
+     * Clean, minimalist student/faculty portal with Login/Signup flow
+     * Design: Minimalist neutral styling, clear hierarchy, zero clutter
      */
 
     *, *::before, *::after {
@@ -18,26 +18,26 @@
     }
 
     :root {
-      --ticker-bg: #c2410c;
-      --ticker-dark: #9a3412;
-      --header-bg: #ffffff;
-      --primary-blue: #0284c7;
-      --primary-dark: #0369a1;
-      --teal-banner: #0f766e;
-      --bg-page: #f8fafc;
-      --grid-border: #cbd5e1;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --border-dark: #cbd5e1;
       --text-main: #0f172a;
       --text-muted: #64748b;
+      --primary: #0284c7;
+      --primary-dark: #0369a1;
+      --green: #16a34a;
+      --orange: #ea580c;
       --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       --font-mono: ui-monospace, Menlo, Consolas, monospace;
     }
 
     body {
-      background-color: var(--bg-page);
+      background-color: var(--bg);
       color: var(--text-main);
       font-family: var(--font-sans);
       font-size: 13px;
-      line-height: 1.45;
+      line-height: 1.5;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -47,399 +47,333 @@
       font-family: var(--font-mono);
     }
 
-    /* 1. TOP ANNOUNCEMENT MARQUEE */
-    .top-marquee-strip {
-      background: var(--ticker-bg);
-      color: #ffffff;
-      height: 32px;
-      display: flex;
-      align-items: center;
-      overflow: hidden;
-      font-size: 12px;
-      font-weight: 500;
-    }
-
-    .marquee-label {
-      background: var(--ticker-dark);
-      padding: 0 16px;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      font-weight: 700;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      white-space: nowrap;
-      z-index: 2;
-    }
-
-    .marquee-track {
-      flex: 1;
-      overflow: hidden;
-      white-space: nowrap;
-    }
-
-    .marquee-content {
-      display: inline-block;
-      padding-left: 100%;
-      animation: ticker 25s linear infinite;
-    }
-
-    .marquee-track:hover .marquee-content {
-      animation-play-state: paused;
-    }
-
-    @keyframes ticker {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-100%); }
-    }
-
-    .role-indicator {
-      background: var(--ticker-dark);
-      padding: 0 16px;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      font-weight: 700;
-      font-size: 11px;
-      white-space: nowrap;
-      z-index: 2;
-    }
-
-    /* 2. CIT BRAND HEADER */
-    .header-bar {
+    /* Top University Header */
+    header {
       background: #ffffff;
-      border-bottom: 2px solid #e2e8f0;
-      padding: 10px 24px;
+      border-bottom: 1px solid var(--border);
+      height: 54px;
+      padding: 0 24px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
     }
 
-    .brand-group {
+    .brand-wrap {
       display: flex;
       align-items: center;
       gap: 12px;
     }
 
-    .brand-seal {
-      width: 40px;
-      height: 40px;
+    .brand-icon {
+      width: 32px;
+      height: 32px;
       border-radius: 6px;
-      background: linear-gradient(135deg, #0369a1, #0284c7);
-      color: #ffffff;
-      font-weight: 800;
-      font-size: 15px;
+      background: var(--primary);
+      color: #fff;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 2px 4px rgba(2, 132, 199, 0.2);
-    }
-
-    .brand-titles h1 {
-      font-size: 16px;
       font-weight: 800;
-      color: #0369a1;
-      letter-spacing: -0.3px;
-    }
-
-    .brand-titles p {
-      font-size: 11px;
-      color: #64748b;
-    }
-
-    /* Curved Header Module Tabs */
-    .header-tabs {
-      display: flex;
-      align-items: flex-end;
-      gap: 3px;
-    }
-
-    .tab-pill {
-      background: #0284c7;
-      color: #ffffff;
-      border: none;
-      padding: 7px 15px;
-      border-top-left-radius: 6px;
-      border-top-right-radius: 6px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: background 0.15s ease;
-    }
-
-    .tab-pill:hover {
-      background: #0369a1;
-    }
-
-    .tab-pill.active {
-      background: #0369a1;
-      border-bottom: 2px solid #38bdf8;
-    }
-
-    .header-role-box {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .role-select {
-      background: #f1f5f9;
-      border: 1px solid #cbd5e1;
-      color: #0369a1;
-      padding: 5px 10px;
-      border-radius: 4px;
-      font-size: 11px;
-      font-weight: 700;
-      outline: none;
-      cursor: pointer;
-    }
-
-    /* 3. SECTION SUB-BAR */
-    .section-bar {
-      background: var(--teal-banner);
-      color: #ffffff;
-      padding: 7px 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
       font-size: 13px;
+    }
+
+    .brand-name {
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--text-main);
+    }
+
+    .user-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Navigation Tabs */
+    .user-nav {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-list {
+      display: flex;
+      gap: 4px;
+    }
+
+    .tab-item {
+      background: transparent;
+      border: none;
+      padding: 12px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      position: relative;
+    }
+
+    .tab-item:hover {
+      color: var(--text-main);
+    }
+
+    .tab-item.active {
+      color: var(--primary);
       font-weight: 700;
     }
 
-    .btn-reset-state {
-      background: rgba(255, 255, 255, 0.15);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      color: #ffffff;
-      padding: 3px 10px;
-      border-radius: 4px;
+    .tab-item.active::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 14px;
+      right: 14px;
+      height: 2px;
+      background: var(--primary);
+    }
+
+    .admin-link-pill {
       font-size: 11px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .btn-reset-state:hover {
-      background: rgba(255, 255, 255, 0.25);
-    }
-
-    /* 4. CALENDAR FILTER & LEGEND TOOLBAR */
-    .calendar-toolbar {
-      background: #ffffff;
-      border-bottom: 1px solid #cbd5e1;
-      padding: 8px 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 12px;
-      font-size: 12px;
-    }
-
-    .filter-cluster {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .dropdown {
-      background: #ffffff;
-      border: 1px solid #cbd5e1;
-      padding: 5px 10px;
-      border-radius: 4px;
-      font-size: 12px;
-      font-weight: 600;
-      color: #0f172a;
-      outline: none;
-    }
-
-    .legend-row {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      font-size: 11px;
-      color: #475569;
-    }
-
-    .legend-badge {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .legend-color {
-      width: 12px;
-      height: 12px;
-      border-radius: 2px;
-    }
-
-    .btn-today {
-      background: #ffffff;
-      border: 1px solid #cbd5e1;
+      color: var(--text-muted);
+      text-decoration: none;
       padding: 4px 10px;
+      border: 1px solid var(--border);
       border-radius: 4px;
-      font-size: 11px;
       font-weight: 600;
-      cursor: pointer;
     }
 
-    /* 5. WORKSPACE CONTAINER */
-    .workspace-container {
-      padding: 16px 24px;
+    .admin-link-pill:hover {
+      background: #f1f5f9;
+      color: var(--text-main);
+    }
+
+    /* Main Container */
+    main {
+      max-width: 1360px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 20px 24px;
       flex: 1;
-      overflow-x: auto;
     }
 
-    /* TIMETABLE GRID TABLE */
-    table.timetable-matrix {
+    .content-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 20px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+    }
+
+    .card-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+
+    .title-text {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .subtitle-text {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Timetable Grid */
+    .grid-wrapper {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+    }
+
+    table.calendar-table {
       width: 100%;
       border-collapse: collapse;
-      border: 1px solid var(--grid-border);
-      background: #ffffff;
+      font-size: 12px;
     }
 
-    table.timetable-matrix th, table.timetable-matrix td {
-      border: 1px solid var(--grid-border);
+    table.calendar-table th, table.calendar-table td {
+      border: 1px solid var(--border);
       padding: 6px;
     }
 
-    table.timetable-matrix th {
-      background: #0e7490;
-      color: #ffffff;
+    table.calendar-table th {
+      background: #f8fafc;
+      color: var(--text-muted);
+      font-size: 11px;
       font-weight: 700;
-      font-size: 12px;
       text-align: center;
       padding: 8px 4px;
       width: 13.5%;
     }
 
-    table.timetable-matrix th.hour-header {
+    table.calendar-table th.time-header {
       width: 80px;
-      background: #083344;
     }
 
-    td.hour-label {
+    td.time-cell {
       background: #f8fafc;
-      color: #475569;
-      font-weight: 700;
+      color: var(--text-muted);
       font-size: 11px;
+      font-weight: 700;
       text-align: center;
       vertical-align: middle;
-      padding: 6px 4px;
     }
 
-    td.class-cell {
+    td.slot-container {
       height: 64px;
       vertical-align: top;
       background: #ffffff;
       padding: 4px;
     }
 
-    td.weekend-cell {
-      background: #fefce8;
-    }
-
-    /* Class Cards */
-    .session-card {
+    .class-pill {
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+      border-left: 3px solid var(--primary);
       border-radius: 4px;
-      padding: 5px 8px;
+      padding: 4px 6px;
       height: 100%;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       font-size: 11px;
-      line-height: 1.3;
     }
 
-    .card-lecture {
-      background: #94a3b8;
-      color: #ffffff;
+    .class-pill.lab {
+      background: #faf5ff;
+      border-color: #e9d5ff;
+      border-left-color: #9333ea;
     }
 
-    .card-core {
-      background: #ea580c;
-      color: #ffffff;
+    .class-pill.tutorial {
+      background: #f0fdf4;
+      border-color: #bbf7d0;
+      border-left-color: #16a34a;
     }
 
-    .card-lab {
-      background: #7c3aed;
-      color: #ffffff;
+    /* Login Modal Overlay */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
     }
 
-    .card-rerouted {
-      background: #b91c1c;
-      color: #ffffff;
-    }
-
-    .card-time {
-      font-size: 10px;
-      font-weight: 700;
-      opacity: 0.95;
-    }
-
-    .card-title {
-      font-weight: 700;
-      font-size: 11px;
-      margin-top: 1px;
-    }
-
-    .card-subtext {
-      font-size: 10px;
-      opacity: 0.9;
-    }
-
-    /* Clean Content Panels for other modules */
-    .module-card {
+    .auth-card {
       background: #ffffff;
-      border: 1px solid #cbd5e1;
-      border-radius: 6px;
-      padding: 20px;
+      border-radius: 8px;
+      width: 100%;
+      max-width: 400px;
+      padding: 24px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+      border: 1px solid var(--border);
     }
 
-    .module-header {
-      margin-bottom: 14px;
-      border-bottom: 1px solid #e2e8f0;
-      padding-bottom: 10px;
+    .auth-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 18px;
     }
 
-    .module-title {
-      font-size: 16px;
-      font-weight: 700;
-      color: #0f172a;
-    }
-
-    .module-desc {
-      font-size: 12px;
-      color: #64748b;
-      margin-top: 2px;
-    }
-
-    .btn-action {
-      background: #0284c7;
-      color: #ffffff;
+    .auth-tab {
+      flex: 1;
+      text-align: center;
+      padding: 8px;
+      background: transparent;
       border: none;
-      padding: 7px 16px;
-      border-radius: 4px;
-      font-size: 12px;
       font-weight: 600;
+      font-size: 13px;
+      color: var(--text-muted);
       cursor: pointer;
     }
 
-    .btn-action:hover {
-      background: #0369a1;
+    .auth-tab.active {
+      color: var(--primary);
+      border-bottom: 2px solid var(--primary);
     }
 
-    /* Footer */
-    footer {
-      border-top: 1px solid #cbd5e1;
-      padding: 10px 24px;
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-label {
+      display: block;
       font-size: 11px;
-      color: #64748b;
-      display: flex;
-      justify-content: space-between;
-      background: #f8fafc;
-      margin-top: auto;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid var(--border-dark);
+      border-radius: 4px;
+      font-size: 12px;
+      outline: none;
+    }
+
+    .form-input:focus {
+      border-color: var(--primary);
+    }
+
+    .btn-submit {
+      width: 100%;
+      background: var(--primary);
+      color: #ffffff;
+      border: none;
+      padding: 9px;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      margin-top: 6px;
+    }
+
+    .btn-submit:hover {
+      background: var(--primary-dark);
+    }
+
+    .quick-roles {
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .quick-roles-title {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .quick-btn {
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      cursor: pointer;
+      margin: 2px;
+    }
+
+    .quick-btn:hover {
+      background: #e2e8f0;
     }
 
     #toast {
@@ -452,104 +386,129 @@
       border-radius: 4px;
       font-size: 12px;
       display: none;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
       z-index: 100;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 14px 24px;
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      background: #ffffff;
+      margin-top: auto;
     }
   </style>
 </head>
 <body>
 
-  <!-- 1. TOP ANNOUNCEMENT MARQUEE -->
-  <div class="top-marquee-strip">
-    <div class="marquee-label">Announcement</div>
-    <div class="marquee-track">
-      <span class="marquee-content">
-        📢 CIT Week 7 Notice: Spectra Tech Fest venue allocations active under Dean's Office priority rules. · 📢 Midsem Examinations: All venue capacities halved for seating spacing. · 📢 Infrastructure: Room CR-102 maintenance in progress; all classes relocated with zero time shifts.
-      </span>
-    </div>
-    <div class="role-indicator" id="role-indicator">
-      ROLE: ADMIN (DEAN'S OFFICE)
-    </div>
-  </div>
-
-  <!-- 2. CIT BRAND HEADER -->
-  <header class="header-bar">
-    <div class="brand-group">
-      <div class="brand-seal">CIT</div>
-      <div class="brand-titles">
-        <h1>CHILIKA INSTITUTE OF TECHNOLOGY</h1>
-        <p>Academic Timetable & Venue Operations Portal</p>
+  <!-- Top Header -->
+  <header>
+    <div class="brand-wrap">
+      <div class="brand-icon">CIT</div>
+      <div>
+        <div class="brand-name">Chilika Institute of Technology</div>
       </div>
     </div>
 
-    <!-- Navigation Tabs -->
-    <div class="header-tabs">
-      <button class="tab-pill active" onclick="switchTab('timetable')">Time Table</button>
-      <button class="tab-pill" onclick="switchTab('fest')">Spectra Week 7</button>
-      <button class="tab-pill" onclick="switchTab('ai')">Venue AI Assistant</button>
-      <button class="tab-pill" onclick="switchTab('disruption')">Disruption Center</button>
-      <button class="tab-pill" onclick="switchTab('exams')">Midsem Exams</button>
-      <button class="tab-pill" onclick="switchTab('audit')">Validator Audit</button>
-    </div>
-
-    <!-- Role Switcher -->
-    <div class="header-role-box">
-      <select class="role-select" onchange="changeRole(this.value)">
-        <option value="admin">Dean's Office (Admin)</option>
-        <option value="coordinator">Department Coordinator</option>
-        <option value="faculty">Faculty Member</option>
-        <option value="club">Club Representative</option>
-      </select>
+    <div class="user-actions">
+      <div id="user-profile-badge" style="display: none; align-items: center; gap: 8px;">
+        <span id="user-display-email" style="font-weight: 600; font-size: 12px;">student@cit.ac.in</span>
+        <span id="user-role-tag" class="mono" style="font-size: 10px; background: #e0f2fe; color: #0369a1; padding: 2px 6px; border-radius: 3px;">STUDENT</span>
+        <button onclick="logout()" style="background: transparent; border: 1px solid var(--border); padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer;">
+          Log out
+        </button>
+      </div>
+      <button id="btn-login-open" onclick="openAuthModal()" style="background: var(--primary); color: #fff; border: none; padding: 6px 14px; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer;">
+        Sign In
+      </button>
     </div>
   </header>
 
-  <!-- 3. SECTION SUB-BAR -->
-  <div class="section-bar">
-    <span id="section-title">Master Semester Timetable</span>
-    <button class="btn-reset-state" onclick="resetDemo()">↺ Reset Demo Data</button>
-  </div>
-
-  <!-- 4. CALENDAR FILTER & LEGEND TOOLBAR -->
-  <div class="calendar-toolbar" id="toolbar">
-    <div class="filter-cluster">
-      <select class="dropdown" id="cohort-select" onchange="changeCohort(this.value)">
-        <!-- Populated via JS -->
-      </select>
-
-      <button class="btn-today" onclick="showToast('Viewing Week 7 teaching schedule')">Today</button>
-      <strong style="margin-left: 6px; font-size: 13px;">Week 7 (Semester Schedule)</strong>
+  <!-- User Navigation Sub-bar -->
+  <nav class="user-nav">
+    <div class="nav-list">
+      <button class="tab-item active" onclick="switchUserTab('timetable')">My Schedule</button>
+      <button class="tab-item" onclick="switchUserTab('bookings')">Spectra Venue Bookings</button>
+      <button class="tab-item" onclick="switchUserTab('ai')">AI Booking Assistant</button>
+      <button class="tab-item" onclick="switchUserTab('exams')">Midsem Exams</button>
     </div>
 
-    <!-- Color Legend -->
-    <div class="legend-row">
-      <div class="legend-badge">
-        <div class="legend-color" style="background: #94a3b8;"></div>
-        <span>Regular Class</span>
+    <!-- Direct access to Admin Terminal -->
+    <a href="/admin" class="admin-link-pill">
+      Admin Terminal &rarr;
+    </a>
+  </nav>
+
+  <!-- Main Content Body -->
+  <main id="portal-content">
+    <!-- Rendered dynamically -->
+  </main>
+
+  <!-- Minimalist Login / Signup Modal -->
+  <div id="auth-modal" class="modal-backdrop" style="display: none;">
+    <div class="auth-card">
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login" onclick="toggleAuthTab('login')">Sign In</button>
+        <button class="auth-tab" id="tab-signup" onclick="toggleAuthTab('signup')">Register</button>
       </div>
-      <div class="legend-badge">
-        <div class="legend-color" style="background: #ea580c;"></div>
-        <span>Tutorial / Core</span>
+
+      <div id="login-form">
+        <div class="form-group">
+          <label class="form-label">CIT Email or Roll Number</label>
+          <input type="text" id="login-email" class="form-input" placeholder="e.g. 2401010@cit.ac.in" value="student@cit.ac.in" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" id="login-password" class="form-input" placeholder="••••••••" value="password123" />
+        </div>
+        <button class="btn-submit" onclick="handleLogin()">Sign In to Portal</button>
+
+        <div class="quick-roles">
+          <div class="quick-roles-title">Demo 1-Click Access</div>
+          <button class="quick-btn" onclick="quickLogin('student')">Student (Y1-A)</button>
+          <button class="quick-btn" onclick="quickLogin('faculty')">Faculty (Physics)</button>
+          <button class="quick-btn" onclick="quickLogin('club')">Club Rep (Spectra)</button>
+        </div>
       </div>
-      <div class="legend-badge">
-        <div class="legend-color" style="background: #7c3aed;"></div>
-        <span>3-Hour Lab</span>
+
+      <div id="signup-form" style="display: none;">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input type="text" id="signup-name" class="form-input" placeholder="Enter full name" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">CIT Institute Email</label>
+          <input type="email" id="signup-email" class="form-input" placeholder="user@cit.ac.in" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Select Cohort / Department</label>
+          <select id="signup-cohort" class="form-input">
+            <option value="Y1-A">Year 1 - Section A</option>
+            <option value="Y1-B">Year 1 - Section B</option>
+            <option value="CSE-2">Computer Science - Year 2</option>
+            <option value="ELEC-2">Electrical - Year 2</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" id="signup-password" class="form-input" placeholder="Create password" />
+        </div>
+        <button class="btn-submit" onclick="handleSignup()">Create Account</button>
       </div>
-      <div class="legend-badge">
-        <div class="legend-color" style="background: #b91c1c;"></div>
-        <span>Rescheduled</span>
+
+      <div style="text-align: center; margin-top: 14px;">
+        <button onclick="closeAuthModal()" style="background: transparent; border: none; font-size: 11px; color: var(--text-muted); cursor: pointer;">
+          Cancel
+        </button>
       </div>
     </div>
   </div>
 
-  <!-- 5. WORKSPACE CONTAINER -->
-  <div class="workspace-container" id="workspace">
-    <!-- Populated dynamically -->
-  </div>
-
-  <!-- FOOTER -->
   <footer>
-    <span>Chilika Institute of Technology · Department of Academic Affairs</span>
-    <span>Dataset: cit-public-v1 · Certified 0 Hard Clashes</span>
+    <span>Chilika Institute of Technology · Student & Faculty Academic Services</span>
+    <span class="mono">Engine: cit-public-v1 · Certified 0 Hard Clashes</span>
   </footer>
 
   <div id="toast"></div>
@@ -557,17 +516,9 @@
   <script>
     let DATA = null;
     let SCHED = null;
-    let SCHED_AFTER = null;
+    let currentUser = null;
     let currentTab = 'timetable';
     let selectedCohort = 'Y1-A';
-    let disruptionApplied = false;
-
-    const ROLES = {
-      admin: "ROLE: ADMIN (DEAN'S OFFICE)",
-      coordinator: "ROLE: DEPT COORDINATOR",
-      faculty: "ROLE: FACULTY",
-      club: "ROLE: CLUB REPRESENTATIVE"
-    };
 
     function showToast(msg) {
       const t = document.getElementById("toast");
@@ -576,29 +527,113 @@
       setTimeout(() => { t.style.display = "none"; }, 3000);
     }
 
-    function changeRole(r) {
-      document.getElementById("role-indicator").innerText = ROLES[r];
-      showToast(`Switched active role to ${ROLES[r]}`);
+    function openAuthModal() {
+      document.getElementById("auth-modal").style.display = "flex";
     }
 
-    function switchTab(t) {
+    function closeAuthModal() {
+      document.getElementById("auth-modal").style.display = "none";
+    }
+
+    function toggleAuthTab(tab) {
+      if (tab === 'login') {
+        document.getElementById("tab-login").classList.add("active");
+        document.getElementById("tab-signup").classList.remove("active");
+        document.getElementById("login-form").style.display = "block";
+        document.getElementById("signup-form").style.display = "none";
+      } else {
+        document.getElementById("tab-signup").classList.add("active");
+        document.getElementById("tab-login").classList.remove("active");
+        document.getElementById("signup-form").style.display = "block";
+        document.getElementById("login-form").style.display = "none";
+      }
+    }
+
+    async function handleLogin() {
+      const email = document.getElementById("login-email").value;
+      try {
+        const res = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email })
+        }).then(r => r.json());
+
+        if (res.success) {
+          currentUser = res.user;
+          updateAuthUI();
+          closeAuthModal();
+          showToast(`Welcome back, ${currentUser.email}!`);
+        }
+      } catch (e) {
+        showToast("Login error");
+      }
+    }
+
+    function quickLogin(type) {
+      if (type === 'student') {
+        document.getElementById("login-email").value = "student@cit.ac.in";
+      } else if (type === 'faculty') {
+        document.getElementById("login-email").value = "faculty.f19@cit.ac.in";
+      } else {
+        document.getElementById("login-email").value = "spectra.club@cit.ac.in";
+      }
+      handleLogin();
+    }
+
+    async function handleSignup() {
+      const name = document.getElementById("signup-name").value;
+      const email = document.getElementById("signup-email").value;
+      const cohort = document.getElementById("signup-cohort").value;
+      if (!email) {
+        showToast("Please enter email");
+        return;
+      }
+      try {
+        const res = await fetch("/api/auth/signup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, cohort })
+        }).then(r => r.json());
+
+        if (res.success) {
+          showToast(res.message);
+          toggleAuthTab('login');
+          document.getElementById("login-email").value = email;
+        }
+      } catch (e) {
+        showToast("Registration error");
+      }
+    }
+
+    function logout() {
+      currentUser = null;
+      updateAuthUI();
+      showToast("Logged out successfully.");
+    }
+
+    function updateAuthUI() {
+      const profile = document.getElementById("user-profile-badge");
+      const loginBtn = document.getElementById("btn-login-open");
+
+      if (currentUser) {
+        profile.style.display = "flex";
+        loginBtn.style.display = "none";
+        document.getElementById("user-display-email").innerText = currentUser.email;
+        document.getElementById("user-role-tag").innerText = currentUser.role.toUpperCase();
+        if (currentUser.cohort && currentUser.cohort !== "All Groups") {
+          selectedCohort = currentUser.cohort;
+        }
+      } else {
+        profile.style.display = "none";
+        loginBtn.style.display = "block";
+      }
+      renderTab();
+    }
+
+    function switchUserTab(t) {
       currentTab = t;
-      document.querySelectorAll(".tab-pill").forEach(p => p.classList.remove("active"));
+      document.querySelectorAll(".tab-item").forEach(item => item.classList.remove("active"));
       event.currentTarget.classList.add("active");
-
-      const titles = {
-        timetable: "Master Semester Timetable",
-        fest: "Spectra Tech Fest (Week 7 Venue Bookings)",
-        ai: "Venue Booking AI Assistant",
-        disruption: "Emergency Disruption & Reschedule Center",
-        exams: "Midsem Examination Schedule",
-        audit: "Official Validator Audit"
-      };
-      document.getElementById("section-title").innerText = titles[t] || "Master Timetable";
-
-      // Show toolbar only on timetable tab
-      document.getElementById("toolbar").style.display = (t === 'timetable') ? 'flex' : 'none';
-
       renderTab();
     }
 
@@ -607,50 +642,34 @@
       renderTab();
     }
 
-    function resetDemo() {
-      disruptionApplied = false;
-      showToast("Data restored to initial baseline.");
-      renderTab();
-    }
-
     async function init() {
       try {
-        const [d, s, sa] = await Promise.all([
+        const [d, s] = await Promise.all([
           fetch("/api/data").then(r => r.json()),
-          fetch("/api/schedule").then(r => r.json()),
-          fetch("/api/schedule_after").then(r => r.json())
+          fetch("/api/schedule").then(r => r.json())
         ]);
         DATA = d;
         SCHED = s;
-        SCHED_AFTER = sa;
-
-        // Populate cohort selector
-        const select = document.getElementById("cohort-select");
-        select.innerHTML = DATA.student_groups.map(g => 
-          `<option value="${g.id}">Cohort: ${g.id} (${g.name})</option>`
-        ).join('');
-
-        renderTab();
+        // Default guest login
+        currentUser = { email: "student@cit.ac.in", role: "student", cohort: "Y1-A" };
+        updateAuthUI();
       } catch (e) {
-        document.getElementById("workspace").innerHTML = "<div style='color:red; padding:20px;'>API error. Ensure server.py is running.</div>";
+        document.getElementById("portal-content").innerHTML = "<div style='color:red;'>API error. Ensure server.py is running.</div>";
       }
     }
 
     function renderTab() {
-      const ws = document.getElementById("workspace");
-      const currentSched = disruptionApplied ? SCHED_AFTER : SCHED;
-      if (!currentSched) return;
+      const content = document.getElementById("portal-content");
+      if (!DATA || !SCHED) return;
 
-      if (currentTab === 'timetable') renderTimetable(ws, currentSched);
-      else if (currentTab === 'fest') renderFest(ws, currentSched);
-      else if (currentTab === 'ai') renderAI(ws);
-      else if (currentTab === 'disruption') renderDisruption(ws);
-      else if (currentTab === 'exams') renderExams(ws, currentSched);
-      else if (currentTab === 'audit') renderAudit(ws);
+      if (currentTab === 'timetable') renderTimetable(content);
+      else if (currentTab === 'bookings') renderBookings(content);
+      else if (currentTab === 'ai') renderAI(content);
+      else if (currentTab === 'exams') renderExams(content);
     }
 
-    // 1. TIMETABLE VIEW
-    function renderTimetable(ws, sched) {
+    // 1. MY SCHEDULE VIEW
+    function renderTimetable(content) {
       const sessMap = {};
       DATA.sessions.forEach(s => { sessMap[s.id] = s; });
 
@@ -662,7 +681,7 @@
         grid[p] = { MON: null, TUE: null, WED: null, THU: null, FRI: null };
       }
 
-      sched.sessions.forEach(item => {
+      SCHED.sessions.forEach(item => {
         const s = sessMap[item.session_id];
         if (!s) return;
         if (s.groups.includes(selectedCohort)) {
@@ -685,78 +704,105 @@
         { id: 9, label: "05:00 PM", time: "17:00 - 18:00" }
       ];
 
-      ws.innerHTML = `
-        <table class="timetable-matrix">
-          <thead>
-            <tr>
-              <th class="hour-header">TIME</th>
-              <th>MON<br><span style="font-size: 10px; font-weight: normal; opacity: 0.85;">Monday</span></th>
-              <th>TUE<br><span style="font-size: 10px; font-weight: normal; opacity: 0.85;">Tuesday</span></th>
-              <th>WED<br><span style="font-size: 10px; font-weight: normal; opacity: 0.85;">Wednesday</span></th>
-              <th>THU<br><span style="font-size: 10px; font-weight: normal; opacity: 0.85;">Thursday</span></th>
-              <th>FRI<br><span style="font-size: 10px; font-weight: normal; opacity: 0.85;">Friday</span></th>
-              <th style="background: #155e75;">SAT<br><span style="font-size: 10px; font-weight: normal; opacity: 0.85;">Saturday</span></th>
-              <th style="background: #155e75;">SUN<br><span style="font-size: 10px; font-weight: normal; opacity: 0.85;">Sunday</span></th>
-            </tr>
-          </thead>
-          <tbody>
-            ${periods.map(slot => {
-              if (slot.id === 0) {
-                return `
-                  <tr>
-                    <td class="hour-label">${slot.label}</td>
-                    <td colspan="7" style="background: #f1f5f9; text-align: center; color: #64748b; font-weight: 700; font-size: 11px; padding: 6px;">
-                      LUNCH RECESS (13:00 - 14:00)
-                    </td>
-                  </tr>
-                `;
-              }
+      content.innerHTML = `
+        <div class="content-card">
+          <div class="card-title-row">
+            <div>
+              <div class="title-text">My Teaching & Class Schedule</div>
+              <div class="subtitle-text">Weekly timetable with certified zero clashing (Week 7 active)</div>
+            </div>
 
-              return `
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 11px; font-weight: 600; color: var(--text-muted);">COHORT:</span>
+              <select onchange="changeCohort(this.value)" style="border: 1px solid var(--border-dark); padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; outline: none;">
+                ${DATA.student_groups.map(g => `
+                  <option value="${g.id}" ${selectedCohort === g.id ? 'selected' : ''}>${g.id} (${g.name})</option>
+                `).join('')}
+              </select>
+            </div>
+          </div>
+
+          <div class="grid-wrapper">
+            <table class="calendar-table">
+              <thead>
                 <tr>
-                  <td class="hour-label">${slot.label}</td>
-                  ${['MON', 'TUE', 'WED', 'THU', 'FRI'].map(d => {
-                    const item = grid[slot.id][d];
-                    if (!item) return `<td class="class-cell"></td>`;
-
-                    const cInfo = courseMap[item.course_id];
-                    let cardClass = 'card-lecture';
-                    if (item.kind === 'tutorial' || item.basket_slot) cardClass = 'card-core';
-                    if (item.kind === 'lab') cardClass = 'card-lab';
-                    if (disruptionApplied && item.room_id === 'CR-101' && item.session_id.includes('CS101')) cardClass = 'card-rerouted';
-
-                    return `
-                      <td class="class-cell">
-                        <div class="session-card ${cardClass}">
-                          <div class="card-time">${slot.time}</div>
-                          <div class="card-title">${item.course_id} · ${cInfo ? cInfo.title : ''}</div>
-                          <div class="card-subtext">Cohort: ${selectedCohort}, Room: ${item.room_id}</div>
-                        </div>
-                      </td>
-                    `;
-                  }).join('')}
-                  <td class="class-cell weekend-cell"></td>
-                  <td class="class-cell weekend-cell"></td>
+                  <th class="time-header">TIME</th>
+                  <th>MON</th>
+                  <th>TUE</th>
+                  <th>WED</th>
+                  <th>THU</th>
+                  <th>FRI</th>
+                  <th>SAT</th>
+                  <th>SUN</th>
                 </tr>
-              `;
-            }).join('')}
-          </tbody>
-        </table>
+              </thead>
+              <tbody>
+                ${periods.map(slot => {
+                  if (slot.id === 0) {
+                    return `
+                      <tr>
+                        <td class="time-cell">${slot.label}</td>
+                        <td colspan="7" style="background: #f8fafc; text-align: center; color: var(--text-muted); font-weight: 700; font-size: 11px; padding: 6px;">
+                          LUNCH RECESS (13:00 - 14:00)
+                        </td>
+                      </tr>
+                    `;
+                  }
+
+                  return `
+                    <tr>
+                      <td class="time-cell">${slot.label}</td>
+                      ${['MON', 'TUE', 'WED', 'THU', 'FRI'].map(d => {
+                        const item = grid[slot.id][d];
+                        if (!item) return `<td class="slot-container"></td>`;
+
+                        const cInfo = courseMap[item.course_id];
+                        let type = '';
+                        if (item.kind === 'lab') type = 'lab';
+                        if (item.kind === 'tutorial') type = 'tutorial';
+
+                        return `
+                          <td class="slot-container">
+                            <div class="class-pill ${type}">
+                              <div style="font-weight: 700;">${item.course_id} · ${cInfo ? cInfo.title : ''}</div>
+                              <div style="font-size: 10px; color: var(--text-muted);">${item.id}</div>
+                              <div style="display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted); margin-top: 2px;">
+                                <span>Room: <strong>${item.room_id}</strong></span>
+                                <span>Faculty: ${item.faculty_id}</span>
+                              </div>
+                            </div>
+                          </td>
+                        `;
+                      }).join('')}
+                      <td class="slot-container" style="background: #fafafa;"></td>
+                      <td class="slot-container" style="background: #fafafa;"></td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
       `;
     }
 
-    // 2. FEST BOOKINGS VIEW
-    function renderFest(ws, sched) {
-      ws.innerHTML = `
-        <div class="module-card">
-          <div class="module-header">
-            <div class="module-title">Spectra Week 7 Venue Bookings</div>
-            <div class="module-desc">Ordered strictly by priority: Exams &gt; Regular Classes &gt; Institute Events &gt; Guest Lectures &gt; Dept Events &gt; Club Events.</div>
+    // 2. VENUE BOOKINGS (USER VIEW)
+    function renderBookings(content) {
+      content.innerHTML = `
+        <div class="content-card">
+          <div class="card-title-row">
+            <div>
+              <div class="title-text">Spectra Fest Venue Bookings Status</div>
+              <div class="subtitle-text">Official decisions following CIT institutional priority order</div>
+            </div>
+            <button onclick="switchUserTab('ai')" style="background: var(--primary); color: #fff; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer;">
+              + New Venue Request
+            </button>
           </div>
 
-          <table class="timetable-matrix" style="font-size: 12px;">
+          <table class="calendar-table" style="font-size: 12px;">
             <thead>
-              <tr style="background: #0284c7;">
+              <tr style="background: #f8fafc;">
                 <th style="width: 75px;">REQ ID</th>
                 <th>EVENT TITLE</th>
                 <th>ORGANIZER</th>
@@ -766,22 +812,24 @@
               </tr>
             </thead>
             <tbody>
-              ${sched.fest_week.bookings.map(b => {
+              ${SCHED.fest_week.bookings.map(b => {
                 const req = DATA.booking_requests.find(r => r.id === b.request_id);
-                let statusColor = '#16a34a';
-                if (b.status === 'alternative_offered') statusColor = '#d97706';
-                if (b.status === 'rejected') statusColor = '#dc2626';
+                let color = 'var(--green)';
+                if (b.status === 'alternative_offered') color = 'var(--orange)';
+                if (b.status === 'rejected') color = '#dc2626';
 
                 return `
                   <tr>
-                    <td style="font-weight: 700; text-align: center;">${b.request_id}</td>
+                    <td class="mono" style="font-weight: 700; text-align: center;">${b.request_id}</td>
                     <td style="font-weight: 600;">${req ? req.title : 'Event'}</td>
                     <td>${req ? req.requester : 'Unknown'}</td>
-                    <td style="text-align: center;">
-                      <span style="font-weight: 700; color: ${statusColor};">${b.status.replace('_', ' ').toUpperCase()}</span>
+                    <td style="text-align: center; font-weight: 700; color: ${color}; text-transform: uppercase;">
+                      ${b.status.replace('_', ' ')}
                     </td>
-                    <td style="font-weight: 600;">${b.status !== 'rejected' ? `${b.room_id} (${b.day} P${b.start_period}-P${b.end_period})` : '—'}</td>
-                    <td style="color: #64748b; font-size: 11px;">${b.reason}</td>
+                    <td class="mono" style="font-weight: 600;">
+                      ${b.status !== 'rejected' ? `${b.room_id} (${b.day} P${b.start_period}-P${b.end_period})` : '—'}
+                    </td>
+                    <td style="color: var(--text-muted); font-size: 11px;">${b.reason}</td>
                   </tr>
                 `;
               }).join('')}
@@ -791,46 +839,50 @@
       `;
     }
 
-    // 3. AI VENUE PARSER VIEW
-    function renderAI(ws) {
-      ws.innerHTML = `
-        <div class="module-card" style="max-width: 800px; margin: 0 auto;">
-          <div class="module-header">
-            <div class="module-title">Venue Booking AI Assistant</div>
-            <div class="module-desc">Accepts plain English or Hinglish venue requests. Extracts structured parameters and validates availability against timetable constraints.</div>
+    // 3. AI VENUE BOOKING ASSISTANT
+    function renderAI(content) {
+      content.innerHTML = `
+        <div class="content-card" style="max-width: 800px; margin: 0 auto;">
+          <div class="card-title-row">
+            <div>
+              <div class="title-text">Venue AI Booking Assistant</div>
+              <div class="subtitle-text">Request a room using plain English or Hinglish. Checks availability with underlying timetable constraints.</div>
+            </div>
           </div>
 
-          <div style="font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 6px;">BENCHMARK SAMPLE PROMPTS:</div>
+          <div style="font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">SAMPLE BENCHMARK REQUESTS:</div>
           <div style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px;">
-            <button onclick="fillPrompt('seminar hall kal shaam 6 baje, 2 ghante, 100 log, mic chahiye')" style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 6px 10px; border-radius: 4px; text-align: left; font-size: 11px; cursor: pointer;">
+            <button onclick="fillAI('seminar hall kal shaam 6 baje, 2 ghante, 100 log, mic chahiye')" style="background: #f8fafc; border: 1px solid var(--border); padding: 6px 10px; border-radius: 4px; text-align: left; font-size: 11px; cursor: pointer;">
               "seminar hall kal shaam 6 baje, 2 ghante, 100 log, mic chahiye"
             </button>
-            <button onclick="fillPrompt('Need a room for 45 people on Tuesday 6 to 8 pm, projector please.')" style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 6px 10px; border-radius: 4px; text-align: left; font-size: 11px; cursor: pointer;">
+            <button onclick="fillAI('Need a room for 45 people on Tuesday 6 to 8 pm, projector please.')" style="background: #f8fafc; border: 1px solid var(--border); padding: 6px 10px; border-radius: 4px; text-align: left; font-size: 11px; cursor: pointer;">
               "Need a room for 45 people on Tuesday 6 to 8 pm, projector please."
             </button>
           </div>
 
           <div style="display: flex; gap: 8px; margin-bottom: 16px;">
-            <input type="text" id="ai-input" style="flex:1; border: 1px solid #cbd5e1; padding: 8px 12px; border-radius: 4px; font-size: 12px; outline: none;" placeholder="Enter venue booking prompt in English or Hinglish..." />
-            <button class="btn-action" onclick="submitAI()">Parse & Validate</button>
+            <input type="text" id="ai-user-input" class="form-input" placeholder="Type booking request in English or Hinglish..." />
+            <button onclick="submitUserAI()" style="background: var(--primary); color: #fff; border: none; padding: 8px 16px; border-radius: 4px; font-weight: 600; cursor: pointer; white-space: nowrap;">
+              Check Availability
+            </button>
           </div>
 
-          <div id="ai-output" style="display: none;"></div>
+          <div id="ai-user-result" style="display: none;"></div>
         </div>
       `;
     }
 
-    function fillPrompt(txt) {
-      document.getElementById("ai-input").value = txt;
-      submitAI();
+    function fillAI(txt) {
+      document.getElementById("ai-user-input").value = txt;
+      submitUserAI();
     }
 
-    async function submitAI() {
-      const val = document.getElementById("ai-input").value;
+    async function submitUserAI() {
+      const val = document.getElementById("ai-user-input").value;
       if (!val) return;
-      const out = document.getElementById("ai-output");
-      out.style.display = "block";
-      out.innerHTML = "<div style='color: #0284c7;'>Synthesizing request...</div>";
+      const resContainer = document.getElementById("ai-user-result");
+      resContainer.style.display = "block";
+      resContainer.innerHTML = "<div style='color: var(--primary); font-size: 12px;'>Analyzing request...</div>";
 
       try {
         const res = await fetch("/api/parse-nlp", {
@@ -839,171 +891,77 @@
           body: JSON.stringify({ text: val })
         }).then(r => r.json());
 
-        out.innerHTML = `
-          <div style="background: #f8fafc; border: 1px solid #16a34a; border-radius: 6px; padding: 14px;">
-            <div style="font-weight: 700; color: #166534; margin-bottom: 8px;">Extracted & Validated Parameters</div>
-            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; font-size: 11px; margin-bottom: 12px;">
-              <div style="background: #ffffff; padding: 8px; border: 1px solid #e2e8f0; border-radius: 4px;">
-                <div style="color: #64748b;">CAPACITY</div>
-                <strong>${res.attendance} people</strong>
+        resContainer.innerHTML = `
+          <div style="background: #f8fafc; border: 1px solid var(--green); border-radius: 4px; padding: 14px;">
+            <div style="font-weight: 700; color: var(--green); margin-bottom: 8px;">Extracted & Clash-Checked Request</div>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; font-size: 11px; margin-bottom: 12px;" class="mono">
+              <div style="background: #ffffff; padding: 8px; border: 1px solid var(--border); border-radius: 4px;">
+                <div style="color: var(--text-muted); font-size: 10px;">SEATING</div>
+                <strong>${res.attendance} pax</strong>
               </div>
-              <div style="background: #ffffff; padding: 8px; border: 1px solid #e2e8f0; border-radius: 4px;">
-                <div style="color: #64748b;">DURATION</div>
-                <strong>${res.duration_periods} hours</strong>
+              <div style="background: #ffffff; padding: 8px; border: 1px solid var(--border); border-radius: 4px;">
+                <div style="color: var(--text-muted); font-size: 10px;">DURATION</div>
+                <strong>${res.duration_periods} hrs</strong>
               </div>
-              <div style="background: #ffffff; padding: 8px; border: 1px solid #e2e8f0; border-radius: 4px;">
-                <div style="color: #64748b;">TARGET WINDOW</div>
-                <strong style="color: #0284c7;">${res.windows[0].day} P${res.windows[0].from_period}-P${res.windows[0].to_period}</strong>
+              <div style="background: #ffffff; padding: 8px; border: 1px solid var(--border); border-radius: 4px;">
+                <div style="color: var(--text-muted); font-size: 10px;">SLOT</div>
+                <strong style="color: var(--primary);">${res.windows[0].day} P${res.windows[0].from_period}-P${res.windows[0].to_period}</strong>
               </div>
-              <div style="background: #ffffff; padding: 8px; border: 1px solid #e2e8f0; border-radius: 4px;">
-                <div style="color: #64748b;">FACILITIES</div>
-                <strong>${res.needs.length ? res.needs.join(', ') : 'Standard'}</strong>
+              <div style="background: #ffffff; padding: 8px; border: 1px solid var(--border); border-radius: 4px;">
+                <div style="color: var(--text-muted); font-size: 10px;">NEEDS</div>
+                <strong>${res.needs.length ? res.needs.join(', ') : 'None'}</strong>
               </div>
             </div>
-            <button onclick="showToast('Venue successfully confirmed.')" style="background: #16a34a; color: #fff; border: none; padding: 6px 14px; border-radius: 4px; font-weight: 600; cursor: pointer;">
-              Confirm Reservation
-            </button>
+            <div style="display: flex; justify-content: flex-end;">
+              <button onclick="showToast('Venue request submitted for review!')" style="background: var(--green); color: #fff; border: none; padding: 6px 14px; border-radius: 4px; font-weight: 600; cursor: pointer;">
+                Submit Venue Request
+              </button>
+            </div>
           </div>
         `;
       } catch (e) {
-        out.innerHTML = "<div style='color:red;'>Parser error</div>";
+        resContainer.innerHTML = "<div style='color:red;'>Parser error</div>";
       }
     }
 
-    // 4. DISRUPTIONS VIEW
-    function renderDisruption(ws) {
-      ws.innerHTML = `
-        <div class="module-card">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+    // 4. MIDSEM EXAMS
+    function renderExams(content) {
+      content.innerHTML = `
+        <div class="content-card">
+          <div class="card-title-row">
             <div>
-              <div class="module-title">Disruption Resolution (CR-102 Water Leak)</div>
-              <div class="module-desc">Room CR-102 closed. Minimal-move algorithm preserves exact class time slots and reroutes only venues.</div>
+              <div class="title-text">Midsem Examination Schedule</div>
+              <div class="subtitle-text">Mon–Sat AM (09:30–11:30) & PM (14:00–16:00). Halved seating capacities per CIT guidelines.</div>
             </div>
-            <button class="btn-action" style="background: ${disruptionApplied ? '#64748b' : '#ea580c'};" onclick="toggleDisruption()">
-              ${disruptionApplied ? 'Revert to Baseline' : 'Apply Minimal-Move Reschedule'}
-            </button>
           </div>
 
-          <table class="timetable-matrix" style="font-size: 12px;">
+          <table class="calendar-table" style="font-size: 12px;">
             <thead>
-              <tr style="background: #0284c7;">
-                <th>SESSION</th>
-                <th>COURSE</th>
-                <th>PREVIOUS LOCATION</th>
-                <th>REPAIRED LOCATION</th>
-                <th>STATUS</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${[
-                { id: "CS101-B-L2", course: "CS101", orig: "MON P4 @ CR-102", newV: "MON P4 @ CR-101", note: "Exact time preserved" },
-                { id: "CS101-C-L2", course: "CS101", orig: "TUE P2 @ CR-102", newV: "TUE P2 @ CR-101", note: "Exact time preserved" },
-                { id: "CS101-D-L1", course: "CS101", orig: "WED P1 @ CR-102", newV: "WED P1 @ CR-101", note: "Exact time preserved" },
-                { id: "CS101-D-L2", course: "CS101", orig: "THU P4 @ CR-102", newV: "THU P4 @ CR-101", note: "Exact time preserved" },
-                { id: "HS101-B-L1", course: "HS101", orig: "WED P3 @ CR-102", newV: "WED P3 @ CR-101", note: "Exact time preserved" },
-                { id: "HS101-B-L2", course: "HS101", orig: "FRI P2 @ CR-102", newV: "FRI P2 @ CR-101", note: "Exact time preserved" },
-                { id: "MA101-B-T1", course: "MA101", orig: "MON P7 @ CR-102", newV: "MON P7 @ CR-101", note: "Exact time preserved" },
-                { id: "MA101-C-T1", course: "MA101", orig: "TUE P6 @ CR-102", newV: "TUE P6 @ CR-101", note: "Exact time preserved" },
-                { id: "PH101-B-L1", course: "PH101", orig: "THU P2 @ CR-102", newV: "THU P2 @ CR-101", note: "Exact time preserved" },
-                { id: "PH101-C-L1", course: "PH101", orig: "MON P2 @ CR-102", newV: "MON P2 @ CR-101", note: "Exact time preserved" },
-                { id: "PH101-C-L2", course: "PH101", orig: "WED P4 @ CR-102", newV: "WED P4 @ CR-101", note: "Exact time preserved" }
-              ].map(r => `
-                <tr>
-                  <td style="font-weight: 700;">${r.id}</td>
-                  <td>${r.course}</td>
-                  <td style="color: #dc2626; text-decoration: line-through;">${r.orig}</td>
-                  <td style="font-weight: 700; color: #16a34a;">${r.newV}</td>
-                  <td style="color: #64748b; font-size: 11px;">${r.note}</td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-        </div>
-      `;
-    }
-
-    function toggleDisruption() {
-      disruptionApplied = !disruptionApplied;
-      showToast(disruptionApplied ? "Disruption applied: 11 sessions relocated with 0 time changes." : "Reverted to baseline.");
-      renderTab();
-    }
-
-    // 5. EXAMS VIEW
-    function renderExams(ws, sched) {
-      ws.innerHTML = `
-        <div class="module-card">
-          <div class="module-header">
-            <div class="module-title">Midsem Examination Schedule</div>
-            <div class="module-desc">Monday to Saturday: AM (09:30–11:30) & PM (14:00–16:00). Capacities halved per Rule H5.</div>
-          </div>
-
-          <table class="timetable-matrix" style="font-size: 12px;">
-            <thead>
-              <tr style="background: #0284c7;">
+              <tr style="background: #f8fafc;">
                 <th style="width: 80px;">EXAM ID</th>
                 <th>COURSE</th>
                 <th>GROUPS</th>
-                <th>SIZE</th>
+                <th>SEATS</th>
                 <th>SLOT</th>
-                <th>COMBINED ROOMS</th>
+                <th>ALLOCATED VENUES</th>
               </tr>
             </thead>
             <tbody>
-              ${sched.exams.map(e => {
+              ${SCHED.exams.map(e => {
                 const ex = DATA.exams.find(item => item.id === e.exam_id);
                 return `
                   <tr>
-                    <td style="font-weight: 700; text-align: center;">${e.exam_id}</td>
+                    <td class="mono" style="font-weight: 700; text-align: center;">${e.exam_id}</td>
                     <td style="font-weight: 600;">${ex ? ex.course_ids.join(', ') : ''}</td>
-                    <td>${ex ? ex.groups.join(', ') : ''}</td>
-                    <td style="text-align: center;">${ex ? ex.size : 0}</td>
-                    <td style="font-weight: 600; text-align: center;">${e.day} ${e.session}</td>
-                    <td style="font-weight: 700; color: #16a34a;">${e.rooms.join(' + ')}</td>
+                    <td class="mono" style="font-size: 11px;">${ex ? ex.groups.join(', ') : ''}</td>
+                    <td class="mono" style="text-align: center;">${ex ? ex.size : 0}</td>
+                    <td class="mono" style="font-weight: 700; text-align: center;">${e.day} ${e.session}</td>
+                    <td class="mono" style="font-weight: 700; color: var(--green);">${e.rooms.join(' + ')}</td>
                   </tr>
                 `;
               }).join('')}
             </tbody>
           </table>
-        </div>
-      `;
-    }
-
-    // 6. VALIDATOR AUDIT VIEW
-    function renderAudit(ws) {
-      ws.innerHTML = `
-        <div class="module-card" style="max-width: 800px; margin: 0 auto;">
-          <div class="module-header">
-            <div class="module-title">Official Validator Execution Audit</div>
-            <div class="module-desc">Direct report from validator.py. Evaluates all hard rules H1–H14 and soft penalties S1–S6.</div>
-          </div>
-
-          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; text-align: center;">
-            <div style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 10px; border-radius: 4px;">
-              <div style="font-size: 11px; color: #64748b;">HARD VIOLATIONS</div>
-              <div style="font-size: 18px; font-weight: 800; color: #16a34a; margin-top: 2px;">0</div>
-            </div>
-            <div style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 10px; border-radius: 4px;">
-              <div style="font-size: 11px; color: #64748b;">BOOKING SCORE</div>
-              <div style="font-size: 18px; font-weight: 800; color: #0284c7; margin-top: 2px;">63.0 / 64</div>
-            </div>
-            <div style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 10px; border-radius: 4px;">
-              <div style="font-size: 11px; color: #64748b;">INVERSIONS</div>
-              <div style="font-size: 18px; font-weight: 800; color: #16a34a; margin-top: 2px;">0</div>
-            </div>
-            <div style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 10px; border-radius: 4px;">
-              <div style="font-size: 11px; color: #64748b;">SCORE</div>
-              <div style="font-size: 18px; font-weight: 800; color: #16a34a; margin-top: 2px;">25 / 25</div>
-            </div>
-          </div>
-
-          <div style="display: flex; gap: 8px;">
-            <a href="/exports/schedule.json" download style="background: #0284c7; color: #fff; padding: 8px 14px; border-radius: 4px; font-weight: 600; text-decoration: none; font-size: 12px;">
-              Download schedule.json
-            </a>
-            <a href="/exports/schedule_after.json" download style="background: #475569; color: #fff; padding: 8px 14px; border-radius: 4px; font-weight: 600; text-decoration: none; font-size: 12px;">
-              Download schedule_after.json
-            </a>
-          </div>
         </div>
       `;
     }
