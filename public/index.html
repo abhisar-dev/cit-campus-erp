@@ -1797,14 +1797,10 @@
       `;
 
       content.innerHTML = ctaBannerHtml + `
-      <!-- old-assign-ignored
-      ];
-
-      content.innerHTML = `
-        <div class="content-card">
+        <div class="content-card" id="timetable-grid-card">
           <div class="card-title-row">
             <div>
--->        <div class="content-card" id="timetable-grid-card"><div class="card-title-row"><div><div class="title-text">Official Academic Class Timetable</div>
+              <div class="title-text">Official Academic Class Timetable</div>
               <div class="subtitle-text">Clear real-time schedule · Monday to Friday (5 academic days)</div>
             </div>
 
@@ -2576,48 +2572,6 @@
       return;
     }
 
-    function _legacyOldBug() { return;
-      e.preventDefault();
-      const name = document.getElementById('modal-bug-name').value.trim();
-      const email = document.getElementById('modal-bug-email').value.trim();
-      const cat = document.getElementById('modal-bug-cat').value;
-      const desc = document.getElementById('modal-bug-desc').value.trim();
-      const btn = document.getElementById('btn-modal-bug-submit');
-      const alert = document.getElementById('modal-bug-alert');
-
-      btn.disabled = true;
-      btn.innerText = 'Submitting report...';
-
-      setTimeout(() => {
-        const ticketId = 'CIT-BUG-' + Math.floor(10000 + Math.random() * 90000);
-        const tickets = JSON.parse(localStorage.getItem('cit_support_tickets') || '[]');
-        tickets.unshift({
-          id: ticketId,
-          name,
-          email,
-          category: cat,
-          message: desc,
-          timestamp: new Date().toISOString(),
-          status: 'Under Investigation'
-        });
-        localStorage.setItem('cit_support_tickets', JSON.stringify(tickets));
-
-        alert.style.display = 'block';
-        alert.style.padding = '10px 12px';
-        alert.style.background = '#f0fdf4';
-        alert.style.border = '1px solid #bbf7d0';
-        alert.style.borderRadius = '6px';
-        alert.style.color = '#166534';
-        alert.style.fontSize = '12px';
-        alert.style.marginBottom = '12px';
-        alert.innerHTML = `✓ <strong>Ticket Logged: ${ticketId}</strong><br/>Thank you. Our academic IT cell has received your report.`;
-
-        btn.disabled = false;
-        btn.innerText = 'Submit Another Issue';
-        document.getElementById('modal-bug-desc').value = '';
-      }, 500);
-    }
-
     // User Profile Management & State
     let userProfile = {
       name: '',
@@ -2896,58 +2850,6 @@
 
       showToast("Profile updated successfully!");
       return;
-    }
-
-    function _legacyProfileSave() { return;
-      e.preventDefault();
-      const btn = document.getElementById('prof-save-btn');
-      if (btn) {
-        btn.disabled = true;
-        btn.innerHTML = '<span>Saving...</span>';
-      }
-
-      userProfile.name = document.getElementById('prof-input-name').value.trim();
-      userProfile.email = document.getElementById('prof-input-email').value.trim();
-      userProfile.rollNumber = document.getElementById('prof-input-roll').value.trim();
-      userProfile.course = document.getElementById('prof-input-course').value.trim();
-      userProfile.phone = document.getElementById('prof-input-phone').value.trim();
-      userProfile.cohort = document.getElementById('prof-input-cohort').value.trim();
-      userProfile.campus = document.getElementById('prof-input-campus').value.trim();
-      userProfile.bio = document.getElementById('prof-input-bio').value.trim();
-      userProfile.github = document.getElementById('prof-input-github').value.trim();
-      userProfile.linkedin = document.getElementById('prof-input-linkedin').value.trim();
-
-      if (currentUser) {
-        if (userProfile.name) currentUser.name = userProfile.name;
-        if (userProfile.email) currentUser.email = userProfile.email;
-        if (userProfile.cohort) currentUser.cohort = userProfile.cohort;
-        localStorage.setItem('cit_session', JSON.stringify(currentUser));
-      }
-
-      localStorage.setItem('cit_user_profile', JSON.stringify(userProfile));
-
-      try {
-        await fetch('/api/user/profile', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(userProfile)
-        });
-      } catch (err) {}
-
-      syncProfileUI();
-
-      if (btn) {
-        btn.disabled = false;
-        btn.innerHTML = '<span>Save Changes</span>';
-      }
-
-      const banner = document.getElementById('prof-alert-banner');
-      if (banner) {
-        banner.style.display = 'block';
-        banner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }
-
-      showToast("Profile updated successfully!");
     }
 
     function handleAvatarUpload(event) {
