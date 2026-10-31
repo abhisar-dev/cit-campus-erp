@@ -815,6 +815,10 @@
       </div>
     </div>
     <div class="topbar-right">
+      <div id="neon-topbar-indicator" class="status-badge mono" style="font-size: 11px; cursor: pointer;" onclick="switchAdminTab('backups')" title="Click to view Neon Database Cloud Console">
+        <span class="status-dot" style="background: #f59e0b;"></span>
+        <span id="neon-topbar-text">STORAGE: LOCAL FALLBACK</span>
+      </div>
       <button class="btn-topbar" onclick="refreshAdminState(true)" title="Reload live telemetry and booking data">
         <span>🔄</span> Refresh
       </button>
@@ -981,6 +985,12 @@
       allow_signup: true,
       ai_assistant: true
     };
+    let NEON_STATUS = {
+      configured: false,
+      connected: false,
+      provider: "Neon Serverless PostgreSQL",
+      message: "Checking database status..."
+    };
 
     // Filter states
     let requestFilter = 'all';
@@ -1077,6 +1087,13 @@
           USERS_DATA = uRes;
         }
 
+        // Fetch Neon DB Cloud Status
+        const dbRes = await fetch('/api/admin/db/status').then(r => r.json()).catch(() => null);
+        if (dbRes && dbRes.neon) {
+          NEON_STATUS = dbRes.neon;
+        }
+        updateNeonTopbar();
+
         // Local Storage Sync (custom bookings created by students)
         try {
           const localCustom = JSON.parse(localStorage.getItem('cit_custom_bookings') || '[]');
@@ -1094,6 +1111,22 @@
         if (showFeedback) showToast('✓ Live telemetry and booking status refreshed.');
       } catch (err) {
         renderAdminWorkspace();
+      }
+    }
+
+    function updateNeonTopbar() {
+      const dot = document.querySelector('#neon-topbar-indicator .status-dot');
+      const text = document.getElementById('neon-topbar-text');
+      if (!dot || !text) return;
+      if (NEON_STATUS && NEON_STATUS.connected) {
+        dot.style.background = '#10b981';
+        text.innerHTML = 'NEON POSTGRES: CONNECTED';
+      } else if (NEON_STATUS && NEON_STATUS.configured) {
+        dot.style.background = '#ef4444';
+        text.innerHTML = 'NEON POSTGRES: ERROR';
+      } else {
+        dot.style.background = '#f59e0b';
+        text.innerHTML = 'DB: LOCAL STORE (NEON READY)';
       }
     }
 
@@ -1365,6 +1398,31 @@
         <div class="view-header">
           <h1 class="view-title">Executive Telemetry & Campus Pulse</h1>
           <p class="view-subtitle">Comprehensive live analytics of student visits, problem submissions, and venue reservations.</p>
+        </div>
+
+        <!-- Neon Cloud Telemetry Banner -->
+        <div class="content-box" style="margin-bottom: 20px; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border-left: 4px solid ${(NEON_STATUS && NEON_STATUS.connected) ? 'var(--green)' : '#f59e0b'};">
+          <div style="padding: 12px 18px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <span style="font-size: 22px;">🐘</span>
+              <div>
+                <div style="font-weight: 800; font-size: 13px; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+                  <span>DATABASE ENGINE: NEON SERVERLESS POSTGRESQL</span>
+                  <span class="badge ${(NEON_STATUS && NEON_STATUS.connected) ? 'badge-success' : 'badge-warning'}">
+                    ${(NEON_STATUS && NEON_STATUS.connected) ? 'CONNECTED & SYNCED' : 'LOCAL JSON STORE (FALLBACK)'}
+                  </span>
+                </div>
+                <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 2px;">
+                  ${(NEON_STATUS && NEON_STATUS.connected) ? 'Dual-persistence active on AWS Neon cloud. Institutional data fully synchronized.' : 'Running in local JSON fallback mode. Dual persistence ready to sync to Neon cloud.'}
+                </div>
+              </div>
+            </div>
+            <div>
+              <button class="btn-topbar" style="font-size: 11px; padding: 5px 12px;" onclick="switchAdminTab('backups')">
+                Manage Cloud Database &rarr;
+              </button>
+            </div>
+          </div>
         </div>
 
         <!-- First Row: 4 Primary Stat Cards -->
@@ -2101,33 +2159,173 @@
     }
 
     /* -------------------------------------------------------------------------
-       VIEW 5: DATABASE & CLOUD BACKUPS
+       VIEW 5: DATABASE & CLOUD BACKUPS (Neon Serverless PostgreSQL)
     ------------------------------------------------------------------------- */
     function renderBackupsView(ws) {
+      const isConnected = NEON_STATUS && NEON_STATUS.connected;
+      const isConfigured = NEON_STATUS && NEON_STATUS.configured;
+
       ws.innerHTML = `
         <div class="view-header">
-          <h1 class="view-title">Database & Cloud Backups</h1>
-          <p class="view-subtitle">Snapshot storage, local JSON exports, and state recovery.</p>
+          <h1 class="view-title">Database & Cloud Persistence</h1>
+          <p class="view-subtitle">Neon Serverless PostgreSQL cloud integration, table synchronization, and disaster recovery snapshots.</p>
         </div>
 
-        <div class="content-box" style="max-width: 800px;">
+        <!-- Neon Serverless Cloud Card -->
+        <div class="content-box" style="max-width: 920px; border-top: 3px solid ${isConnected ? 'var(--green)' : '#f59e0b'};">
           <div class="content-box-head">
-            <div class="content-box-title">Database Snapshot Management</div>
-          </div>
-          <div style="padding: 20px;">
-            <div style="margin-bottom: 16px;">
-              <strong>Export Full System State (JSON)</strong>
-              <p style="color: var(--text-muted); font-size: 12px; margin-top: 4px;">Exports users, credentials, booking overrides, and audit trails in standard JSON format.</p>
-              <button class="btn-topbar" style="margin-top: 8px;" onclick="exportFullJSONBackup()">📥 Download Complete Snapshot (JSON)</button>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="font-size: 20px;">🐘</span>
+              <div>
+                <div class="content-box-title">Neon Serverless PostgreSQL Engine</div>
+                <div class="content-box-subtitle">Managed serverless PostgreSQL cluster with instant branch scaling & dual-persistence</div>
+              </div>
             </div>
-            <div style="border-top: 1px solid var(--border); padding-top: 16px;">
-              <strong>Reset System State</strong>
-              <p style="color: var(--text-muted); font-size: 12px; margin-top: 4px;">Clears custom bookings and resets all statuses to baseline institute records.</p>
-              <button class="btn-action btn-action-reject" style="margin-top: 8px; padding: 7px 14px;" onclick="resetBaselineData()">Reset to Baseline Data</button>
+            <span class="badge ${isConnected ? 'badge-success' : 'badge-warning'}">
+              <span class="status-dot" style="background: ${isConnected ? 'var(--green)' : '#f59e0b'};"></span>
+              ${isConnected ? 'CONNECTED & ACTIVE' : (isConfigured ? 'CONNECTION FAILED' : 'LOCAL FALLBACK READY')}
+            </span>
+          </div>
+
+          <div style="padding: 22px;">
+            <!-- Telemetry summary cards -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin-bottom: 22px;">
+              <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: 6px; padding: 14px;">
+                <div style="font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Cloud Provider</div>
+                <div style="font-size: 15px; font-weight: 800; color: var(--text-main); margin-top: 4px;">Neon Serverless</div>
+                <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">PostgreSQL 16 · AWS</div>
+              </div>
+
+              <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: 6px; padding: 14px;">
+                <div style="font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Host & Database</div>
+                <div style="font-size: 14px; font-weight: 800; color: var(--text-main); margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${NEON_STATUS.host || 'Local fallback'}">
+                  ${NEON_STATUS.host ? NEON_STATUS.host.split('.')[0] + '...' : 'users_store.json'}
+                </div>
+                <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">DB: ${NEON_STATUS.database || 'default'}</div>
+              </div>
+
+              <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: 6px; padding: 14px;">
+                <div style="font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Schema Tables</div>
+                <div style="font-size: 15px; font-weight: 800; color: ${isConnected ? 'var(--green-dark)' : 'var(--text-main)'}; margin-top: 4px;">
+                  ${isConnected ? '4 Tables Ready' : 'Standby Schema'}
+                </div>
+                <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">users, bookings, logs, store</div>
+              </div>
+
+              <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: 6px; padding: 14px;">
+                <div style="font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Persistence Layer</div>
+                <div style="font-size: 15px; font-weight: 800; color: var(--text-main); margin-top: 4px;">Dual Redundancy</div>
+                <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Auto-failover enabled</div>
+              </div>
+            </div>
+
+            <!-- Status Banner Message -->
+            <div style="background: ${isConnected ? '#ecfdf5' : '#fffbeb'}; border: 1px solid ${isConnected ? '#a7f3d0' : '#fde68a'}; border-radius: 6px; padding: 12px 16px; margin-bottom: 22px; font-size: 12.5px; color: ${isConnected ? '#065f46' : '#92400e'}; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+              <div>
+                <strong>Status Message:</strong> ${NEON_STATUS.message || 'Ready for connection.'}
+              </div>
+              <button class="btn-topbar" style="background: #ffffff; padding: 5px 12px; font-size: 11px;" onclick="testNeonPing()">
+                🔄 Ping Cloud DB
+              </button>
+            </div>
+
+            <!-- Neon Connection String Configuration Form -->
+            <div style="background: #ffffff; border: 1px solid var(--border); border-radius: 6px; padding: 16px; margin-bottom: 20px;">
+              <label style="font-size: 12px; font-weight: 800; color: var(--text-main); display: block; margin-bottom: 4px;">
+                Connect / Update Neon Database Connection String:
+              </label>
+              <p style="font-size: 11.5px; color: var(--text-muted); margin-bottom: 10px;">
+                Enter your Neon PostgreSQL URI (format: <code>postgresql://[user]:[password]@[endpoint].neon.tech/[dbname]?sslmode=require</code>). All campus data will automatically migrate and sync.
+              </p>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <input type="text" id="neon-conn-input" placeholder="postgresql://neondb_owner:***@ep-cool-fog-123456.ap-southeast-1.aws.neon.tech/neondb?sslmode=require" style="flex: 1; min-width: 280px; padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; font-family: monospace; font-size: 12px;" />
+                <button class="btn-topbar" style="background: var(--primary); color: #ffffff; border-color: var(--primary); font-weight: 700;" onclick="submitNeonConnection()">
+                  🚀 Connect & Migrate to Neon
+                </button>
+              </div>
+              <div style="margin-top: 10px; font-size: 11px; color: var(--text-muted);">
+                💡 <em>CLI Alternative:</em> Run <code>python setup_neon.py "&lt;connection_string&gt;"</code> in your terminal.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Local Snapshot & Disaster Recovery -->
+        <div class="content-box" style="max-width: 920px;">
+          <div class="content-box-head">
+            <div class="content-box-title">System Snapshot & Disaster Recovery</div>
+            <div class="content-box-subtitle">Offline exports and emergency state restoration</div>
+          </div>
+          <div style="padding: 22px;">
+            <div style="margin-bottom: 18px;">
+              <strong>Export Full System State (JSON)</strong>
+              <p style="color: var(--text-muted); font-size: 12px; margin-top: 4px;">
+                Exports institutional users (${USERS_DATA.length}), booking overrides (${Object.keys(BOOKING_OVERRIDES).length}), and audit events (${AUDIT_LOGS.length}) in portable JSON format.
+              </p>
+              <button class="btn-topbar" style="margin-top: 8px;" onclick="exportFullJSONBackup()">
+                📥 Download Complete Snapshot (JSON)
+              </button>
+            </div>
+
+            <div style="border-top: 1px solid var(--border); padding-top: 18px;">
+              <strong style="color: var(--red);">Reset System State to Institutional Baseline</strong>
+              <p style="color: var(--text-muted); font-size: 12px; margin-top: 4px;">
+                Clears custom student venue reservations and resets all booking statuses to baseline records.
+              </p>
+              <button class="btn-action btn-action-reject" style="margin-top: 8px; padding: 7px 14px;" onclick="resetBaselineData()">
+                Reset to Baseline Data
+              </button>
             </div>
           </div>
         </div>
       `;
+    }
+
+    async function testNeonPing() {
+      showToast('Testing Neon Serverless database latency...');
+      try {
+        const res = await fetch('/api/admin/db/status').then(r => r.json());
+        if (res && res.neon) {
+          NEON_STATUS = res.neon;
+          updateNeonTopbar();
+          renderBackupsView(document.getElementById('admin-workspace'));
+          if (res.neon.connected) {
+            showToast('✓ Neon PostgreSQL ping successful! Cluster active.');
+          } else {
+            showToast('ℹ Neon ping checked: ' + (res.neon.message || 'Offline'));
+          }
+        }
+      } catch (e) {
+        showToast('⚠ Failed to query Neon status API.');
+      }
+    }
+
+    async function submitNeonConnection() {
+      const input = document.getElementById('neon-conn-input');
+      const connStr = input ? input.value.trim() : '';
+      if (!connStr) {
+        alert('Please enter a valid Neon PostgreSQL connection string (postgresql://...).');
+        return;
+      }
+      showToast('Initializing Neon tables and migrating campus data...');
+      try {
+        const res = await fetch('/api/admin/db/setup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ database_url: connStr })
+        }).then(r => r.json());
+
+        if (res && res.success) {
+          NEON_STATUS = res.neon || NEON_STATUS;
+          updateNeonTopbar();
+          renderBackupsView(document.getElementById('admin-workspace'));
+          showToast('✓ Neon Serverless PostgreSQL successfully connected and migrated!');
+        } else {
+          alert('Neon setup error: ' + (res.error || 'Connection failed'));
+        }
+      } catch (err) {
+        alert('Setup request failed. Check server logs.');
+      }
     }
 
     function exportFullJSONBackup() {

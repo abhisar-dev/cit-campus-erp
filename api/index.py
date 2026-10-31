@@ -1,6 +1,7 @@
 import http.server
 import json
 import os
+import sys
 import urllib.parse
 import urllib.request
 import re
@@ -8,6 +9,16 @@ import secrets
 import base64
 import hashlib
 import time
+
+# Auto-add parent directory to sys.path for neon_db
+_parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if _parent_dir not in sys.path:
+    sys.path.append(_parent_dir)
+
+try:
+    import neon_db
+except ImportError:
+    neon_db = None
 
 GOOGLE_CLIENT_ID = "917818079741-c9a59ofsp34ko667atqmhf6hdvknbr9r.apps.googleusercontent.com"
 
@@ -220,61 +231,91 @@ WEBSITE_SETTINGS = {
 
 DB_FILE = "/tmp/cit_users_db.json"
 
-def load_persistent_db():
+def _apply_saved_state(saved: dict):
     global USERS_DB, USER_CREDENTIALS, USER_PROFILES, CUSTOM_BOOKINGS, BOOKING_OVERRIDES, AUDIT_LOGS, WEBSITE_SETTINGS
+    if "users" in saved and isinstance(saved["users"], list):
+        for u in saved["users"]:
+            if not any(x["email"].lower() == u["email"].lower() for x in USERS_DB):
+                USERS_DB.append(u)
+            else:
+                existing = next((x for x in USERS_DB if x["email"].lower() == u["email"].lower()), None)
+                if existing and u.get("password_hash") and not existing.get("password_hash"):
+                    existing["password_hash"] = u["password_hash"]
+    if "credentials" in saved and isinstance(saved["credentials"], dict):
+        USER_CREDENTIALS.update(saved["credentials"])
+    if "profiles" in saved and isinstance(saved["profiles"], dict):
+        USER_PROFILES.update(saved["profiles"])
+    if "custom_bookings" in saved and isinstance(saved["custom_bookings"], list):
+        CUSTOM_BOOKINGS = saved["custom_bookings"]
+    if "booking_overrides" in saved and isinstance(saved["booking_overrides"], dict):
+        BOOKING_OVERRIDES.update(saved["booking_overrides"])
+    if "audit_logs" in saved and isinstance(saved["audit_logs"], list) and len(saved["audit_logs"]) > 0:
+        AUDIT_LOGS = saved["audit_logs"]
+    if "settings" in saved and isinstance(saved["settings"], dict):
+        WEBSITE_SETTINGS.update(saved["settings"])
+
+    for u in USERS_DB:
+        if u.get("password_hash") and u.get("email"):
+            em = u["email"].lower()
+            if em not in USER_CREDENTIALS or not USER_CREDENTIALS[em].get("hash"):
+                USER_CREDENTIALS[em] = {
+                    "hash": u["password_hash"],
+                    "failed_attempts": USER_CREDENTIALS.get(em, {}).get("failed_attempts", 0)
+                }
+    # Always ensure admin has 0 failed attempts and accepts admin123
+    USER_CREDENTIALS["admin@cit.ac.in"] = {"hash": hash_password("admin123"), "failed_attempts": 0}
+    USER_CREDENTIALS["admin"] = {"hash": hash_password("admin123"), "failed_attempts": 0}
+
+def load_persistent_db():
+    # 1. Try loading from Neon Serverless PostgreSQL
+    if neon_db and neon_db.is_neon_configured():
+        try:
+            neon_state = neon_db.load_state_from_neon()
+            if neon_state:
+                _apply_saved_state(neon_state)
+                print("[DATABASE] Successfully loaded state from Neon Serverless PostgreSQL.")
+                return
+            else:
+                print("[DATABASE] Fresh Neon DB detected. Initializing tables...")
+                neon_db.init_neon_tables()
+        except Exception as e:
+            print(f"[NEON WARN] Load failed, falling back to local: {e}")
+
+    # 2. Local JSON File Fallback
     try:
         if os.path.exists(DB_FILE):
             with open(DB_FILE, "r", encoding="utf-8") as f:
                 saved = json.load(f)
-                if "users" in saved and isinstance(saved["users"], list):
-                    for u in saved["users"]:
-                        if not any(x["email"].lower() == u["email"].lower() for x in USERS_DB):
-                            USERS_DB.append(u)
-                        else:
-                            existing = next((x for x in USERS_DB if x["email"].lower() == u["email"].lower()), None)
-                            if existing and u.get("password_hash") and not existing.get("password_hash"):
-                                existing["password_hash"] = u["password_hash"]
-                if "credentials" in saved and isinstance(saved["credentials"], dict):
-                    USER_CREDENTIALS.update(saved["credentials"])
-                if "profiles" in saved and isinstance(saved["profiles"], dict):
-                    USER_PROFILES.update(saved["profiles"])
-                if "custom_bookings" in saved and isinstance(saved["custom_bookings"], list):
-                    CUSTOM_BOOKINGS = saved["custom_bookings"]
-                if "booking_overrides" in saved and isinstance(saved["booking_overrides"], dict):
-                    BOOKING_OVERRIDES.update(saved["booking_overrides"])
-                if "audit_logs" in saved and isinstance(saved["audit_logs"], list) and len(saved["audit_logs"]) > 0:
-                    AUDIT_LOGS = saved["audit_logs"]
-                if "settings" in saved and isinstance(saved["settings"], dict):
-                    WEBSITE_SETTINGS.update(saved["settings"])
-
-                for u in USERS_DB:
-                    if u.get("password_hash") and u.get("email"):
-                        em = u["email"].lower()
-                        if em not in USER_CREDENTIALS or not USER_CREDENTIALS[em].get("hash"):
-                            USER_CREDENTIALS[em] = {
-                                "hash": u["password_hash"],
-                                "failed_attempts": USER_CREDENTIALS.get(em, {}).get("failed_attempts", 0)
-                            }
-                # Always ensure admin has 0 failed attempts and accepts admin123
-                USER_CREDENTIALS["admin@cit.ac.in"] = {"hash": hash_password("admin123"), "failed_attempts": 0}
-                USER_CREDENTIALS["admin"] = {"hash": hash_password("admin123"), "failed_attempts": 0}
-    except Exception:
-        pass
+                _apply_saved_state(saved)
+                # Seed Neon if connected but empty
+                if neon_db and neon_db.is_neon_configured():
+                    neon_db.save_state_to_neon(saved)
+    except Exception as e:
+        print(f"[LOCAL STORE WARN] Could not load local DB: {e}")
 
 def save_persistent_db():
+    state = {
+        "users": USERS_DB,
+        "credentials": USER_CREDENTIALS,
+        "profiles": USER_PROFILES,
+        "custom_bookings": CUSTOM_BOOKINGS,
+        "booking_overrides": BOOKING_OVERRIDES,
+        "audit_logs": AUDIT_LOGS,
+        "settings": WEBSITE_SETTINGS
+    }
+    # 1. Local JSON write
     try:
         with open(DB_FILE, "w", encoding="utf-8") as f:
-            json.dump({
-                "users": USERS_DB,
-                "credentials": USER_CREDENTIALS,
-                "profiles": USER_PROFILES,
-                "custom_bookings": CUSTOM_BOOKINGS,
-                "booking_overrides": BOOKING_OVERRIDES,
-                "audit_logs": AUDIT_LOGS,
-                "settings": WEBSITE_SETTINGS
-            }, f, indent=2)
+            json.dump(state, f, indent=2)
     except Exception:
         pass
+
+    # 2. Neon Serverless PostgreSQL write
+    if neon_db and neon_db.is_neon_configured():
+        try:
+            neon_db.save_state_to_neon(state)
+        except Exception as e:
+            print(f"[NEON WARN] Could not sync state to Neon: {e}")
 
 load_persistent_db()
 
@@ -468,6 +509,13 @@ class handler(http.server.BaseHTTPRequestHandler):
             self.send_response(200)
             self.send_cors_headers("application/json; charset=utf-8")
             self.wfile.write(json.dumps(USERS_DB).encode("utf-8"))
+            return
+
+        if req_path.endswith("/api/admin/db/status") or req_path == "/admin/db/status":
+            self.send_response(200)
+            self.send_cors_headers("application/json; charset=utf-8")
+            status = neon_db.test_neon_status() if neon_db else {"configured": False, "provider": "Local Store"}
+            self.wfile.write(json.dumps({"success": True, "neon": status}).encode("utf-8"))
             return
 
         if req_path.endswith("/api/admin/bookings") or req_path == "/admin/bookings":
@@ -1139,6 +1187,26 @@ class handler(http.server.BaseHTTPRequestHandler):
             except Exception:
                 pass
             self.wfile.write(json.dumps({"success": True, "settings": WEBSITE_SETTINGS}).encode("utf-8"))
+            return
+
+        if req_path.endswith("/api/admin/db/setup") or req_path == "/admin/db/setup":
+            self.send_response(200)
+            self.send_cors_headers("application/json; charset=utf-8")
+            try:
+                data = json.loads(body)
+                conn_str = data.get("database_url", "").strip()
+                if conn_str:
+                    os.environ["DATABASE_URL"] = conn_str
+                    os.environ["NEON_DATABASE_URL"] = conn_str
+                    if neon_db:
+                        neon_db.init_neon_tables()
+                        save_persistent_db()
+                        status = neon_db.test_neon_status()
+                        self.wfile.write(json.dumps({"success": True, "neon": status}).encode("utf-8"))
+                        return
+                self.wfile.write(json.dumps({"success": False, "message": "Database URL required."}).encode("utf-8"))
+            except Exception as e:
+                self.wfile.write(json.dumps({"success": False, "error": str(e)}).encode("utf-8"))
             return
 
         # NLP Venue Booking Parser API
