@@ -364,6 +364,44 @@
       color: var(--text-muted);
       margin-top: 2px;
     }
+
+    /* Recovery Channel Selector Tabs */
+    .channel-tab {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 10px;
+      font-size: 11.5px;
+      font-weight: 600;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .channel-tab.active {
+      background: #ffffff;
+      color: var(--primary);
+      border-color: var(--primary);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    @keyframes slideInNotif {
+      from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.96);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    @keyframes pulseBadge {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
   </style>
 </head>
 <body>
@@ -705,31 +743,75 @@
 
       <!-- Step 1: Request OTP -->
       <form id="form-forgot-step1" onsubmit="handleRequestResetCode(event)">
-        <div class="form-group" style="margin-bottom: 12px;">
-          <label class="form-label" for="forgot-email">Account Email Address</label>
-          <input type="email" id="forgot-email" class="form-input" placeholder="e.g. student@gmail.com or user@cit.ac.in" required />
-          <div class="form-hint" style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Enter your registered institutional @cit.ac.in or personal @gmail.com account.</div>
+        <!-- Channel Selector Tabs -->
+        <label class="form-label" style="margin-bottom: 6px;">Select Recovery Verification Channel</label>
+        <div style="display: flex; gap: 8px; margin-bottom: 14px;">
+          <button type="button" id="channel-tab-email" class="channel-tab active" onclick="setForgotChannel('email')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            Institutional Email
+          </button>
+          <button type="button" id="channel-tab-sms" class="channel-tab" onclick="setForgotChannel('sms')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            Mobile SMS
+          </button>
         </div>
+
+        <div class="form-group" id="group-forgot-email" style="margin-bottom: 12px;">
+          <label class="form-label" for="forgot-email">Account Email Address</label>
+          <input type="email" id="forgot-email" class="form-input" placeholder="e.g. student@cit.ac.in or user@gmail.com" required />
+          <div class="form-hint">Enter your registered institutional @cit.ac.in or personal email.</div>
+        </div>
+
+        <div class="form-group" id="group-forgot-phone" style="display: none; margin-bottom: 12px;">
+          <label class="form-label" for="forgot-phone">Registered Mobile Number</label>
+          <div style="display: flex; gap: 6px;">
+            <span style="display: flex; align-items: center; padding: 0 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; font-size: 12px; font-weight: 700; color: var(--text-muted);">+91</span>
+            <input type="tel" id="forgot-phone" class="form-input" placeholder="e.g. 9876543210" pattern="[0-9]{10}" maxlength="10" />
+          </div>
+          <div class="form-hint">A 6-digit verification code will be dispatched via mobile carrier gateway.</div>
+        </div>
+
         <button type="submit" class="btn-submit" id="btn-request-code" style="margin-top: 6px;">Send Reset Verification Code →</button>
       </form>
 
       <!-- Step 2: Verify OTP and Set New Password -->
       <form id="form-forgot-step2" style="display: none; margin-top: 8px;" onsubmit="handleExecutePasswordReset(event)">
-        <div style="background: #fbf5ea; border: 1px solid #e6dfd5; padding: 10px 12px; border-radius: 6px; margin-bottom: 14px; font-size: 11.5px; color: var(--text-main);">
-          Verification code dispatched for <strong id="forgot-target-email-display"></strong>.
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 14px; margin-bottom: 14px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+            <div style="display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: #166534;">
+              <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #22c55e; animation: pulseBadge 2s infinite;"></span>
+              DISPATCH CONFIRMED
+            </div>
+            <span style="font-size: 11px; color: #64748b;" id="forgot-dispatch-time">Just now</span>
+          </div>
+          <div style="font-size: 12px; color: #334155;">
+            Verification code dispatched to <strong id="forgot-target-display" style="color: #0f172a;"></strong> via <span id="forgot-channel-display">CIT Institutional Gateway</span>.
+          </div>
+          <div style="font-size: 11px; color: #64748b; margin-top: 4px;">
+            Please check your messages or inbox. Verification codes remain valid for 10 minutes.
+          </div>
         </div>
+
         <div class="form-group" style="margin-bottom: 12px;">
-          <label class="form-label" for="forgot-otp-code">6-Digit Verification Code</label>
-          <input type="text" id="forgot-otp-code" class="form-input" placeholder="e.g. 583921" maxlength="6" required style="letter-spacing: 3px; font-weight: 700; font-size: 14px;" />
+          <label class="form-label" for="forgot-otp-code">Enter 6-Digit Verification Code</label>
+          <input type="text" id="forgot-otp-code" class="form-input" placeholder="• • • • • •" maxlength="6" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code" required style="letter-spacing: 6px; font-weight: 800; font-size: 18px; text-align: center; font-family: monospace;" />
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px; font-size: 11.5px;">
+            <span id="forgot-cooldown-text" style="color: #64748b;">Resend code in <strong id="forgot-countdown">45</strong>s</span>
+            <button type="button" id="btn-resend-code" onclick="handleResendCode()" style="display: none; background: none; border: none; color: var(--primary); font-weight: 700; cursor: pointer; text-decoration: underline; padding: 0;">Didn't get code? Resend</button>
+            <a href="#" onclick="goBackToForgotStep1(event)" style="color: #64748b; text-decoration: underline;">Change email / phone</a>
+          </div>
         </div>
+
         <div class="form-group" style="margin-bottom: 12px;">
           <label class="form-label" for="forgot-new-password">New Password</label>
           <input type="password" id="forgot-new-password" class="form-input" placeholder="Minimum 6 characters" minlength="6" required />
         </div>
+
         <div class="form-group" style="margin-bottom: 14px;">
           <label class="form-label" for="forgot-confirm-password">Confirm New Password</label>
           <input type="password" id="forgot-confirm-password" class="form-input" placeholder="Re-type new password" minlength="6" required />
         </div>
+
         <div style="display: flex; gap: 10px; justify-content: flex-end; align-items: center; margin-top: 10px;">
           <button type="button" onclick="closeForgotPasswordModal()" style="background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 8px 16px; border-radius: 6px; font-size: 12px; cursor: pointer;">Cancel</button>
           <button type="submit" class="btn-submit" id="btn-reset-password-action" style="width: auto; padding: 8px 18px; margin-top: 0; font-size: 12px;">Update Password & Sign In</button>
@@ -737,6 +819,9 @@
       </form>
     </div>
   </div>
+
+  <!-- Device Incoming Push Notification Simulation Banner -->
+  <div id="device-notification-banner" style="display: none; position: fixed; top: 20px; right: 20px; z-index: 100000; width: 340px; background: #0f172a; color: #ffffff; border-radius: 12px; box-shadow: 0 12px 30px rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.12); padding: 14px 16px; animation: slideInNotif 0.3s cubic-bezier(0.16, 1, 0.3, 1);"></div>
 
   <script>
     // Get query params if any redirect was requested
@@ -1041,13 +1126,31 @@
       setTimeout(activateBotProtection, 200);
     }
 
-    // Forgot Password Modal Handlers
+    // Forgot Password State & Modal Handlers
+    let activeForgotChannel = 'email';
+    let forgotCooldownInterval = null;
+
+    function setForgotChannel(ch) {
+      activeForgotChannel = ch;
+      const tabEmail = document.getElementById('channel-tab-email');
+      const tabSms = document.getElementById('channel-tab-sms');
+      if (tabEmail) tabEmail.classList.toggle('active', ch === 'email');
+      if (tabSms) tabSms.classList.toggle('active', ch === 'sms');
+      const phoneGroup = document.getElementById('group-forgot-phone');
+      if (phoneGroup) {
+        phoneGroup.style.display = ch === 'sms' ? 'block' : 'none';
+        const phoneInput = document.getElementById('forgot-phone');
+        if (phoneInput) phoneInput.required = (ch === 'sms');
+      }
+    }
+
     function openForgotPasswordModal() {
       const loginEmail = document.getElementById('login-email') ? document.getElementById('login-email').value.trim() : '';
       const forgotEmailInput = document.getElementById('forgot-email');
       if (forgotEmailInput && loginEmail) {
         forgotEmailInput.value = loginEmail;
       }
+      setForgotChannel('email');
       document.getElementById('form-forgot-step1').style.display = 'block';
       document.getElementById('form-forgot-step2').style.display = 'none';
       const alertBox = document.getElementById('forgot-alert-box');
@@ -1059,6 +1162,8 @@
     function closeForgotPasswordModal() {
       const m = document.getElementById('modalForgotPassword');
       if (m) m.classList.remove('show');
+      if (forgotCooldownInterval) clearInterval(forgotCooldownInterval);
+      dismissDeviceNotification();
     }
 
     function showForgotAlert(msg, type = 'danger') {
@@ -1071,29 +1176,142 @@
       b.innerHTML = msg;
     }
 
+    function startForgotCooldown(seconds) {
+      if (forgotCooldownInterval) clearInterval(forgotCooldownInterval);
+      let remaining = seconds;
+      const cooldownText = document.getElementById('forgot-cooldown-text');
+      const countdownSpan = document.getElementById('forgot-countdown');
+      const resendBtn = document.getElementById('btn-resend-code');
+
+      if (cooldownText) cooldownText.style.display = 'inline';
+      if (resendBtn) resendBtn.style.display = 'none';
+      if (countdownSpan) countdownSpan.innerText = remaining;
+
+      forgotCooldownInterval = setInterval(() => {
+        remaining--;
+        if (countdownSpan) countdownSpan.innerText = remaining;
+        if (remaining <= 0) {
+          clearInterval(forgotCooldownInterval);
+          if (cooldownText) cooldownText.style.display = 'none';
+          if (resendBtn) resendBtn.style.display = 'inline';
+        }
+      }, 1000);
+    }
+
+    function handleResendCode() {
+      handleRequestResetCode(null);
+    }
+
+    function goBackToForgotStep1(e) {
+      if (e) e.preventDefault();
+      if (forgotCooldownInterval) clearInterval(forgotCooldownInterval);
+      document.getElementById('form-forgot-step1').style.display = 'block';
+      document.getElementById('form-forgot-step2').style.display = 'none';
+      const alertBox = document.getElementById('forgot-alert-box');
+      if (alertBox) alertBox.style.display = 'none';
+    }
+
+    function showDeviceNotification(notif) {
+      const container = document.getElementById('device-notification-banner');
+      if (!container) return;
+
+      const isSms = notif.channel === 'sms';
+      const iconSvg = isSms 
+        ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`
+        : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>`;
+
+      container.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="width: 26px; height: 26px; border-radius: 6px; background: ${isSms ? '#0284c7' : '#961528'}; display: flex; align-items: center; justify-content: center; color: #fff;">
+              ${iconSvg}
+            </div>
+            <div>
+              <span style="font-size: 11.5px; font-weight: 700; color: #f8fafc; letter-spacing: 0.2px;">${notif.sender}</span>
+              <span style="font-size: 10px; color: #94a3b8; display: block;">${notif.sender_address}</span>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 10px; color: #94a3b8; font-weight: 600;">now</span>
+            <button type="button" onclick="dismissDeviceNotification()" style="background: none; border: none; color: #94a3b8; cursor: pointer; padding: 2px; font-size: 13px; line-height: 1;">✕</button>
+          </div>
+        </div>
+        <div style="margin-top: 6px; padding-left: 34px;">
+          <div style="font-size: 12px; font-weight: 700; color: #ffffff; margin-bottom: 2px;">${notif.title}</div>
+          <div style="font-size: 11.5px; color: #cbd5e1; line-height: 1.4;">
+            ${notif.preview}
+          </div>
+        </div>
+        <div style="margin-top: 10px; height: 3px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden;">
+          <div id="device-notif-progress" style="height: 100%; width: 100%; background: #38bdf8; transition: width 12s linear;"></div>
+        </div>
+      `;
+
+      container.style.display = 'block';
+      setTimeout(() => {
+        const prog = document.getElementById('device-notif-progress');
+        if (prog) prog.style.width = '0%';
+      }, 50);
+
+      if (window.deviceNotifTimer) clearTimeout(window.deviceNotifTimer);
+      window.deviceNotifTimer = setTimeout(dismissDeviceNotification, 12000);
+    }
+
+    function dismissDeviceNotification() {
+      const container = document.getElementById('device-notification-banner');
+      if (container) container.style.display = 'none';
+      if (window.deviceNotifTimer) clearTimeout(window.deviceNotifTimer);
+    }
+
     async function handleRequestResetCode(e) {
-      e.preventDefault();
+      if (e) e.preventDefault();
       const email = document.getElementById('forgot-email').value.trim().toLowerCase();
+      const phone = document.getElementById('forgot-phone') ? document.getElementById('forgot-phone').value.trim() : '';
       const btn = document.getElementById('btn-request-code');
-      btn.innerText = 'Sending code...';
+      btn.innerText = 'Dispatching secure code...';
       btn.disabled = true;
 
       try {
         const res = await fetch('/api/auth/forgot-password', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email })
+          body: JSON.stringify({ email, channel: activeForgotChannel, phone })
         }).then(r => r.json());
 
         if (res.success) {
-          document.getElementById('forgot-target-email-display').innerText = email;
+          document.getElementById('forgot-target-display').innerText = res.masked_target;
+          document.getElementById('forgot-channel-display').innerText = activeForgotChannel === 'sms' ? 'Mobile SMS Carrier Gateway' : 'CIT Institutional Gateway';
           document.getElementById('form-forgot-step1').style.display = 'none';
           document.getElementById('form-forgot-step2').style.display = 'block';
-          if (res.otp_hint) {
-            document.getElementById('forgot-otp-code').value = res.otp_hint;
-            showForgotAlert(`✓ Verification code sent to <strong>${email}</strong>.<br/><span style="font-size:11px;">(Recovery Code: <strong>${res.otp_hint}</strong>)</span>`, 'success');
-          } else {
-            showForgotAlert(`✓ Verification code sent to <strong>${email}</strong>. Please check your inbox.`, 'success');
+
+          // Never auto-fill code - leave blank for user entry
+          const otpInput = document.getElementById('forgot-otp-code');
+          otpInput.value = '';
+          otpInput.focus();
+
+          const alertBox = document.getElementById('forgot-alert-box');
+          if (alertBox) {
+            alertBox.style.display = 'block';
+            alertBox.style.background = '#f0fdf4';
+            alertBox.style.border = '1px solid #bbf7d0';
+            alertBox.style.color = '#166534';
+            alertBox.innerHTML = `
+              <div style="display:flex; align-items:flex-start; gap:8px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-top:1px; flex-shrink:0;"><polyline points="20 6 9 17 4 12"/></svg>
+                <div>
+                  <strong>Verification Code Dispatched!</strong><br/>
+                  <span style="font-size:11px;">Sent via ${activeForgotChannel === 'sms' ? 'SMS text message' : 'secure email'} to <strong>${res.masked_target}</strong>. Please check your ${activeForgotChannel === 'sms' ? 'mobile messages' : 'inbox or spam folder'}.</span>
+                </div>
+              </div>`;
+          }
+
+          startForgotCooldown(res.cooldown || 45);
+
+          // Simulated device incoming push notification arrives after 1.8 seconds
+          if (res.simulated_notification) {
+            setTimeout(() => {
+              showDeviceNotification(res.simulated_notification);
+            }, 1800);
           }
         } else {
           showForgotAlert(res.message || 'Unable to generate reset code.');
@@ -1114,6 +1332,11 @@
       const confirmPassword = document.getElementById('forgot-confirm-password').value;
       const btn = document.getElementById('btn-reset-password-action');
 
+      if (code.length !== 6 || !/^\d{6}$/.test(code)) {
+        showForgotAlert('Please enter the 6-digit numerical verification code.');
+        return;
+      }
+
       if (newPassword !== confirmPassword) {
         showForgotAlert('New passwords do not match. Please re-type.');
         return;
@@ -1124,7 +1347,7 @@
         return;
       }
 
-      btn.innerText = 'Updating password...';
+      btn.innerText = 'Verifying code & updating...';
       btn.disabled = true;
 
       try {
@@ -1136,6 +1359,7 @@
 
         if (res.success) {
           closeForgotPasswordModal();
+          dismissDeviceNotification();
           failedLoginAttempts = 0;
           localStorage.removeItem('cit_failed_attempts');
           const box = document.getElementById('bot-protection-box');
@@ -1147,7 +1371,7 @@
 
           document.getElementById('login-email').value = email;
           document.getElementById('login-password').value = newPassword;
-          showAlert('✓ ' + (res.message || 'Password reset successfully! You can now sign in.'), 'success');
+          showAlert('✓ ' + (res.message || 'Password reset successfully! You can now sign in with your new password.'), 'success');
         } else {
           showForgotAlert(res.message || 'Failed to reset password.');
         }

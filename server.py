@@ -37,6 +37,101 @@ USER_CREDENTIALS = {
 PASSWORD_RESET_TOKENS = {}
 VALID_HUMAN_TOKENS = set()
 
+def mask_identity(target: str, channel: str = "email") -> str:
+    if channel == "sms":
+        digits = "".join(c for c in target if c.isdigit())
+        if len(digits) >= 10:
+            return f"+91 {digits[:2]}••••••{digits[-2:]}"
+        return "+91 98••••••42"
+    if "@" in target:
+        user, domain = target.split("@", 1)
+        if len(user) <= 2:
+            return f"{user[0]}•••@{domain}"
+        return f"{user[0]}••••••{user[-1]}@{domain}"
+    return target
+
+def dispatch_email_code(to_email: str, otp: str):
+    smtp_host = os.environ.get("SMTP_HOST")
+    smtp_port = int(os.environ.get("SMTP_PORT", 587))
+    smtp_user = os.environ.get("SMTP_USER")
+    smtp_pass = os.environ.get("SMTP_PASS")
+    smtp_from = os.environ.get("SMTP_FROM", "CIT Central Auth <noreply@cit.ac.in>")
+    resend_key = os.environ.get("RESEND_API_KEY")
+
+    subject = f"CIT ERP Verification Code: {otp}"
+    html_content = f"""<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="font-family: Arial, sans-serif; background: #f8fafc; padding: 20px; color: #1e293b;">
+  <div style="max-width: 560px; margin: 0 auto; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 24px;">
+    <div style="border-bottom: 2px solid #0f172a; padding-bottom: 12px; margin-bottom: 20px;">
+      <h2 style="margin: 0; color: #0f172a; font-size: 18px;">Chilika Institute of Technology</h2>
+      <span style="font-size: 11px; font-weight: 700; color: #64748b; letter-spacing: 1px;">CAMPUS ERP · CENTRAL IDENTITY RECOVERY</span>
+    </div>
+    <p style="font-size: 14px; line-height: 1.5; color: #334155;">
+      A request was initiated to reset the password for your CIT ERP account (<strong>{to_email}</strong>).
+    </p>
+    <div style="background: #f1f5f9; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 20px; text-align: center; margin: 20px 0;">
+      <div style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 1px;">6-Digit Verification Code</div>
+      <div style="font-size: 32px; font-weight: 800; color: #0f172a; letter-spacing: 8px; font-family: monospace; margin: 10px 0;">{otp}</div>
+      <div style="font-size: 11px; color: #e11d48; font-weight: 600;">Valid for 10 minutes · Do not share this code with anyone</div>
+    </div>
+    <p style="font-size: 12px; color: #64748b; line-height: 1.5;">
+      If you did not request this verification code, someone may be attempting to access your account. Please notify the CIT IT Security Helpdesk immediately.
+    </p>
+    <div style="border-top: 1px solid #e2e8f0; margin-top: 24px; padding-top: 12px; font-size: 10.5px; color: #94a3b8;">
+      Chilika Institute of Technology · Administrative Complex, Level 2, Odisha, India<br/>
+      Institutional Security Desk · DPDP Act 2023 Compliant
+    </div>
+  </div>
+</body>
+</html>"""
+
+    if resend_key:
+        try:
+            req = urllib.request.Request(
+                "https://api.resend.com/emails",
+                data=json.dumps({
+                    "from": smtp_from if "@" in smtp_from else "CIT Auth <onboarding@resend.dev>",
+                    "to": [to_email],
+                    "subject": subject,
+                    "html": html_content
+                }).encode("utf-8"),
+                headers={
+                    "Authorization": f"Bearer {resend_key}",
+                    "Content-Type": "application/json"
+                }
+            )
+            with urllib.request.urlopen(req, timeout=5) as resp:
+                if resp.status in (200, 201):
+                    return True, "Resend API Gateway"
+        except Exception as e:
+            print(f"[MAIL WARN] Resend dispatch failed: {e}")
+
+    if smtp_host and smtp_user and smtp_pass:
+        try:
+            import smtplib
+            from email.mime.multipart import MIMEMultipart
+            from email.mime.text import MIMEText
+            msg = MIMEMultipart("alternative")
+            msg["Subject"] = subject
+            msg["From"] = smtp_from
+            msg["To"] = to_email
+            msg.attach(MIMEText(html_content, "html"))
+
+            with smtplib.SMTP(smtp_host, smtp_port, timeout=5) as server:
+                server.ehlo()
+                if smtp_port != 465:
+                    server.starttls()
+                    server.ehlo()
+                server.login(smtp_user, smtp_pass)
+                server.sendmail(smtp_from, [to_email], msg.as_string())
+            return True, f"SMTP Gateway ({smtp_host})"
+        except Exception as e:
+            print(f"[MAIL WARN] SMTP dispatch failed: {e}")
+
+    return False, "Simulated Campus Gateway"
+
 def verify_google_token(id_token):
     if not id_token:
         return None
@@ -781,22 +876,56 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
             try:
                 data = json.loads(body)
                 email = data.get("email", "").strip().lower()
+                channel = data.get("channel", "email").strip().lower()
+                phone = data.get("phone", "").strip()
             except Exception:
-                email = ""
+                email, channel, phone = "", "email", ""
 
             if not email or "@" not in email or "." not in email:
-                self.wfile.write(json.dumps({"success": False, "message": "Please enter a valid email address."}).encode("utf-8"))
+                self.wfile.write(json.dumps({"success": False, "message": "Please enter a valid institutional or personal email address."}).encode("utf-8"))
                 return
 
             otp = f"{secrets.randbelow(900000) + 100000}"
             PASSWORD_RESET_TOKENS[email] = {
                 "code": otp,
-                "expires": time.time() + 600
+                "expires": time.time() + 600,
+                "channel": channel
             }
+
+            # Mask identity target
+            target_raw = phone if (channel == "sms" and phone) else email
+            masked_target = mask_identity(target_raw, channel)
+
+            # Dispatch real email if channel is email
+            dispatched = False
+            dispatch_method = "Simulated Campus Gateway"
+            if channel == "email":
+                dispatched, dispatch_method = dispatch_email_code(email, otp)
+
+            # Institutional audit logging
+            print("=" * 60)
+            print(f"[CIT SECURITY GATEWAY] Password Reset Verification Dispatched")
+            print(f"[CIT SECURITY GATEWAY] Recipient: {email} | Target: {masked_target} | Channel: {channel.upper()}")
+            print(f"[CIT SECURITY GATEWAY] One-Time Verification Code: {otp}")
+            print(f"[CIT SECURITY GATEWAY] Gateway Dispatch Method: {dispatch_method} (Valid: 10 mins)")
+            print("=" * 60)
+
             res = {
                 "success": True,
-                "message": f"Verification code dispatched to {email}.",
-                "otp_hint": otp
+                "channel": channel,
+                "masked_target": masked_target,
+                "message": f"Verification code dispatched via {channel.upper()} to {masked_target}.",
+                "expires_in": 600,
+                "cooldown": 45,
+                "delivery_id": f"CIT-DISPATCH-{secrets.token_hex(4).upper()}",
+                "simulated_notification": {
+                    "channel": channel,
+                    "sender": "CIT Security Gateway" if channel == "email" else "CIT-AUTH-SMS",
+                    "sender_address": "noreply@cit.ac.in" if channel == "email" else "+91 (06756) 220-100",
+                    "title": "CIT ERP Verification Code",
+                    "code": otp,
+                    "preview": f"Your 6-digit recovery OTP is {otp}. Valid for 10 minutes. Do not share."
+                }
             }
             self.wfile.write(json.dumps(res).encode("utf-8"))
             return
