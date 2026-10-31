@@ -9,6 +9,7 @@
       location.replace('https://' + location.host + location.pathname + location.search + location.hash);
     }
   </script>
+  <script src="/cookie-consent.js" defer></script>
   <title>Admin Portal Sign In — Chilika Institute of Technology</title>
   <link rel="preload" as="image" href="/assets/admin_login_left.webp" type="image/webp" fetchpriority="high" />
   <style>
@@ -568,6 +569,8 @@
             <a href="/terms" style="color: var(--maroon-primary); text-decoration: underline; font-weight: 700;">Terms & Conditions</a>
             <span>·</span>
             <a href="/support" style="color: var(--maroon-primary); text-decoration: underline; font-weight: 700;">Support Desk</a>
+            <span>·</span>
+            <a href="javascript:void(0)" onclick="if(window.CITCookies)window.CITCookies.openPreferences()" style="color: var(--maroon-primary); text-decoration: underline; font-weight: 700;">Cookie Preferences</a>
             <span>·</span>
             <a href="/login" style="color: var(--text-muted); text-decoration: none;">Student Portal</a>
           </div>

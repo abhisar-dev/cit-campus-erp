@@ -9,6 +9,7 @@
       location.replace('https://' + location.host + location.pathname + location.search + location.hash);
     }
   </script>
+  <script src="/cookie-consent.js" defer></script>
   <title>CIT Campus Portal — Academic Timetable & Venue Services</title>
   <style>
     *, *::before, *::after {
@@ -1212,6 +1213,8 @@
       <a href="/terms" style="color: var(--primary); text-decoration: none; font-weight: 700;">Terms & Conditions</a>
       <span>·</span>
       <a href="/support" style="color: var(--primary); text-decoration: none; font-weight: 700;">Support Desk</a>
+      <span>·</span>
+      <a href="javascript:void(0)" onclick="if(window.CITCookies)window.CITCookies.openPreferences()" style="color: var(--primary); text-decoration: none; font-weight: 700;">Cookie Preferences</a>
       <span>·</span>
       <a href="/login" style="color: var(--text-muted); text-decoration: none;">Sign In</a>
       <span>·</span>

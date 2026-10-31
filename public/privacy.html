@@ -9,6 +9,7 @@
       location.replace('https://' + location.host + location.pathname + location.search + location.hash);
     }
   </script>
+  <script src="/cookie-consent.js" defer></script>
   <title>Privacy Policy — Chilika Institute of Technology (CIT) Campus ERP</title>
   <meta name="description" content="Official Institutional Privacy Policy & Academic Data Protection Guidelines for the CIT Campus ERP and Academic Scheduling Platform." />
   <link rel="icon" type="image/svg+xml" href="/public/favicon.svg" />
@@ -866,6 +867,7 @@
         <a href="/login">Portal Login</a>
         <a href="/privacy" style="color: var(--primary); font-weight: 800;">Privacy Policy</a>
         <a href="/terms" style="color: var(--text-muted); font-weight: 600;">Terms & Conditions</a>
+        <a href="javascript:void(0)" onclick="if(window.CITCookies)window.CITCookies.openPreferences()" style="color: var(--text-muted); font-weight: 600;">Cookie Settings</a>
         <a href="/admin/login">Admin Terminal</a>
       </div>
     </div>

@@ -9,6 +9,7 @@
       location.replace('https://' + location.host + location.pathname + location.search + location.hash);
     }
   </script>
+  <script src="/cookie-consent.js" defer></script>
   <title>Support & Help Center — Chilika Institute of Technology (CIT)</title>
   <meta name="description" content="Official technical support, incident reporting, timetable grievance resolution, and campus assistance for Chilika Institute of Technology." />
   <link rel="icon" type="image/svg+xml" href="/public/favicon.svg" />
@@ -956,6 +957,8 @@
         <a href="/privacy">Privacy Policy</a>
         <span>·</span>
         <a href="/terms">Terms & Conditions</a>
+        <span>·</span>
+        <a href="javascript:void(0)" onclick="if(window.CITCookies)window.CITCookies.openPreferences()">Cookie Settings</a>
         <span>·</span>
         <a href="/admin/login">Admin Clearance</a>
       </div>

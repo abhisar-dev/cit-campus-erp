@@ -9,6 +9,7 @@
       location.replace('https://' + location.host + location.pathname + location.search + location.hash);
     }
   </script>
+  <script src="/cookie-consent.js" defer></script>
   <title>CIT Academic Operations — Admin Command Terminal</title>
   <style>
     *, *::before, *::after {
@@ -601,6 +602,12 @@
           <a href="/terms" class="admin-tab" style="text-decoration: none;" target="_blank">
             <span>Terms & Conditions</span>
             <span class="mono" style="font-size: 10px; color: var(--gold-dark); font-weight: 700;">Code ↗</span>
+          </a>
+        </li>
+        <li>
+          <a href="javascript:void(0)" onclick="if(window.CITCookies)window.CITCookies.openPreferences()" class="admin-tab" style="text-decoration: none;">
+            <span>Cookie Settings</span>
+            <span class="mono" style="font-size: 10px; color: var(--gold-dark); font-weight: 700;">Privacy ⚙</span>
           </a>
         </li>
         <li>
