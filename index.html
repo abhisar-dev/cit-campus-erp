@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Chilika Institute of Technology — University ERP</title>
+  <title>Chilika Institute of Technology — Campus Scheduling & Venue Portal</title>
   <style>
     /*
-     * ChronoCIT — University ERP Time Table
-     * Faithful recreation of authentic Indian University ERP layout (Invertis / TCS iON)
-     * Clean, simple, spacious, and readable.
+     * Chilika Institute of Technology (CIT)
+     * Campus Scheduling & Venue Management Portal
+     * Clean, functional, authentic university academic layout
      */
 
     *, *::before, *::after {
@@ -18,15 +18,18 @@
     }
 
     :root {
-      --orange-ribbon: #ea580c;
-      --teal-banner: #0d9488;
-      --header-blue: #0284c7;
-      --header-blue-dark: #0369a1;
-      --bg-page: #ffffff;
+      --ticker-bg: #c2410c;
+      --ticker-dark: #9a3412;
+      --header-bg: #ffffff;
+      --primary-blue: #0284c7;
+      --primary-dark: #0369a1;
+      --teal-banner: #0f766e;
+      --bg-page: #f8fafc;
       --grid-border: #cbd5e1;
       --text-main: #0f172a;
       --text-muted: #64748b;
-      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --font-mono: ui-monospace, Menlo, Consolas, monospace;
     }
 
     body {
@@ -34,15 +37,19 @@
       color: var(--text-main);
       font-family: var(--font-sans);
       font-size: 13px;
-      line-height: 1.4;
+      line-height: 1.45;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
     }
 
-    /* 1. TOP ANNOUNCEMENT TICKER */
-    .top-ribbon {
-      background: var(--orange-ribbon);
+    .mono {
+      font-family: var(--font-mono);
+    }
+
+    /* 1. TOP ANNOUNCEMENT MARQUEE */
+    .top-marquee-strip {
+      background: var(--ticker-bg);
       color: #ffffff;
       height: 32px;
       display: flex;
@@ -52,40 +59,43 @@
       font-weight: 500;
     }
 
-    .ribbon-tag {
-      background: #c2410c;
-      padding: 0 14px;
+    .marquee-label {
+      background: var(--ticker-dark);
+      padding: 0 16px;
       height: 100%;
       display: flex;
       align-items: center;
       font-weight: 700;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
       white-space: nowrap;
       z-index: 2;
     }
 
-    .marquee-container {
+    .marquee-track {
       flex: 1;
       overflow: hidden;
       white-space: nowrap;
     }
 
-    .marquee-text {
+    .marquee-content {
       display: inline-block;
       padding-left: 100%;
-      animation: marquee-anim 26s linear infinite;
+      animation: ticker 25s linear infinite;
     }
 
-    .marquee-container:hover .marquee-text {
+    .marquee-track:hover .marquee-content {
       animation-play-state: paused;
     }
 
-    @keyframes marquee-anim {
+    @keyframes ticker {
       0% { transform: translateX(0); }
       100% { transform: translateX(-100%); }
     }
 
-    .user-tag {
-      background: #c2410c;
+    .role-indicator {
+      background: var(--ticker-dark);
       padding: 0 16px;
       height: 100%;
       display: flex;
@@ -96,7 +106,7 @@
       z-index: 2;
     }
 
-    /* 2. UNIVERSITY HEADER */
+    /* 2. CIT BRAND HEADER */
     .header-bar {
       background: #ffffff;
       border-bottom: 2px solid #e2e8f0;
@@ -104,93 +114,121 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 16px;
     }
 
-    .logo-area {
+    .brand-group {
       display: flex;
       align-items: center;
       gap: 12px;
     }
 
-    .logo-badge {
+    .brand-seal {
       width: 40px;
       height: 40px;
       border-radius: 6px;
-      background: #0284c7;
+      background: linear-gradient(135deg, #0369a1, #0284c7);
       color: #ffffff;
       font-weight: 800;
       font-size: 15px;
       display: flex;
       align-items: center;
       justify-content: center;
+      box-shadow: 0 2px 4px rgba(2, 132, 199, 0.2);
     }
 
-    .logo-text h1 {
+    .brand-titles h1 {
       font-size: 16px;
       font-weight: 800;
       color: #0369a1;
       letter-spacing: -0.3px;
     }
 
-    .logo-text p {
+    .brand-titles p {
       font-size: 11px;
       color: #64748b;
     }
 
-    /* Curved Blue Module Tabs */
-    .nav-pills {
+    /* Curved Header Module Tabs */
+    .header-tabs {
       display: flex;
       align-items: flex-end;
       gap: 3px;
     }
 
-    .nav-pill {
+    .tab-pill {
       background: #0284c7;
       color: #ffffff;
       border: none;
-      padding: 7px 14px;
+      padding: 7px 15px;
       border-top-left-radius: 6px;
       border-top-right-radius: 6px;
       font-size: 12px;
       font-weight: 600;
       cursor: pointer;
       white-space: nowrap;
+      transition: background 0.15s ease;
     }
 
-    .nav-pill.active {
+    .tab-pill:hover {
+      background: #0369a1;
+    }
+
+    .tab-pill.active {
       background: #0369a1;
       border-bottom: 2px solid #38bdf8;
     }
 
-    .user-avatar {
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      background: #e2e8f0;
-      border: 2px solid #0284c7;
+    .header-role-box {
       display: flex;
       align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      color: #0369a1;
-      font-size: 12px;
+      gap: 10px;
     }
 
-    /* 3. TIME TABLE TEAL STRIP */
-    .section-banner {
+    .role-select {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      color: #0369a1;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      outline: none;
+      cursor: pointer;
+    }
+
+    /* 3. SECTION SUB-BAR */
+    .section-bar {
       background: var(--teal-banner);
       color: #ffffff;
-      padding: 6px 24px;
-      font-size: 14px;
+      padding: 7px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
       font-weight: 700;
-      letter-spacing: 0.2px;
     }
 
-    /* 4. CALENDAR CONTROLS & LEGEND STRIP */
-    .controls-bar {
+    .btn-reset-state {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #ffffff;
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-reset-state:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    /* 4. CALENDAR FILTER & LEGEND TOOLBAR */
+    .calendar-toolbar {
       background: #ffffff;
       border-bottom: 1px solid #cbd5e1;
-      padding: 10px 24px;
+      padding: 8px 24px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -199,16 +237,16 @@
       font-size: 12px;
     }
 
-    .controls-left {
+    .filter-cluster {
       display: flex;
       align-items: center;
       gap: 10px;
     }
 
-    .drop-select {
+    .dropdown {
       background: #ffffff;
       border: 1px solid #cbd5e1;
-      padding: 4px 10px;
+      padding: 5px 10px;
       border-radius: 4px;
       font-size: 12px;
       font-weight: 600;
@@ -216,7 +254,7 @@
       outline: none;
     }
 
-    .legend-area {
+    .legend-row {
       display: flex;
       align-items: center;
       gap: 16px;
@@ -224,81 +262,49 @@
       color: #475569;
     }
 
-    .legend-item {
+    .legend-badge {
       display: flex;
       align-items: center;
       gap: 6px;
     }
 
-    .legend-box {
-      width: 14px;
-      height: 14px;
+    .legend-color {
+      width: 12px;
+      height: 12px;
       border-radius: 2px;
     }
 
-    .nav-arrows {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .arrow-btn {
+    .btn-today {
       background: #ffffff;
       border: 1px solid #cbd5e1;
-      padding: 3px 10px;
+      padding: 4px 10px;
       border-radius: 4px;
       font-size: 11px;
       font-weight: 600;
       cursor: pointer;
     }
 
-    .arrow-btn:hover {
-      background: #f1f5f9;
-    }
-
-    .view-toggle {
-      display: inline-flex;
-      border: 1px solid #cbd5e1;
-      border-radius: 4px;
-      overflow: hidden;
-    }
-
-    .view-btn {
-      background: #ffffff;
-      border: none;
-      padding: 4px 12px;
-      font-size: 11px;
-      font-weight: 600;
-      color: #475569;
-      cursor: pointer;
-    }
-
-    .view-btn.active {
-      background: #ea580c;
-      color: #ffffff;
-    }
-
-    /* 5. TIMETABLE GRID TABLE */
-    .grid-container {
+    /* 5. WORKSPACE CONTAINER */
+    .workspace-container {
       padding: 16px 24px;
       flex: 1;
       overflow-x: auto;
     }
 
-    table.calendar-grid {
+    /* TIMETABLE GRID TABLE */
+    table.timetable-matrix {
       width: 100%;
       border-collapse: collapse;
       border: 1px solid var(--grid-border);
       background: #ffffff;
     }
 
-    table.calendar-grid th, table.calendar-grid td {
+    table.timetable-matrix th, table.timetable-matrix td {
       border: 1px solid var(--grid-border);
       padding: 6px;
     }
 
-    /* Day Headers (Dark Slate Blue) */
-    table.calendar-grid th {
+    table.timetable-matrix th {
       background: #0e7490;
       color: #ffffff;
       font-weight: 700;
@@ -308,13 +314,12 @@
       width: 13.5%;
     }
 
-    table.calendar-grid th.time-col-header {
+    table.timetable-matrix th.hour-header {
       width: 80px;
       background: #083344;
     }
 
-    /* Time Labels on Left */
-    td.time-label {
+    td.hour-label {
       background: #f8fafc;
       color: #475569;
       font-weight: 700;
@@ -324,21 +329,21 @@
       padding: 6px 4px;
     }
 
-    td.grid-cell {
+    td.class-cell {
       height: 64px;
       vertical-align: top;
       background: #ffffff;
       padding: 4px;
     }
 
-    td.grid-cell.weekend {
-      background: #fefce8; /* Soft cream weekend */
+    td.weekend-cell {
+      background: #fefce8;
     }
 
-    /* Class Cards (Matching Invertis style) */
-    .class-card {
+    /* Class Cards */
+    .session-card {
       border-radius: 4px;
-      padding: 6px 8px;
+      padding: 5px 8px;
       height: 100%;
       display: flex;
       flex-direction: column;
@@ -347,26 +352,22 @@
       line-height: 1.3;
     }
 
-    /* Grey Card (Standard Lecture) */
-    .card-grey {
+    .card-lecture {
       background: #94a3b8;
       color: #ffffff;
     }
 
-    /* Orange Card (Core Lecture / Focus) */
-    .card-orange {
-      background: #f97316;
+    .card-core {
+      background: #ea580c;
       color: #ffffff;
     }
 
-    /* Purple Card (3-Hour Lab) */
-    .card-purple {
-      background: #8b5cf6;
+    .card-lab {
+      background: #7c3aed;
       color: #ffffff;
     }
 
-    /* Red Card (Rescheduled Class) */
-    .card-rescheduled {
+    .card-rerouted {
       background: #b91c1c;
       color: #ffffff;
     }
@@ -377,15 +378,56 @@
       opacity: 0.95;
     }
 
-    .card-course {
+    .card-title {
       font-weight: 700;
       font-size: 11px;
       margin-top: 1px;
     }
 
-    .card-meta {
+    .card-subtext {
       font-size: 10px;
       opacity: 0.9;
+    }
+
+    /* Clean Content Panels for other modules */
+    .module-card {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 20px;
+    }
+
+    .module-header {
+      margin-bottom: 14px;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 10px;
+    }
+
+    .module-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .module-desc {
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 2px;
+    }
+
+    .btn-action {
+      background: #0284c7;
+      color: #ffffff;
+      border: none;
+      padding: 7px 16px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-action:hover {
+      background: #0369a1;
     }
 
     /* Footer */
@@ -410,102 +452,103 @@
       border-radius: 4px;
       font-size: 12px;
       display: none;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
       z-index: 100;
     }
   </style>
 </head>
 <body>
 
-  <!-- 1. MOVING ANNOUNCEMENT TICKER -->
-  <div class="top-ribbon">
-    <div class="ribbon-tag">Announcement</div>
-    <div class="marquee-container">
-      <span class="marquee-text">
-        📢 Check timetable: Week 7 Spectra Fest venue allocations are active · 📢 Midsem Exam Schedule: Seating capacity halved for all venues · 📢 Facility Update: Room CR-102 maintenance in progress; all classes relocated with zero time changes.
+  <!-- 1. TOP ANNOUNCEMENT MARQUEE -->
+  <div class="top-marquee-strip">
+    <div class="marquee-label">Announcement</div>
+    <div class="marquee-track">
+      <span class="marquee-content">
+        📢 CIT Week 7 Notice: Spectra Tech Fest venue allocations active under Dean's Office priority rules. · 📢 Midsem Examinations: All venue capacities halved for seating spacing. · 📢 Infrastructure: Room CR-102 maintenance in progress; all classes relocated with zero time shifts.
       </span>
     </div>
-    <div class="user-tag">SUBHAJIT DAS</div>
+    <div class="role-indicator" id="role-indicator">
+      ROLE: ADMIN (DEAN'S OFFICE)
+    </div>
   </div>
 
-  <!-- 2. UNIVERSITY HEADER -->
+  <!-- 2. CIT BRAND HEADER -->
   <header class="header-bar">
-    <div class="logo-area">
-      <div class="logo-badge">CIT</div>
-      <div class="logo-text">
+    <div class="brand-group">
+      <div class="brand-seal">CIT</div>
+      <div class="brand-titles">
         <h1>CHILIKA INSTITUTE OF TECHNOLOGY</h1>
-        <p>Campus ERP · Academic Timetable & Venue Portal</p>
+        <p>Academic Timetable & Venue Operations Portal</p>
       </div>
     </div>
 
-    <!-- Blue Curved Module Tabs -->
-    <div class="nav-pills">
-      <button class="nav-pill active" onclick="switchTab('timetable')">Time Table</button>
-      <button class="nav-pill" onclick="switchTab('fest')">Spectra Week 7</button>
-      <button class="nav-pill" onclick="switchTab('ai')">Venue AI Parser</button>
-      <button class="nav-pill" onclick="switchTab('disruption')">Disruption Resolver</button>
-      <button class="nav-pill" onclick="switchTab('exams')">Midsem Exams</button>
-      <button class="nav-pill" onclick="switchTab('audit')">Validator Audit</button>
+    <!-- Navigation Tabs -->
+    <div class="header-tabs">
+      <button class="tab-pill active" onclick="switchTab('timetable')">Time Table</button>
+      <button class="tab-pill" onclick="switchTab('fest')">Spectra Week 7</button>
+      <button class="tab-pill" onclick="switchTab('ai')">Venue AI Assistant</button>
+      <button class="tab-pill" onclick="switchTab('disruption')">Disruption Center</button>
+      <button class="tab-pill" onclick="switchTab('exams')">Midsem Exams</button>
+      <button class="tab-pill" onclick="switchTab('audit')">Validator Audit</button>
     </div>
 
-    <div class="user-avatar">SD</div>
+    <!-- Role Switcher -->
+    <div class="header-role-box">
+      <select class="role-select" onchange="changeRole(this.value)">
+        <option value="admin">Dean's Office (Admin)</option>
+        <option value="coordinator">Department Coordinator</option>
+        <option value="faculty">Faculty Member</option>
+        <option value="club">Club Representative</option>
+      </select>
+    </div>
   </header>
 
-  <!-- 3. TIME TABLE TEAL BANNER -->
-  <div class="section-banner" id="banner-title">
-    Time Table
+  <!-- 3. SECTION SUB-BAR -->
+  <div class="section-bar">
+    <span id="section-title">Master Semester Timetable</span>
+    <button class="btn-reset-state" onclick="resetDemo()">↺ Reset Demo Data</button>
   </div>
 
-  <!-- 4. CONTROLS & LEGEND BAR -->
-  <div class="controls-bar" id="controls-bar">
-    <div class="controls-left">
-      <select class="drop-select" id="section-select" onchange="changeFilter(this.value)">
-        <!-- Sections populated dynamically -->
+  <!-- 4. CALENDAR FILTER & LEGEND TOOLBAR -->
+  <div class="calendar-toolbar" id="toolbar">
+    <div class="filter-cluster">
+      <select class="dropdown" id="cohort-select" onchange="changeCohort(this.value)">
+        <!-- Populated via JS -->
       </select>
 
-      <div class="nav-arrows">
-        <button class="arrow-btn" onclick="showToast('Showing Week 7 schedule')">&lt;</button>
-        <button class="arrow-btn" onclick="showToast('Showing Week 7 schedule')">&gt;</button>
-        <button class="arrow-btn" onclick="showToast('Viewing current teaching week')">Today</button>
-      </div>
-
+      <button class="btn-today" onclick="showToast('Viewing Week 7 teaching schedule')">Today</button>
       <strong style="margin-left: 6px; font-size: 13px;">Week 7 (Semester Schedule)</strong>
     </div>
 
-    <!-- Legend -->
-    <div class="legend-area">
-      <div class="legend-item">
-        <div class="legend-box" style="background: #94a3b8;"></div>
+    <!-- Color Legend -->
+    <div class="legend-row">
+      <div class="legend-badge">
+        <div class="legend-color" style="background: #94a3b8;"></div>
         <span>Regular Class</span>
       </div>
-      <div class="legend-item">
-        <div class="legend-box" style="background: #f97316;"></div>
+      <div class="legend-badge">
+        <div class="legend-color" style="background: #ea580c;"></div>
         <span>Tutorial / Core</span>
       </div>
-      <div class="legend-item">
-        <div class="legend-box" style="background: #8b5cf6;"></div>
+      <div class="legend-badge">
+        <div class="legend-color" style="background: #7c3aed;"></div>
         <span>3-Hour Lab</span>
       </div>
-      <div class="legend-item">
-        <div class="legend-box" style="background: #b91c1c;"></div>
+      <div class="legend-badge">
+        <div class="legend-color" style="background: #b91c1c;"></div>
         <span>Rescheduled</span>
       </div>
     </div>
-
-    <!-- View Switch (Week / Day) -->
-    <div class="view-toggle">
-      <button class="view-btn active">Week</button>
-      <button class="view-btn" onclick="showToast('Switching to day view')">Day</button>
-    </div>
   </div>
 
-  <!-- 5. MAIN CONTENT AREA -->
-  <div class="grid-container" id="content-container">
+  <!-- 5. WORKSPACE CONTAINER -->
+  <div class="workspace-container" id="workspace">
     <!-- Populated dynamically -->
   </div>
 
   <!-- FOOTER -->
   <footer>
-    <span>Chilika Institute of Technology · Academic Affairs</span>
+    <span>Chilika Institute of Technology · Department of Academic Affairs</span>
     <span>Dataset: cit-public-v1 · Certified 0 Hard Clashes</span>
   </footer>
 
@@ -516,8 +559,15 @@
     let SCHED = null;
     let SCHED_AFTER = null;
     let currentTab = 'timetable';
-    let selectedGroup = 'Y1-A';
-    let disruptionActive = false;
+    let selectedCohort = 'Y1-A';
+    let disruptionApplied = false;
+
+    const ROLES = {
+      admin: "ROLE: ADMIN (DEAN'S OFFICE)",
+      coordinator: "ROLE: DEPT COORDINATOR",
+      faculty: "ROLE: FACULTY",
+      club: "ROLE: CLUB REPRESENTATIVE"
+    };
 
     function showToast(msg) {
       const t = document.getElementById("toast");
@@ -526,30 +576,40 @@
       setTimeout(() => { t.style.display = "none"; }, 3000);
     }
 
+    function changeRole(r) {
+      document.getElementById("role-indicator").innerText = ROLES[r];
+      showToast(`Switched active role to ${ROLES[r]}`);
+    }
+
     function switchTab(t) {
       currentTab = t;
-      document.querySelectorAll(".nav-pill").forEach(p => p.classList.remove("active"));
+      document.querySelectorAll(".tab-pill").forEach(p => p.classList.remove("active"));
       event.currentTarget.classList.add("active");
 
       const titles = {
-        timetable: "Time Table",
-        fest: "Spectra Week 7 Event Requests",
-        ai: "Venue AI Booking Assistant",
-        disruption: "Emergency Disruption & Reschedule",
+        timetable: "Master Semester Timetable",
+        fest: "Spectra Tech Fest (Week 7 Venue Bookings)",
+        ai: "Venue Booking AI Assistant",
+        disruption: "Emergency Disruption & Reschedule Center",
         exams: "Midsem Examination Schedule",
         audit: "Official Validator Audit"
       };
-      document.getElementById("banner-title").innerText = titles[t] || "Time Table";
+      document.getElementById("section-title").innerText = titles[t] || "Master Timetable";
 
-      // Toggle controls bar visibility
-      const cBar = document.getElementById("controls-bar");
-      cBar.style.display = (t === 'timetable') ? 'flex' : 'none';
+      // Show toolbar only on timetable tab
+      document.getElementById("toolbar").style.display = (t === 'timetable') ? 'flex' : 'none';
 
       renderTab();
     }
 
-    function changeFilter(g) {
-      selectedGroup = g;
+    function changeCohort(c) {
+      selectedCohort = c;
+      renderTab();
+    }
+
+    function resetDemo() {
+      disruptionApplied = false;
+      showToast("Data restored to initial baseline.");
       renderTab();
     }
 
@@ -564,40 +624,39 @@
         SCHED = s;
         SCHED_AFTER = sa;
 
-        // Populate section dropdown cleanly
-        const select = document.getElementById("section-select");
+        // Populate cohort selector
+        const select = document.getElementById("cohort-select");
         select.innerHTML = DATA.student_groups.map(g => 
-          `<option value="${g.id}">Section: ${g.id} (${g.name})</option>`
+          `<option value="${g.id}">Cohort: ${g.id} (${g.name})</option>`
         ).join('');
 
         renderTab();
       } catch (e) {
-        document.getElementById("content-container").innerHTML = "<div style='color:red; padding:20px;'>API error. Ensure server.py is running.</div>";
+        document.getElementById("workspace").innerHTML = "<div style='color:red; padding:20px;'>API error. Ensure server.py is running.</div>";
       }
     }
 
     function renderTab() {
-      const container = document.getElementById("content-container");
-      const activeSched = disruptionActive ? SCHED_AFTER : SCHED;
-      if (!activeSched) return;
+      const ws = document.getElementById("workspace");
+      const currentSched = disruptionApplied ? SCHED_AFTER : SCHED;
+      if (!currentSched) return;
 
-      if (currentTab === 'timetable') renderTimetable(container, activeSched);
-      else if (currentTab === 'fest') renderFest(container, activeSched);
-      else if (currentTab === 'ai') renderAI(container);
-      else if (currentTab === 'disruption') renderDisruption(container);
-      else if (currentTab === 'exams') renderExams(container, activeSched);
-      else if (currentTab === 'audit') renderAudit(container);
+      if (currentTab === 'timetable') renderTimetable(ws, currentSched);
+      else if (currentTab === 'fest') renderFest(ws, currentSched);
+      else if (currentTab === 'ai') renderAI(ws);
+      else if (currentTab === 'disruption') renderDisruption(ws);
+      else if (currentTab === 'exams') renderExams(ws, currentSched);
+      else if (currentTab === 'audit') renderAudit(ws);
     }
 
-    // 1. TIMETABLE (FAITHFUL WEEKLY GRID)
-    function renderTimetable(container, sched) {
+    // 1. TIMETABLE VIEW
+    function renderTimetable(ws, sched) {
       const sessMap = {};
       DATA.sessions.forEach(s => { sessMap[s.id] = s; });
 
       const courseMap = {};
       DATA.courses.forEach(c => { courseMap[c.id] = c; });
 
-      // Grid [period 1..9][day]
       const grid = {};
       for (let p = 1; p <= 9; p++) {
         grid[p] = { MON: null, TUE: null, WED: null, THU: null, FRI: null };
@@ -606,31 +665,31 @@
       sched.sessions.forEach(item => {
         const s = sessMap[item.session_id];
         if (!s) return;
-        if (s.groups.includes(selectedGroup)) {
+        if (s.groups.includes(selectedCohort)) {
           for (let p = item.start_period; p < item.start_period + s.duration; p++) {
-            grid[p][item.day] = { ...s, ...item, isStart: p === item.start_period };
+            grid[p][item.day] = { ...s, ...item };
           }
         }
       });
 
       const periods = [
-        { id: 1, label: "8:00 AM", time: "08:00 - 09:00" },
-        { id: 2, label: "9:00 AM", time: "09:00 - 10:00" },
+        { id: 1, label: "08:00 AM", time: "08:00 - 09:00" },
+        { id: 2, label: "09:00 AM", time: "09:00 - 10:00" },
         { id: 3, label: "10:00 AM", time: "10:00 - 11:00" },
         { id: 4, label: "11:00 AM", time: "11:00 - 12:00" },
         { id: 5, label: "12:00 PM", time: "12:00 - 01:00" },
-        { id: 0, label: "1:00 PM", time: "13:00 - 14:00 (Lunch)" },
-        { id: 6, label: "2:00 PM", time: "14:00 - 15:00" },
-        { id: 7, label: "3:00 PM", time: "15:00 - 16:00" },
-        { id: 8, label: "4:00 PM", time: "16:00 - 17:00" },
-        { id: 9, label: "5:00 PM", time: "17:00 - 18:00" }
+        { id: 0, label: "01:00 PM", time: "13:00 - 14:00 (Lunch)" },
+        { id: 6, label: "02:00 PM", time: "14:00 - 15:00" },
+        { id: 7, label: "03:00 PM", time: "15:00 - 16:00" },
+        { id: 8, label: "04:00 PM", time: "16:00 - 17:00" },
+        { id: 9, label: "05:00 PM", time: "17:00 - 18:00" }
       ];
 
-      container.innerHTML = `
-        <table class="calendar-grid">
+      ws.innerHTML = `
+        <table class="timetable-matrix">
           <thead>
             <tr>
-              <th class="time-col-header">TIME</th>
+              <th class="hour-header">TIME</th>
               <th>MON<br><span style="font-size: 10px; font-weight: normal; opacity: 0.85;">Monday</span></th>
               <th>TUE<br><span style="font-size: 10px; font-weight: normal; opacity: 0.85;">Tuesday</span></th>
               <th>WED<br><span style="font-size: 10px; font-weight: normal; opacity: 0.85;">Wednesday</span></th>
@@ -643,12 +702,11 @@
           <tbody>
             ${periods.map(slot => {
               if (slot.id === 0) {
-                // Lunch row
                 return `
                   <tr>
-                    <td class="time-label">${slot.label}</td>
+                    <td class="hour-label">${slot.label}</td>
                     <td colspan="7" style="background: #f1f5f9; text-align: center; color: #64748b; font-weight: 700; font-size: 11px; padding: 6px;">
-                      LUNCH BREAK (13:00 - 14:00)
+                      LUNCH RECESS (13:00 - 14:00)
                     </td>
                   </tr>
                 `;
@@ -656,29 +714,29 @@
 
               return `
                 <tr>
-                  <td class="time-label">${slot.label}</td>
+                  <td class="hour-label">${slot.label}</td>
                   ${['MON', 'TUE', 'WED', 'THU', 'FRI'].map(d => {
                     const item = grid[slot.id][d];
-                    if (!item) return `<td class="grid-cell"></td>`;
+                    if (!item) return `<td class="class-cell"></td>`;
 
                     const cInfo = courseMap[item.course_id];
-                    let cardClass = 'card-grey';
-                    if (item.kind === 'tutorial' || item.basket_slot) cardClass = 'card-orange';
-                    if (item.kind === 'lab') cardClass = 'card-purple';
-                    if (disruptionActive && item.room_id === 'CR-101' && item.session_id.includes('CS101')) cardClass = 'card-rescheduled';
+                    let cardClass = 'card-lecture';
+                    if (item.kind === 'tutorial' || item.basket_slot) cardClass = 'card-core';
+                    if (item.kind === 'lab') cardClass = 'card-lab';
+                    if (disruptionApplied && item.room_id === 'CR-101' && item.session_id.includes('CS101')) cardClass = 'card-rerouted';
 
                     return `
-                      <td class="grid-cell">
-                        <div class="class-card ${cardClass}">
+                      <td class="class-cell">
+                        <div class="session-card ${cardClass}">
                           <div class="card-time">${slot.time}</div>
-                          <div class="card-course">${item.course_id} · ${cInfo ? cInfo.title : ''}</div>
-                          <div class="card-meta">Section: ${selectedGroup}, Room: ${item.room_id}</div>
+                          <div class="card-title">${item.course_id} · ${cInfo ? cInfo.title : ''}</div>
+                          <div class="card-subtext">Cohort: ${selectedCohort}, Room: ${item.room_id}</div>
                         </div>
                       </td>
                     `;
                   }).join('')}
-                  <td class="grid-cell weekend"></td>
-                  <td class="grid-cell weekend"></td>
+                  <td class="class-cell weekend-cell"></td>
+                  <td class="class-cell weekend-cell"></td>
                 </tr>
               `;
             }).join('')}
@@ -687,32 +745,32 @@
       `;
     }
 
-    // 2. SPECTRA FEST TAB (SIMPLE TABLE)
-    function renderFest(container, sched) {
-      container.innerHTML = `
-        <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 18px;">
-          <h2 style="font-size: 16px; font-weight: 700; color: #0f172a; margin-bottom: 4px;">Spectra Week 7 Venue Bookings</h2>
-          <p style="font-size: 12px; color: #64748b; margin-bottom: 16px;">
-            Processed strictly according to role priority: Exams &gt; Regular Classes &gt; Institute Events &gt; Guest Lectures &gt; Dept Events &gt; Club Events.
-          </p>
+    // 2. FEST BOOKINGS VIEW
+    function renderFest(ws, sched) {
+      ws.innerHTML = `
+        <div class="module-card">
+          <div class="module-header">
+            <div class="module-title">Spectra Week 7 Venue Bookings</div>
+            <div class="module-desc">Ordered strictly by priority: Exams &gt; Regular Classes &gt; Institute Events &gt; Guest Lectures &gt; Dept Events &gt; Club Events.</div>
+          </div>
 
-          <table class="calendar-grid" style="font-size: 12px;">
+          <table class="timetable-matrix" style="font-size: 12px;">
             <thead>
               <tr style="background: #0284c7;">
-                <th style="width: 70px;">REQ ID</th>
+                <th style="width: 75px;">REQ ID</th>
                 <th>EVENT TITLE</th>
                 <th>ORGANIZER</th>
                 <th>STATUS</th>
                 <th>ALLOCATED VENUE</th>
-                <th>REASON / DETAILS</th>
+                <th>DECISION REASON</th>
               </tr>
             </thead>
             <tbody>
               ${sched.fest_week.bookings.map(b => {
                 const req = DATA.booking_requests.find(r => r.id === b.request_id);
-                let badgeColor = '#16a34a';
-                if (b.status === 'alternative_offered') badgeColor = '#d97706';
-                if (b.status === 'rejected') badgeColor = '#dc2626';
+                let statusColor = '#16a34a';
+                if (b.status === 'alternative_offered') statusColor = '#d97706';
+                if (b.status === 'rejected') statusColor = '#dc2626';
 
                 return `
                   <tr>
@@ -720,7 +778,7 @@
                     <td style="font-weight: 600;">${req ? req.title : 'Event'}</td>
                     <td>${req ? req.requester : 'Unknown'}</td>
                     <td style="text-align: center;">
-                      <span style="font-weight: 700; color: ${badgeColor};">${b.status.replace('_', ' ').toUpperCase()}</span>
+                      <span style="font-weight: 700; color: ${statusColor};">${b.status.replace('_', ' ').toUpperCase()}</span>
                     </td>
                     <td style="font-weight: 600;">${b.status !== 'rejected' ? `${b.room_id} (${b.day} P${b.start_period}-P${b.end_period})` : '—'}</td>
                     <td style="color: #64748b; font-size: 11px;">${b.reason}</td>
@@ -733,16 +791,16 @@
       `;
     }
 
-    // 3. AI VENUE PARSER (SIMPLE & INTUITIVE)
-    function renderAI(container) {
-      container.innerHTML = `
-        <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 20px; max-width: 800px; margin: 0 auto;">
-          <h2 style="font-size: 16px; font-weight: 700; color: #0f172a; margin-bottom: 4px;">Venue Booking AI Assistant</h2>
-          <p style="font-size: 12px; color: #64748b; margin-bottom: 16px;">
-            Type a request in English or Hinglish. Parameters are extracted automatically and checked against timetable constraints.
-          </p>
+    // 3. AI VENUE PARSER VIEW
+    function renderAI(ws) {
+      ws.innerHTML = `
+        <div class="module-card" style="max-width: 800px; margin: 0 auto;">
+          <div class="module-header">
+            <div class="module-title">Venue Booking AI Assistant</div>
+            <div class="module-desc">Accepts plain English or Hinglish venue requests. Extracts structured parameters and validates availability against timetable constraints.</div>
+          </div>
 
-          <div style="font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 6px;">SAMPLE BENCHMARK REQUESTS (CLICK TO TEST):</div>
+          <div style="font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 6px;">BENCHMARK SAMPLE PROMPTS:</div>
           <div style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px;">
             <button onclick="fillPrompt('seminar hall kal shaam 6 baje, 2 ghante, 100 log, mic chahiye')" style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 6px 10px; border-radius: 4px; text-align: left; font-size: 11px; cursor: pointer;">
               "seminar hall kal shaam 6 baje, 2 ghante, 100 log, mic chahiye"
@@ -753,10 +811,8 @@
           </div>
 
           <div style="display: flex; gap: 8px; margin-bottom: 16px;">
-            <input type="text" id="prompt-input" style="flex:1; border: 1px solid #cbd5e1; padding: 8px 12px; border-radius: 4px; font-size: 12px; outline: none;" placeholder="Enter request in English or Hinglish..." />
-            <button onclick="submitPrompt()" style="background: #0284c7; color: #fff; border: none; padding: 8px 16px; border-radius: 4px; font-weight: 600; cursor: pointer;">
-              Parse & Check
-            </button>
+            <input type="text" id="ai-input" style="flex:1; border: 1px solid #cbd5e1; padding: 8px 12px; border-radius: 4px; font-size: 12px; outline: none;" placeholder="Enter venue booking prompt in English or Hinglish..." />
+            <button class="btn-action" onclick="submitAI()">Parse & Validate</button>
           </div>
 
           <div id="ai-output" style="display: none;"></div>
@@ -765,16 +821,16 @@
     }
 
     function fillPrompt(txt) {
-      document.getElementById("prompt-input").value = txt;
-      submitPrompt();
+      document.getElementById("ai-input").value = txt;
+      submitAI();
     }
 
-    async function submitPrompt() {
-      const val = document.getElementById("prompt-input").value;
+    async function submitAI() {
+      const val = document.getElementById("ai-input").value;
       if (!val) return;
       const out = document.getElementById("ai-output");
       out.style.display = "block";
-      out.innerHTML = "<div style='color: #0284c7;'>Processing request...</div>";
+      out.innerHTML = "<div style='color: #0284c7;'>Synthesizing request...</div>";
 
       try {
         const res = await fetch("/api/parse-nlp", {
@@ -785,10 +841,10 @@
 
         out.innerHTML = `
           <div style="background: #f8fafc; border: 1px solid #16a34a; border-radius: 6px; padding: 14px;">
-            <div style="font-weight: 700; color: #166534; margin-bottom: 8px;">Extracted & Validated Request</div>
+            <div style="font-weight: 700; color: #166534; margin-bottom: 8px;">Extracted & Validated Parameters</div>
             <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; font-size: 11px; margin-bottom: 12px;">
               <div style="background: #ffffff; padding: 8px; border: 1px solid #e2e8f0; border-radius: 4px;">
-                <div style="color: #64748b;">ATTENDANCE</div>
+                <div style="color: #64748b;">CAPACITY</div>
                 <strong>${res.attendance} people</strong>
               </div>
               <div style="background: #ffffff; padding: 8px; border: 1px solid #e2e8f0; border-radius: 4px;">
@@ -796,15 +852,15 @@
                 <strong>${res.duration_periods} hours</strong>
               </div>
               <div style="background: #ffffff; padding: 8px; border: 1px solid #e2e8f0; border-radius: 4px;">
-                <div style="color: #64748b;">TIME WINDOW</div>
+                <div style="color: #64748b;">TARGET WINDOW</div>
                 <strong style="color: #0284c7;">${res.windows[0].day} P${res.windows[0].from_period}-P${res.windows[0].to_period}</strong>
               </div>
               <div style="background: #ffffff; padding: 8px; border: 1px solid #e2e8f0; border-radius: 4px;">
-                <div style="color: #64748b;">EQUIPMENT</div>
+                <div style="color: #64748b;">FACILITIES</div>
                 <strong>${res.needs.length ? res.needs.join(', ') : 'Standard'}</strong>
               </div>
             </div>
-            <button onclick="showToast('Venue successfully reserved.')" style="background: #16a34a; color: #fff; border: none; padding: 6px 14px; border-radius: 4px; font-weight: 600; cursor: pointer;">
+            <button onclick="showToast('Venue successfully confirmed.')" style="background: #16a34a; color: #fff; border: none; padding: 6px 14px; border-radius: 4px; font-weight: 600; cursor: pointer;">
               Confirm Reservation
             </button>
           </div>
@@ -814,28 +870,28 @@
       }
     }
 
-    // 4. DISRUPTIONS TAB
-    function renderDisruption(container) {
-      container.innerHTML = `
-        <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 18px;">
+    // 4. DISRUPTIONS VIEW
+    function renderDisruption(ws) {
+      ws.innerHTML = `
+        <div class="module-card">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
             <div>
-              <h2 style="font-size: 16px; font-weight: 700; color: #0f172a;">Disruption Handling (Room CR-102 Water Leak)</h2>
-              <p style="font-size: 12px; color: #64748b;">Room CR-102 closed. Minimal-move algorithm preserves exact class time slots and reroutes only venues.</p>
+              <div class="module-title">Disruption Resolution (CR-102 Water Leak)</div>
+              <div class="module-desc">Room CR-102 closed. Minimal-move algorithm preserves exact class time slots and reroutes only venues.</div>
             </div>
-            <button onclick="toggleDisruption()" style="background: ${disruptionActive ? '#64748b' : '#ea580c'}; color: #fff; border: none; padding: 8px 16px; border-radius: 4px; font-weight: 600; cursor: pointer;">
-              ${disruptionActive ? 'Revert to Baseline' : 'Apply Minimal-Move Reschedule'}
+            <button class="btn-action" style="background: ${disruptionApplied ? '#64748b' : '#ea580c'};" onclick="toggleDisruption()">
+              ${disruptionApplied ? 'Revert to Baseline' : 'Apply Minimal-Move Reschedule'}
             </button>
           </div>
 
-          <table class="calendar-grid" style="font-size: 12px;">
+          <table class="timetable-matrix" style="font-size: 12px;">
             <thead>
               <tr style="background: #0284c7;">
                 <th>SESSION</th>
                 <th>COURSE</th>
                 <th>PREVIOUS LOCATION</th>
                 <th>REPAIRED LOCATION</th>
-                <th>TIME PRESERVATION</th>
+                <th>STATUS</th>
               </tr>
             </thead>
             <tbody>
@@ -867,19 +923,21 @@
     }
 
     function toggleDisruption() {
-      disruptionActive = !disruptionActive;
-      showToast(disruptionActive ? "Disruption applied: 11 sessions relocated with 0 time changes." : "Reverted to baseline.");
+      disruptionApplied = !disruptionApplied;
+      showToast(disruptionApplied ? "Disruption applied: 11 sessions relocated with 0 time changes." : "Reverted to baseline.");
       renderTab();
     }
 
-    // 5. EXAMS TAB
-    function renderExams(container, sched) {
-      container.innerHTML = `
-        <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 18px;">
-          <h2 style="font-size: 16px; font-weight: 700; color: #0f172a; margin-bottom: 4px;">Midsem Examination Schedule</h2>
-          <p style="font-size: 12px; color: #64748b; margin-bottom: 14px;">Monday to Saturday: AM (09:30–11:30) & PM (14:00–16:00). Effective room seating halved per Rule H5.</p>
+    // 5. EXAMS VIEW
+    function renderExams(ws, sched) {
+      ws.innerHTML = `
+        <div class="module-card">
+          <div class="module-header">
+            <div class="module-title">Midsem Examination Schedule</div>
+            <div class="module-desc">Monday to Saturday: AM (09:30–11:30) & PM (14:00–16:00). Capacities halved per Rule H5.</div>
+          </div>
 
-          <table class="calendar-grid" style="font-size: 12px;">
+          <table class="timetable-matrix" style="font-size: 12px;">
             <thead>
               <tr style="background: #0284c7;">
                 <th style="width: 80px;">EXAM ID</th>
@@ -910,12 +968,14 @@
       `;
     }
 
-    // 6. VALIDATOR AUDIT TAB
-    function renderAudit(container) {
-      container.innerHTML = `
-        <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 18px; max-width: 800px; margin: 0 auto;">
-          <h2 style="font-size: 16px; font-weight: 700; color: #0f172a; margin-bottom: 4px;">Official Validator Audit</h2>
-          <p style="font-size: 12px; color: #64748b; margin-bottom: 14px;">Direct execution results from validator.py.</p>
+    // 6. VALIDATOR AUDIT VIEW
+    function renderAudit(ws) {
+      ws.innerHTML = `
+        <div class="module-card" style="max-width: 800px; margin: 0 auto;">
+          <div class="module-header">
+            <div class="module-title">Official Validator Execution Audit</div>
+            <div class="module-desc">Direct report from validator.py. Evaluates all hard rules H1–H14 and soft penalties S1–S6.</div>
+          </div>
 
           <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; text-align: center;">
             <div style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 10px; border-radius: 4px;">
