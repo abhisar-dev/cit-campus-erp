@@ -1127,7 +1127,9 @@
   <!-- Top Header -->
   <header>
     <div class="brand-wrap">
-      <div class="brand-icon mono">CIT</div>
+      <div class="brand-icon mono" style="overflow: hidden; padding: 3px; display: flex; align-items: center; justify-content: center;">
+        <img src="/public/favicon.svg" alt="Chilika Institute of Technology Crest" width="26" height="26" style="display: block;" onerror="this.style.display='none'; this.parentNode.innerText='CIT';" />
+      </div>
       <div>
         <div class="brand-name">Chilika Institute of Technology</div>
         <div style="font-size: 11px; color: var(--text-muted);">Campus Academic Scheduling & Venue Portal</div>
@@ -1140,7 +1142,7 @@
         <button type="button" class="header-profile-btn" onclick="openProfileModal()" title="View and edit your CIT profile">
           <div class="header-avatar-circle" id="header-avatar-circle">
             <span id="header-avatar-initials">S</span>
-            <img id="header-avatar-img" src="" alt="Avatar" style="display: none;" />
+            <img id="header-avatar-img" src="" alt="CIT Student Profile Avatar" style="display: none;" />
           </div>
           <div class="header-profile-text">
             <span id="user-display-email">student@cit.ac.in</span>
@@ -2196,11 +2198,15 @@
       if (userProfile.avatar) {
         if (headImg) {
           headImg.src = userProfile.avatar;
+          headImg.alt = (displayName || 'Student') + ' profile avatar';
           headImg.style.display = 'block';
         }
         if (headInitials) headInitials.style.display = 'none';
       } else {
-        if (headImg) headImg.style.display = 'none';
+        if (headImg) {
+          headImg.style.display = 'none';
+          headImg.alt = 'CIT Student Profile Avatar';
+        }
         if (headInitials) {
           headInitials.innerText = initials;
           headInitials.style.display = 'inline';
@@ -2225,11 +2231,15 @@
       if (userProfile.avatar) {
         if (modalImg) {
           modalImg.src = userProfile.avatar;
+          modalImg.alt = (displayName || 'Student') + ' profile photo';
           modalImg.style.display = 'block';
         }
         if (modalInitials) modalInitials.style.display = 'none';
       } else {
-        if (modalImg) modalImg.style.display = 'none';
+        if (modalImg) {
+          modalImg.style.display = 'none';
+          modalImg.alt = 'CIT Student Profile Photo';
+        }
         if (modalInitials) {
           modalInitials.innerText = initials;
           modalInitials.style.display = 'inline';
@@ -2548,7 +2558,7 @@
           <div class="prof-avatar-wrap">
             <div class="prof-avatar-circle" id="prof-modal-avatar-circle">
               <span id="prof-modal-avatar-initials">S</span>
-              <img id="prof-modal-avatar-img" src="" alt="Profile Photo" style="display: none;" />
+              <img id="prof-modal-avatar-img" src="" alt="CIT Student Profile Photo" style="display: none;" />
             </div>
             <label for="prof-avatar-file-input" class="prof-upload-btn" title="Upload profile photo">
               📷

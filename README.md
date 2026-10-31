@@ -1,5 +1,9 @@
 # ChronoCIT — University Timetable & Venue ERP
 
+<div align="center">
+  <img src="public/social-preview.png" alt="Chilika Institute of Technology (CIT) Campus ERP — Academic Timetables and Venue Operations Preview Banner" width="100%" />
+</div>
+
 [![Live on Vercel](https://img.shields.io/badge/Vercel-Deployed_Live-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://cit-campus-erp.vercel.app)
 [![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![Hard Violations](https://img.shields.io/badge/Hard_Violations-0_Clashes-10B981?style=for-the-badge)](https://cit-campus-erp.vercel.app/admin)
