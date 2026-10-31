@@ -123,6 +123,11 @@ class handler(http.server.BaseHTTPRequestHandler):
             if self.serve_file("terms.html"):
                 return
 
+        # Dedicated Support & Help Desk Route
+        if req_path in ("/support", "/support.html", "/help", "/help.html", "/helpdesk"):
+            if self.serve_file("support.html"):
+                return
+
         # User portal routes
         if req_path in ("/", "/index.html", "/portal", "/dashboard", "/timetable", "/bookings"):
             if self.serve_file("index.html"):

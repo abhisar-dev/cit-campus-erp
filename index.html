@@ -498,6 +498,7 @@
       <button class="tab-item" onclick="switchUserTab('exams', this)">Midsem Exams</button>
       <button class="tab-item" onclick="switchUserTab('privacy', this)">Privacy Policy</button>
       <button class="tab-item" onclick="switchUserTab('terms', this)">Terms & Conditions</button>
+      <button class="tab-item" onclick="switchUserTab('support', this)">Support Desk</button>
     </div>
   </nav>
 
@@ -513,6 +514,12 @@
       <a href="/privacy" style="color: var(--primary); text-decoration: none; font-weight: 700;">Privacy Policy</a>
       <span>·</span>
       <a href="/terms" style="color: var(--primary); text-decoration: none; font-weight: 700;">Terms & Conditions</a>
+      <span>·</span>
+      <a href="/support" style="color: var(--primary); text-decoration: none; font-weight: 700;">Support Desk</a>
+      <span>·</span>
+      <a href="/login" style="color: var(--text-muted); text-decoration: none;">Sign In</a>
+      <span>·</span>
+      <a href="/admin/login" style="color: var(--text-muted); text-decoration: none;">Admin Access</a>
     </div>
     <span class="mono">Engine: cit-public-v1 · Certified 0 Hard Clashes</span>
   </footer>
@@ -629,6 +636,7 @@
       else if (currentTab === 'exams') renderExams(content);
       else if (currentTab === 'privacy') renderPrivacy(content);
       else if (currentTab === 'terms') renderTerms(content);
+      else if (currentTab === 'support') renderSupport(content);
     }
 
     // 1. WEEKLY TIMETABLE VIEW (POLISHED & CLEAR WITH GREEN / GREY / RED CODING)
@@ -1177,6 +1185,67 @@
               </div>
               <a href="/terms" class="btn-submit" style="width: auto; text-decoration: none; padding: 6px 14px; font-size: 12px; margin-top: 0;">
                 Read Full Terms & Regulations &rarr;
+              </a>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // 7. SUPPORT & HELPDESK VIEW
+    function renderSupport(content) {
+      content.innerHTML = `
+        <div class="content-card" style="max-width: 950px; margin: 0 auto;">
+          <div class="card-title-row">
+            <div>
+              <div class="title-text">CIT Academic Support & Technical Helpdesk</div>
+              <div class="subtitle-text">Assistance with timetable clashes, room bookings, and exam hall seating</div>
+            </div>
+            <span class="mono" style="font-size: 11px; background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); padding: 3px 8px; border-radius: 4px; font-weight: 700;">
+              Helpdesk Active
+            </span>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 20px; font-size: 13px; line-height: 1.7;">
+            <div style="background: var(--yellow-light); border: 1px solid var(--yellow-border); padding: 16px; border-radius: 6px;">
+              <strong style="color: var(--gold-dark); font-size: 13px;">Immediate Assistance Channels:</strong>
+              <p style="margin-top: 6px; color: var(--text-main);">
+                If you encounter conflicting lecture periods, unexpected venue reallocations, or login anomalies, contact the academic coordination cell immediately. During Crunch Week, high-priority issues are resolved in under 2 hours.
+              </p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px;">
+              <div style="border: 1px solid var(--border); border-radius: 6px; padding: 14px; background: #fff;">
+                <strong style="color: var(--primary); font-size: 13px;">✉️ Academic Operations Desk</strong>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">
+                  Timetable clashes, cohort swaps, and faculty leave inquiries:<br/>
+                  <a href="mailto:academic.support@cit.ac.in" style="color: var(--primary); font-weight: 700;">academic.support@cit.ac.in</a>
+                </p>
+              </div>
+
+              <div style="border: 1px solid var(--border); border-radius: 6px; padding: 14px; background: #fff;">
+                <strong style="color: var(--primary); font-size: 13px;">🎭 Spectra Venue Reservations</strong>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">
+                  Club event hall bookings, equipment, and Rule H6 status:<br/>
+                  <a href="mailto:spectra.support@cit.ac.in" style="color: var(--primary); font-weight: 700;">spectra.support@cit.ac.in</a>
+                </p>
+              </div>
+
+              <div style="border: 1px solid var(--border); border-radius: 6px; padding: 14px; background: #fff;">
+                <strong style="color: var(--primary); font-size: 13px;">📞 Central Campus Helpline</strong>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">
+                  General Helpline: <strong class="mono">+91 (06756) 220-100</strong><br/>
+                  Crunch Week Emergency: <strong class="mono">+91 (06756) 220-111</strong>
+                </p>
+              </div>
+            </div>
+
+            <div style="border-top: 1px solid var(--border); padding-top: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+              <div style="font-size: 11px; color: var(--text-muted);">
+                Central Administrative Complex · Room AD-204 · Chilika Campus
+              </div>
+              <a href="/support" class="btn-submit" style="width: auto; text-decoration: none; padding: 7px 16px; font-size: 12px; margin-top: 0;">
+                Open Full Help & Support Center &rarr;
               </a>
             </div>
           </div>

@@ -89,6 +89,16 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
                 self.wfile.write(f.read())
             return
 
+        # Dedicated Support & Help Desk route
+        if url.path in ("/support", "/support.html", "/help", "/help.html", "/helpdesk"):
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            with open(os.path.join(BASE_DIR, "support.html"), "rb") as f:
+                self.wfile.write(f.read())
+            return
+
         if url.path == "/api/data":
             self.send_response(200)
             self.send_header("Content-Type", "application/json; charset=utf-8")
