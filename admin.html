@@ -348,6 +348,34 @@
       box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2);
     }
 
+    .filter-pill {
+      background: transparent;
+      border: none;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .filter-pill.active {
+      background: #ffffff;
+      color: var(--primary);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .filter-dropdown {
+      border: 1px solid var(--yellow-border);
+      background: var(--yellow-light);
+      padding: 5px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-main);
+      outline: none;
+      cursor: pointer;
+    }
+
     /* Terminal Data Table */
     .terminal-table-wrapper {
       border: 1px solid var(--border);
@@ -586,8 +614,24 @@
     let SCHED_AFTER = null;
     let activeTab = 'disruption';
     let disruptionCommitted = false;
+    let timetableFilterType = 'cohort';
     let selectedCohort = 'Y1-A';
+    let selectedFaculty = 'F01';
+    let selectedRoom = 'CR-101';
     let festFilter = 'all';
+
+    function setAdminTimetableFilter(type) {
+      timetableFilterType = type;
+      renderTimetable(document.getElementById('admin-workspace'));
+    }
+    function changeAdminFaculty(val) {
+      selectedFaculty = val;
+      renderTimetable(document.getElementById('admin-workspace'));
+    }
+    function changeAdminRoom(val) {
+      selectedRoom = val;
+      renderTimetable(document.getElementById('admin-workspace'));
+    }
 
     // 11 Disrupted sessions in room CR-102 (Water pipe leak)
     const CR102_CANCELLED_SESSIONS = new Set([
@@ -863,10 +907,21 @@
         grid[p] = { MON: null, TUE: null, WED: null, THU: null, FRI: null };
       }
 
+      // Map sessions into Monday to Friday grid based on selected filter
       SCHED.sessions.forEach(item => {
         const s = sessMap[item.session_id];
         if (!s) return;
-        if (s.groups.includes(selectedCohort) || s.groups.includes("ALL-Y1") || s.groups.includes("ALL-Y2")) {
+
+        let matches = false;
+        if (timetableFilterType === 'cohort') {
+          matches = s.groups.includes(selectedCohort) || s.groups.includes("ALL-Y1") || s.groups.includes("ALL-Y2");
+        } else if (timetableFilterType === 'faculty') {
+          matches = item.faculty_id === selectedFaculty;
+        } else if (timetableFilterType === 'room') {
+          matches = item.room_id === selectedRoom;
+        }
+
+        if (matches) {
           for (let p = item.start_period; p < item.start_period + s.duration; p++) {
             if (p <= 9 && grid[p] && grid[p][item.day] !== undefined) {
               grid[p][item.day] = { ...s, ...item };
@@ -902,16 +957,28 @@
               <div class="panel-title">Master Timetable Optimization Grid (5 Academic Days)</div>
               <div class="panel-desc">All 189 teaching sessions placed with 0 hard clashes (H1–H14 validated).</div>
             </div>
-            <div style="display: flex; gap: 10px; align-items: center;">
-              <label style="font-size: 12px; font-weight: 800; color: var(--gold-dark);">Cohort View:</label>
-              <select onchange="selectedCohort=this.value; renderTimetable(document.getElementById('admin-workspace'))" style="background: var(--yellow-light); border: 1px solid var(--yellow-border); color: var(--text-main); font-weight: 700; padding: 5px 12px; border-radius: 4px; font-size: 12px; outline: none;">
-                <option value="Y1-A" ${selectedCohort==='Y1-A'?'selected':''}>Y1-A (Year 1 Section A)</option>
-                <option value="Y1-B" ${selectedCohort==='Y1-B'?'selected':''}>Y1-B (Year 1 Section B)</option>
-                <option value="CSE-2" ${selectedCohort==='CSE-2'?'selected':''}>CSE-2 (Computer Science Y2)</option>
-                <option value="ELEC-2" ${selectedCohort==='ELEC-2'?'selected':''}>ELEC-2 (Electrical Y2)</option>
-                <option value="MECH-2" ${selectedCohort==='MECH-2'?'selected':''}>MECH-2 (Mechanical Y2)</option>
-                <option value="CIVIL-2" ${selectedCohort==='CIVIL-2'?'selected':''}>CIVIL-2 (Civil Y2)</option>
-              </select>
+            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+              <!-- 3-way Perspective Switcher -->
+              <div style="display: flex; background: var(--border); padding: 2px; border-radius: 6px;">
+                <button onclick="setAdminTimetableFilter('cohort')" class="filter-pill ${timetableFilterType === 'cohort' ? 'active' : ''}">Cohort View</button>
+                <button onclick="setAdminTimetableFilter('faculty')" class="filter-pill ${timetableFilterType === 'faculty' ? 'active' : ''}">Faculty View</button>
+                <button onclick="setAdminTimetableFilter('room')" class="filter-pill ${timetableFilterType === 'room' ? 'active' : ''}">Room View</button>
+              </div>
+
+              <!-- Dynamic Dropdown -->
+              ${timetableFilterType === 'cohort' ? `
+                <select onchange="selectedCohort=this.value; renderTimetable(document.getElementById('admin-workspace'))" class="filter-dropdown">
+                  ${DATA.student_groups.map(g => `<option value="${g.id}" ${selectedCohort === g.id ? 'selected' : ''}>${g.id} — ${g.name}</option>`).join('')}
+                </select>
+              ` : timetableFilterType === 'faculty' ? `
+                <select onchange="changeAdminFaculty(this.value)" class="filter-dropdown">
+                  ${DATA.faculty.map(f => `<option value="${f.id}" ${selectedFaculty === f.id ? 'selected' : ''}>${f.id} — ${f.name} (${f.department})</option>`).join('')}
+                </select>
+              ` : `
+                <select onchange="changeAdminRoom(this.value)" class="filter-dropdown">
+                  ${DATA.rooms.map(r => `<option value="${r.id}" ${selectedRoom === r.id ? 'selected' : ''}>${r.id} — ${r.name} (Cap: ${r.capacity})</option>`).join('')}
+                </select>
+              `}
             </div>
           </div>
 

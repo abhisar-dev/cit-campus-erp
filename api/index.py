@@ -86,6 +86,10 @@ class handler(http.server.BaseHTTPRequestHandler):
             _, ext = os.path.splitext(rel_path)
             content_type = MIME_TYPES.get(ext.lower(), default_mime)
             self.send_response(200)
+            if ext.lower() in ('.jpg', '.jpeg', '.png', '.webp', '.svg', '.ico', '.css', '.js'):
+                self.send_header("Cache-Control", "public, max-age=604800, stale-while-revalidate=86400")
+            elif ext.lower() == '.html':
+                self.send_header("Cache-Control", "no-cache, must-revalidate")
             self.send_cors_headers(content_type)
             self.wfile.write(content)
             return True

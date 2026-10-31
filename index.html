@@ -236,6 +236,40 @@
     }
 
     /* Timetable Grid */
+    .filter-pill {
+      background: transparent;
+      border: none;
+      padding: 5px 12px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .filter-pill.active {
+      background: #ffffff;
+      color: var(--primary);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .filter-dropdown {
+      border: 1px solid var(--yellow-border);
+      background: var(--yellow-light);
+      padding: 5px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-main);
+      outline: none;
+      cursor: pointer;
+    }
+    #portal-content {
+      animation: fadeIn 0.18s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0.85; transform: translateY(2px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
     .grid-wrapper {
       overflow-x: auto;
       border: 1px solid var(--border);
@@ -476,10 +510,6 @@
       <span>Chilika Institute of Technology · Central Academic Services</span>
       <span>·</span>
       <a href="/privacy" style="color: var(--primary); text-decoration: none; font-weight: 700;">Privacy Policy</a>
-      <span>·</span>
-      <a href="/login" style="color: var(--text-muted); text-decoration: none;">Sign In</a>
-      <span>·</span>
-      <a href="/admin/login" style="color: var(--text-muted); text-decoration: none;">Admin Access</a>
     </div>
     <span class="mono">Engine: cit-public-v1 · Certified 0 Hard Clashes</span>
   </footer>
@@ -490,7 +520,10 @@
     let DATA = null;
     let SCHED = null;
     let currentTab = 'timetable';
+    let timetableFilterType = 'cohort'; // 'cohort' | 'faculty' | 'room'
     let selectedCohort = 'Y1-A';
+    let selectedFaculty = 'F01';
+    let selectedRoom = 'CR-101';
     let currentUser = null;
 
     // Disrupted sessions in room CR-102 (from sample_disruption.json)
@@ -533,8 +566,23 @@
       renderTab();
     }
 
+    function setTimetableFilter(type) {
+      timetableFilterType = type;
+      renderTab();
+    }
+
     function changeCohort(val) {
       selectedCohort = val;
+      renderTab();
+    }
+
+    function changeFaculty(val) {
+      selectedFaculty = val;
+      renderTab();
+    }
+
+    function changeRoom(val) {
+      selectedRoom = val;
       renderTab();
     }
 
@@ -592,11 +640,21 @@
         grid[p] = { MON: null, TUE: null, WED: null, THU: null, FRI: null };
       }
 
-      // Map sessions into Monday to Friday grid
+      // Map sessions into Monday to Friday grid based on selected filter
       SCHED.sessions.forEach(item => {
         const s = sessMap[item.session_id];
         if (!s) return;
-        if (s.groups.includes(selectedCohort) || s.groups.includes("ALL-Y1") || s.groups.includes("ALL-Y2")) {
+
+        let matches = false;
+        if (timetableFilterType === 'cohort') {
+          matches = s.groups.includes(selectedCohort) || s.groups.includes("ALL-Y1") || s.groups.includes("ALL-Y2");
+        } else if (timetableFilterType === 'faculty') {
+          matches = item.faculty_id === selectedFaculty;
+        } else if (timetableFilterType === 'room') {
+          matches = item.room_id === selectedRoom;
+        }
+
+        if (matches) {
           for (let p = item.start_period; p < item.start_period + s.duration; p++) {
             if (p <= 9 && grid[p] && grid[p][item.day] !== undefined) {
               grid[p][item.day] = { ...s, ...item };
@@ -633,13 +691,28 @@
               <div class="subtitle-text">Clear real-time schedule · Monday to Friday (5 academic days)</div>
             </div>
 
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <span style="font-size: 11px; font-weight: 700; color: var(--gold-dark);">SELECT COHORT:</span>
-              <select onchange="changeCohort(this.value)" style="border: 1px solid var(--yellow-border); background: var(--yellow-light); padding: 5px 12px; border-radius: 4px; font-size: 12px; font-weight: 700; color: var(--text-main); outline: none;">
-                ${DATA.student_groups.map(g => `
-                  <option value="${g.id}" ${selectedCohort === g.id ? 'selected' : ''}>${g.id} — ${g.name}</option>
-                `).join('')}
-              </select>
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+              <!-- 3-way Perspective Switcher -->
+              <div style="display: flex; background: var(--border); padding: 2px; border-radius: 6px;">
+                <button onclick="setTimetableFilter('cohort')" class="filter-pill ${timetableFilterType === 'cohort' ? 'active' : ''}">Cohort View</button>
+                <button onclick="setTimetableFilter('faculty')" class="filter-pill ${timetableFilterType === 'faculty' ? 'active' : ''}">Faculty View</button>
+                <button onclick="setTimetableFilter('room')" class="filter-pill ${timetableFilterType === 'room' ? 'active' : ''}">Room View</button>
+              </div>
+
+              <!-- Dynamic Dropdown -->
+              ${timetableFilterType === 'cohort' ? `
+                <select onchange="changeCohort(this.value)" class="filter-dropdown">
+                  ${DATA.student_groups.map(g => `<option value="${g.id}" ${selectedCohort === g.id ? 'selected' : ''}>${g.id} — ${g.name}</option>`).join('')}
+                </select>
+              ` : timetableFilterType === 'faculty' ? `
+                <select onchange="changeFaculty(this.value)" class="filter-dropdown">
+                  ${DATA.faculty.map(f => `<option value="${f.id}" ${selectedFaculty === f.id ? 'selected' : ''}>${f.id} — ${f.name} (${f.department})</option>`).join('')}
+                </select>
+              ` : `
+                <select onchange="changeRoom(this.value)" class="filter-dropdown">
+                  ${DATA.rooms.map(r => `<option value="${r.id}" ${selectedRoom === r.id ? 'selected' : ''}>${r.id} — ${r.name} (Cap: ${r.capacity})</option>`).join('')}
+                </select>
+              `}
             </div>
           </div>
 
@@ -937,6 +1010,8 @@
           </div>
         </div>
       `;
+    }
+
     // 5. PRIVACY POLICY TAB VIEW
     function renderPrivacy(content) {
       content.innerHTML = `

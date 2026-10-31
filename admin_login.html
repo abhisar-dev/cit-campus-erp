@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Portal Sign In — Chilika Institute of Technology</title>
+  <link rel="preload" as="image" href="/assets/admin_login_left.webp" type="image/webp" fetchpriority="high" />
   <style>
     *, *::before, *::after {
       box-sizing: border-box;
@@ -446,7 +447,10 @@
       </div>
 
       <div class="illustration-wrap">
-        <img src="/assets/admin_login_left.jpg" onerror="if(this.src.indexOf('public')===-1)this.src='/public/admin_login_left.jpg';" alt="CIT Academic Operations Scheduling Console" class="illustration-img" />
+        <picture>
+          <source srcset="/assets/admin_login_left.webp" type="image/webp" />
+          <img src="/assets/admin_login_left.jpg" fetchpriority="high" loading="eager" alt="CIT Academic Operations Scheduling Console" class="illustration-img" />
+        </picture>
       </div>
 
       <div class="left-footer">
