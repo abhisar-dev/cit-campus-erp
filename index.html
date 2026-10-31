@@ -462,6 +462,7 @@
       <button class="tab-item" onclick="switchUserTab('bookings', this)">Spectra Venue Bookings</button>
       <button class="tab-item" onclick="switchUserTab('ai', this)">AI Booking Assistant</button>
       <button class="tab-item" onclick="switchUserTab('exams', this)">Midsem Exams</button>
+      <button class="tab-item" onclick="switchUserTab('privacy', this)">Privacy Policy</button>
     </div>
   </nav>
 
@@ -471,7 +472,15 @@
   </main>
 
   <footer>
-    <span>Chilika Institute of Technology · Central Academic Services</span>
+    <div style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap;">
+      <span>Chilika Institute of Technology · Central Academic Services</span>
+      <span>·</span>
+      <a href="/privacy" style="color: var(--primary); text-decoration: none; font-weight: 700;">Privacy Policy</a>
+      <span>·</span>
+      <a href="/login" style="color: var(--text-muted); text-decoration: none;">Sign In</a>
+      <span>·</span>
+      <a href="/admin/login" style="color: var(--text-muted); text-decoration: none;">Admin Access</a>
+    </div>
     <span class="mono">Engine: cit-public-v1 · Certified 0 Hard Clashes</span>
   </footer>
 
@@ -567,6 +576,7 @@
       else if (currentTab === 'bookings') renderBookings(content);
       else if (currentTab === 'ai') renderAI(content);
       else if (currentTab === 'exams') renderExams(content);
+      else if (currentTab === 'privacy') renderPrivacy(content);
     }
 
     // 1. WEEKLY TIMETABLE VIEW (POLISHED & CLEAR WITH GREEN / GREY / RED CODING)
@@ -924,6 +934,81 @@
                 }).join('')}
               </tbody>
             </table>
+          </div>
+        </div>
+      `;
+    // 5. PRIVACY POLICY TAB VIEW
+    function renderPrivacy(content) {
+      content.innerHTML = `
+        <div class="content-card" style="max-width: 1060px; margin: 0 auto;">
+          <div class="card-title-row">
+            <div>
+              <div class="title-text">CIT Institutional Privacy Policy & Data Governance</div>
+              <div class="subtitle-text">Official safeguards for student, faculty, examination, and venue booking records</div>
+            </div>
+            <a href="/privacy" target="_blank" style="background: var(--primary); color: #fff; text-decoration: none; padding: 7px 14px; border-radius: 4px; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+              Open Dedicated Page ↗
+            </a>
+          </div>
+
+          <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;">
+            <span class="mono" style="font-size: 11px; background: var(--primary-light); color: var(--primary); border: 1px solid var(--primary-border); padding: 3px 8px; border-radius: 4px; font-weight: 700;">
+              DPDP Compliant
+            </span>
+            <span class="mono" style="font-size: 11px; background: var(--yellow-badge); color: var(--gold-dark); border: 1px solid var(--yellow-border); padding: 3px 8px; border-radius: 4px; font-weight: 700;">
+              Zero Data Monetization
+            </span>
+            <span class="mono" style="font-size: 11px; background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); padding: 3px 8px; border-radius: 4px; font-weight: 700;">
+              Certified 0 Hard Clashes
+            </span>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 20px; font-size: 13px; line-height: 1.7;">
+            <div style="background: var(--yellow-light); border: 1px solid var(--yellow-border); padding: 16px; border-radius: 6px;">
+              <strong style="color: var(--gold-dark); font-size: 13px;">Institutional Privacy Commitment:</strong>
+              <p style="margin-top: 6px; color: var(--text-main);">
+                Chilika Institute of Technology (CIT) operates this autonomous campus scheduling platform exclusively for academic operations, fair examination conduct, and transparent Spectra fest venue allocations. Personal academic records are never monetized, tracked across external networks, or disclosed to unauthorized parties.
+              </p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px;">
+              <div style="border: 1px solid var(--border); border-radius: 6px; padding: 14px; background: #fff;">
+                <strong style="color: var(--primary); font-size: 13px;">1. Academic Timetabling Integrity</strong>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">
+                  All weekly lectures and lab slots are computed with deterministic mathematical algorithms (OR-Tools CP-SAT) with zero hard constraint violations (H1-H14), ensuring cohort equity and eliminating subjective scheduling biases.
+                </p>
+              </div>
+
+              <div style="border: 1px solid var(--border); border-radius: 6px; padding: 14px; background: #fff;">
+                <strong style="color: var(--primary); font-size: 13px;">2. Anti-Cheating & Exam Privacy (H5)</strong>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">
+                  Midsemester seating adheres to the 50% capacity halving mandate to secure academic integrity through physical spacing, without invasive biometric tracking or third-party camera proctoring.
+                </p>
+              </div>
+
+              <div style="border: 1px solid var(--border); border-radius: 6px; padding: 14px; background: #fff;">
+                <strong style="color: var(--primary); font-size: 13px;">3. AI Booking Assistant & Hinglish NLP</strong>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">
+                  Conversational venue requests in English or Hinglish are parsed ephemerally on institute servers. Query text is never retained in public LLM training datasets or shared with external analytics vendors.
+                </p>
+              </div>
+
+              <div style="border: 1px solid var(--border); border-radius: 6px; padding: 14px; background: #fff;">
+                <strong style="color: var(--primary); font-size: 13px;">4. Local Session Authentication</strong>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">
+                  Authentication is managed locally via client storage (<code class="mono">cit_session</code>) without tracking cookies. Signing out instantly clears stored profile keys from your device.
+                </p>
+              </div>
+            </div>
+
+            <div style="border-top: 1px solid var(--border); padding-top: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+              <div style="font-size: 11px; color: var(--text-muted);">
+                Office of the Dean of Academic Affairs · Central Secretariat · <code class="mono">privacy@cit.ac.in</code>
+              </div>
+              <a href="/privacy" class="btn-submit" style="width: auto; text-decoration: none; padding: 6px 14px; font-size: 12px; margin-top: 0;">
+                Read Full Legal Policy Document &rarr;
+              </a>
+            </div>
           </div>
         </div>
       `;

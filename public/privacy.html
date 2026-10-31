@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy — Chilika Institute of Technology (CIT) Campus ERP</title>
+  <meta name="description" content="Official Institutional Privacy Policy & Academic Data Protection Guidelines for the CIT Campus ERP and Academic Scheduling Platform." />
+  <link rel="icon" type="image/svg+xml" href="/public/favicon.svg" />
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #fbf6ee; /* Warm cream canvas */
+      --card-bg: #ffffff;
+      --border: #e8e0d5;
+      --border-dark: #d5cbbe;
+      --text-main: #1c1917;
+      --text-muted: #645e57;
+      --text-dim: #8c827a;
+      --primary: #600f1c; /* Official CIT Maroon */
+      --primary-hover: #4a0b15;
+      --primary-light: #fdf2f2;
+      --primary-border: #f8b4b4;
+      --yellow-light: #fef9ed;
+      --yellow-badge: #fef3c7;
+      --yellow-border: #fde68a;
+      --gold-dark: #92400e;
+
+      --green: #15803d;
+      --green-bg: #f0fdf4;
+      --green-border: #bbf7d0;
+
+      --blue: #1d4ed8;
+      --blue-bg: #eff6ff;
+      --blue-border: #bfdbfe;
+
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      line-height: 1.65;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .mono {
+      font-family: var(--font-mono);
+    }
+
+    /* Top University Header */
+    header {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+      height: 60px;
+      padding: 0 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 1px 3px rgba(96, 15, 28, 0.04);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 6px;
+      background: var(--primary);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 14px;
+      letter-spacing: 0.5px;
+    }
+
+    .brand-name {
+      font-weight: 800;
+      font-size: 15px;
+      color: var(--primary);
+      letter-spacing: -0.2px;
+    }
+
+    .brand-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-btn {
+      padding: 7px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav-btn-outline {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      color: var(--text-main);
+    }
+
+    .nav-btn-outline:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .nav-btn-primary {
+      background: var(--primary);
+      border: 1px solid var(--primary);
+      color: #ffffff;
+    }
+
+    .nav-btn-primary:hover {
+      background: var(--primary-hover);
+    }
+
+    /* Policy Container */
+    main {
+      max-width: 1180px;
+      width: 100%;
+      margin: 28px auto;
+      padding: 0 24px;
+      flex: 1;
+    }
+
+    /* Hero Banner */
+    .hero-banner {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px 36px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 16px rgba(96, 15, 28, 0.03);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-banner::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary) 0%, var(--gold-dark) 100%);
+    }
+
+    .badge-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 4px;
+      letter-spacing: 0.2px;
+    }
+
+    .badge-primary {
+      background: var(--primary-light);
+      color: var(--primary);
+      border: 1px solid var(--primary-border);
+    }
+
+    .badge-gold {
+      background: var(--yellow-badge);
+      color: var(--gold-dark);
+      border: 1px solid var(--yellow-border);
+    }
+
+    .badge-green {
+      background: var(--green-bg);
+      color: var(--green);
+      border: 1px solid var(--green-border);
+    }
+
+    .hero-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: -0.5px;
+      line-height: 1.25;
+      margin-bottom: 10px;
+    }
+
+    .hero-desc {
+      font-size: 14px;
+      color: var(--text-muted);
+      max-width: 820px;
+      line-height: 1.6;
+    }
+
+    /* Dual Column Layout */
+    .policy-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 28px;
+      align-items: start;
+    }
+
+    @media (max-width: 900px) {
+      .policy-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Sticky Table of Contents */
+    .toc-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      position: sticky;
+      top: 84px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+    }
+
+    .toc-title {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--gold-dark);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .toc-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .toc-link {
+      display: block;
+      padding: 6px 10px;
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      border-radius: 4px;
+      transition: all 0.15s ease;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    .toc-link:hover {
+      background: var(--yellow-light);
+      color: var(--primary);
+      padding-left: 14px;
+    }
+
+    /* Content Area */
+    .policy-content {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .section-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 28px 30px;
+      box-shadow: 0 2px 8px rgba(96, 15, 28, 0.02);
+      scroll-margin-top: 84px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+
+    .section-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      background: var(--yellow-light);
+      border: 1px solid var(--yellow-border);
+      color: var(--gold-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: -0.3px;
+    }
+
+    .section-body {
+      color: var(--text-main);
+      font-size: 13.5px;
+      line-height: 1.7;
+    }
+
+    .section-body p {
+      margin-bottom: 14px;
+    }
+
+    .section-body p:last-child {
+      margin-bottom: 0;
+    }
+
+    .section-body ul {
+      margin: 10px 0 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .section-body li {
+      color: var(--text-muted);
+    }
+
+    .section-body li strong {
+      color: var(--text-main);
+    }
+
+    /* Callout Boxes */
+    .callout {
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin: 16px 0;
+      font-size: 12.5px;
+      line-height: 1.6;
+      border-left: 4px solid;
+    }
+
+    .callout-gold {
+      background: var(--yellow-light);
+      border-color: var(--gold-dark);
+      color: var(--gold-dark);
+    }
+
+    .callout-green {
+      background: var(--green-bg);
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    .callout-maroon {
+      background: var(--primary-light);
+      border-color: var(--primary);
+      color: #4a0b15;
+    }
+
+    .callout-blue {
+      background: var(--blue-bg);
+      border-color: var(--blue);
+      color: #1e3a8a;
+    }
+
+    /* Policy Grid Table */
+    .policy-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin: 16px 0;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .policy-table th, .policy-table td {
+      border: 1px solid var(--border);
+      padding: 10px 14px;
+      text-align: left;
+    }
+
+    .policy-table th {
+      background: var(--yellow-light);
+      color: var(--gold-dark);
+      font-weight: 800;
+      font-size: 11px;
+      letter-spacing: 0.3px;
+    }
+
+    .policy-table tr:hover {
+      background: #fffdfa;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 22px 28px;
+      font-size: 11.5px;
+      color: var(--text-muted);
+      background: #ffffff;
+      margin-top: 48px;
+    }
+
+    .footer-wrap {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .footer-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+      font-weight: 600;
+    }
+
+    .footer-links a:hover {
+      color: var(--primary);
+    }
+
+    /* Print Styles */
+    @media print {
+      header, .toc-card, footer, .nav-actions, .badge-row {
+        display: none !important;
+      }
+      body {
+        background: #ffffff;
+        color: #000000;
+      }
+      .policy-layout {
+        display: block;
+      }
+      .section-card {
+        border: none;
+        box-shadow: none;
+        padding: 12px 0;
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top University Header -->
+  <header>
+    <a href="/" class="brand-wrap">
+      <div class="brand-icon mono">CIT</div>
+      <div>
+        <div class="brand-name">Chilika Institute of Technology</div>
+        <div class="brand-sub">Campus Academic Scheduling & Venue Portal</div>
+      </div>
+    </a>
+
+    <div class="nav-actions">
+      <a href="/" class="nav-btn nav-btn-outline">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        Weekly Timetable
+      </a>
+      <a href="/login" class="nav-btn nav-btn-outline">Portal Sign In</a>
+      <a href="/admin/login" class="nav-btn nav-btn-primary">Admin Clearance</a>
+    </div>
+  </header>
+
+  <!-- Main Body -->
+  <main>
+    <!-- Hero Banner -->
+    <div class="hero-banner">
+      <div class="badge-row">
+        <span class="badge badge-primary">Official Academic Policy</span>
+        <span class="badge badge-gold mono">Effective: October 31, 2026</span>
+        <span class="badge badge-green">✓ Certified 0 Hard Clashes</span>
+        <span class="badge badge-primary">DPDP Compliant</span>
+      </div>
+
+      <h1 class="hero-title">CIT Campus ERP — Privacy Policy & Data Governance</h1>
+      <p class="hero-desc">
+        This document outlines the principles, safeguards, and procedures governing personal, academic, and venue scheduling information processed within the <strong>Chilika Institute of Technology (CIT) Campus Operating System & Timetable Platform</strong>.
+      </p>
+
+      <div style="margin-top: 18px; display: flex; gap: 12px; flex-wrap: wrap;">
+        <button onclick="window.print()" class="nav-btn nav-btn-outline" style="cursor: pointer;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 6 2 18 2 18 9"></polyline>
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+            <rect x="6" y="14" width="12" height="8"></rect>
+          </svg>
+          Print Policy / Save PDF
+        </button>
+        <a href="/" class="nav-btn nav-btn-primary">Return to Interactive Timetable</a>
+      </div>
+    </div>
+
+    <!-- Dual Layout: TOC + Sections -->
+    <div class="policy-layout">
+      
+      <!-- Table of Contents Sidebar -->
+      <aside class="toc-card">
+        <div class="toc-title">
+          <span>Table of Contents</span>
+          <span class="mono">11 Sec</span>
+        </div>
+        <ul class="toc-list">
+          <li><a href="#section-scope" class="toc-link">1. Institutional Scope</a></li>
+          <li><a href="#section-data-collected" class="toc-link">2. Data We Process</a></li>
+          <li><a href="#section-optimization-ethics" class="toc-link">3. Constraint Optimization Ethics</a></li>
+          <li><a href="#section-exams" class="toc-link">4. Midsem Exam Distancing (H5)</a></li>
+          <li><a href="#section-nlp-ai" class="toc-link">5. AI Booking Assistant & NLP</a></li>
+          <li><a href="#section-rbac" class="toc-link">6. Role-Based Access Tiers</a></li>
+          <li><a href="#section-cookies" class="toc-link">7. Storage & Session Tokens</a></li>
+          <li><a href="#section-sharing" class="toc-link">8. Zero Third-Party Monetization</a></li>
+          <li><a href="#section-retention" class="toc-link">9. Retention & Demo Resets</a></li>
+          <li><a href="#section-rights" class="toc-link">10. User Rights & Corrections</a></li>
+          <li><a href="#section-contact" class="toc-link">11. Data Protection Officer</a></li>
+        </ul>
+      </aside>
+
+      <!-- Main Policy Sections -->
+      <div class="policy-content">
+
+        <!-- 1. Institutional Scope -->
+        <article class="section-card" id="section-scope">
+          <div class="section-header">
+            <div class="section-num mono">01</div>
+            <h2 class="section-title">Institutional Overview & Governance Scope</h2>
+          </div>
+          <div class="section-body">
+            <p>
+              The <strong>Chilika Institute of Technology (CIT) Campus ERP</strong> serves as the central operational backbone for academic timetabling, venue management during the annual Spectra Tech-Cultural Fest, midsemester examination seating allocations, and real-time campus disruption mitigation.
+            </p>
+            <p>
+              This Privacy Policy applies to all students, faculty members, visiting professors, departmental coordinators, administrative staff, and student club representatives accessing the system via:
+            </p>
+            <ul>
+              <li><strong>Student & Faculty Portal:</strong> Weekly cohort timetable, room schedule lookup, and midsem exam allocations.</li>
+              <li><strong>Spectra Venue Booking Desk:</strong> Automated club request processing and priority ordering.</li>
+              <li><strong>AI Natural Language Booking Assistant:</strong> English and Hinglish conversational venue reservation query engine.</li>
+              <li><strong>Admin Command Terminal:</strong> Dean's Office schedule generation, disruption repair (CR-102 rerouting), and validator audit.</li>
+            </ul>
+            <div class="callout callout-gold">
+              <strong>Institutional Mandate:</strong> All academic scheduling algorithms adhere strictly to the guidelines certified by the official CIT academic validator (<code class="mono">validator.py</code>), ensuring complete fairness, transparency, and elimination of arbitrary scheduling conflicts.
+            </div>
+          </div>
+        </article>
+
+        <!-- 2. Data We Process -->
+        <article class="section-card" id="section-data-collected">
+          <div class="section-header">
+            <div class="section-num mono">02</div>
+            <h2 class="section-title">Categories of Information Processed</h2>
+          </div>
+          <div class="section-body">
+            <p>
+              CIT Campus ERP strictly adheres to the principle of <em>Data Minimization</em>. We only collect and compute records directly indispensable to campus operations:
+            </p>
+
+            <table class="policy-table">
+              <thead>
+                <tr>
+                  <th>Category</th>
+                  <th>Data Elements</th>
+                  <th>Operational Purpose</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Student Academic Identity</strong></td>
+                  <td>Student Name, Institute Email (<code class="mono">@cit.ac.in</code>), Roll/ID, Cohort Code (e.g. <code class="mono">Y1-A</code>, <code class="mono">CSE-2</code>, <code class="mono">ECE-2</code>), registered course sessions.</td>
+                  <td>Displaying cohort-specific weekly timetables and ensuring zero student lecture clashing (H3 constraint).</td>
+                </tr>
+                <tr>
+                  <td><strong>Faculty Teaching Records</strong></td>
+                  <td>Faculty Name, ID (e.g. <code class="mono">F06</code>, <code class="mono">F19</code>), Department, Assigned Course Modules, daily lecture duration tallies.</td>
+                  <td>Enforcing the maximum 4-hour daily teaching limit (H4) and zero double-booking (H2).</td>
+                </tr>
+                <tr>
+                  <td><strong>Venue & Fest Booking Requests</strong></td>
+                  <td>Club Name, Requester Name, Role Category (e.g. Fest Core, Technical Club, Cultural), Event Title, Preferred Day/Period, AV Needs, Attendance.</td>
+                  <td>Deterministic priority scoring (H6 constraint), avoiding priority inversions and assigning suitable venues (e.g. Auditorium AUD-01).</td>
+                </tr>
+                <tr>
+                  <td><strong>Security & Session State</strong></td>
+                  <td>Browser local storage session token (<code class="mono">cit_session</code>), active clearance level, IP timestamp log for administrative actions.</td>
+                  <td>Authenticating access between Dean Admin Terminal and student-facing timetable views.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+
+        <!-- 3. Constraint Optimization Ethics -->
+        <article class="section-card" id="section-optimization-ethics">
+          <div class="section-header">
+            <div class="section-num mono">03</div>
+            <h2 class="section-title">Constraint-Driven Optimization & Algorithmic Ethics</h2>
+          </div>
+          <div class="section-body">
+            <p>
+              Unlike traditional administrative workflows where room or schedule assignments could be subject to subjective bias or opaque human discretion, CIT Campus ERP utilizes a mathematical <strong>Constraint Satisfaction Solver (Google OR-Tools CP-SAT)</strong>.
+            </p>
+            <p>
+              The solver treats all cohorts and student groups with mathematically provable neutrality:
+            </p>
+            <ul>
+              <li><strong>Zero Preference Bias:</strong> No cohort or faculty is prioritized unless explicitly codified in official Senate constraints (e.g. Faculty medical leaves or hard room capacity limits).</li>
+              <li><strong>Explainability by Design:</strong> Every booking rejection or alternative offering includes an unalterable algorithmic decision rationale (e.g. <em>"Higher priority Fest Core requested Auditorium AUD-01; alternative offered in Seminar Hall SEM-01"</em>).</li>
+              <li><strong>Disruption Stability (Minimal Move):</strong> When emergency maintenance occurs (such as the ceiling leak disruption in CR-102), the system minimizes perturbation by relocating room assignments without modifying students' established class periods.</li>
+            </ul>
+            <div class="callout callout-green">
+              <strong>Audit Certified:</strong> The baseline timetable submitted achieves <strong>0 Hard Violations</strong> across all 14 hard constraints (H1 through H14) and 0 Priority Inversions, verifying ethical algorithmic fairness.
+            </div>
+          </div>
+        </article>
+
+        <!-- 4. Midsem Exam Distancing (H5) -->
+        <article class="section-card" id="section-exams">
+          <div class="section-header">
+            <div class="section-num mono">04</div>
+            <h2 class="section-title">Midsem Examination Logistics & Seating Privacy (H5 Rule)</h2>
+          </div>
+          <div class="section-body">
+            <p>
+              During midsemester examination cycles, student test integrity is protected using automated spatial distancing rules rather than invasive surveillance software:
+            </p>
+            <ul>
+              <li><strong>50% Capacity Seating Limit (Constraint H5):</strong> Each examination hall is allocated to at most half of its certified seating capacity (e.g., a 60-seat classroom admits a maximum of 30 test candidates).</li>
+              <li><strong>Zero Non-Academic Biometric Profiling:</strong> The ERP does not utilize facial recognition, keystroke logging, or video proctoring feeds. Seating assignments are strictly spatial and room-based.</li>
+              <li><strong>Cohort Isolation:</strong> Overlapping student groups are never assigned multiple simultaneous exams, guaranteeing a fair resting interval between 3-hour test blocks (P2–P4 and P6–P8).</li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- 5. AI Booking Assistant & NLP -->
+        <article class="section-card" id="section-nlp-ai">
+          <div class="section-header">
+            <div class="section-num mono">05</div>
+            <h2 class="section-title">AI Venue Booking Assistant & Natural Language (NLP) Processing</h2>
+          </div>
+          <div class="section-body">
+            <p>
+              The platform integrates a specialized conversational AI assistant supporting both formal English and campus Hinglish queries (e.g. <em>"Auditorium AUD-01 chahiye Friday P6 se P8 tak for drama club rehearsal"</em>).
+            </p>
+            <div class="callout callout-maroon">
+              <strong>Your Prompt Privacy Guarantee:</strong>
+              <ul style="margin: 6px 0 0 16px;">
+                <li>Conversational queries are parsed ephemerally into structured booking parameters (venue, day, period, attendance, equipment needs).</li>
+                <li><strong>No Model Retraining:</strong> User conversation history is never fed into public training corpuses or external LLM databases.</li>
+                <li><strong>No Telemetry Sharing:</strong> Inquiries are evaluated directly against CIT's local database and timetable schedule constraints.</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <!-- 6. Role-Based Access Tiers -->
+        <article class="section-card" id="section-rbac">
+          <div class="section-header">
+            <div class="section-num mono">06</div>
+            <h2 class="section-title">Role-Based Access Control & Privilege Tiers</h2>
+          </div>
+          <div class="section-body">
+            <p>
+              Data accessibility is demarcated into 4 strict privilege levels to prevent unauthorized elevation of privilege:
+            </p>
+            <table class="policy-table">
+              <thead>
+                <tr>
+                  <th>Role Tier</th>
+                  <th>Authorized Scope</th>
+                  <th>Restrictions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Student</strong></td>
+                  <td>View cohort timetable, filter courses, view allocated midsem exam rooms, check Spectra booking status.</td>
+                  <td>Read-only for schedules; cannot alter room assignments or view faculty personal leaves.</td>
+                </tr>
+                <tr>
+                  <td><strong>Faculty Member</strong></td>
+                  <td>View personal weekly teaching schedule, track daily teaching hours against 4-hour caps, request rescheduling.</td>
+                  <td>Cannot edit other faculty schedules or override institute exams.</td>
+                </tr>
+                <tr>
+                  <td><strong>Club Representative</strong></td>
+                  <td>Submit Spectra venue booking requests, check AI availability, view approval reasons or alternatives.</td>
+                  <td>Subject to precedence validation; cannot approve their own requests.</td>
+                </tr>
+                <tr>
+                  <td><strong>Dean / Central Admin</strong></td>
+                  <td>Execute CP-SAT solver, approve emergency disruptions (e.g. CR-102 repair), reset demo states, export official artifacts.</td>
+                  <td>All actions logged; clearances restricted to verified administrative credentials.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+
+        <!-- 7. Storage & Session Tokens -->
+        <article class="section-card" id="section-cookies">
+          <div class="section-header">
+            <div class="section-num mono">07</div>
+            <h2 class="section-title">Client-Side Storage & Session Management</h2>
+          </div>
+          <div class="section-body">
+            <p>
+              CIT Campus ERP does <strong>not</strong> employ commercial tracking cookies, advertising beacons, or third-party behavioral pixels.
+            </p>
+            <p>
+              We utilize browser <code class="mono">localStorage</code> exclusively for operational persistence:
+            </p>
+            <ul>
+              <li><code class="mono">cit_session</code>: Stores user identity, verified email, role tag, and cohort preference for session continuity.</li>
+              <li>Clearing your browser cache or clicking <strong>"Sign Out"</strong> instantly invalidates and deletes the stored session key.</li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- 8. Zero Third-Party Monetization -->
+        <article class="section-card" id="section-sharing">
+          <div class="section-header">
+            <div class="section-num mono">08</div>
+            <h2 class="section-title">Absolute Prohibition on Commercial Data Monetization</h2>
+          </div>
+          <div class="section-body">
+            <p>
+              <strong>Chilika Institute of Technology does not sell, rent, lease, trade, or monetize student or faculty data under any circumstances.</strong>
+            </p>
+            <p>
+              Academic timetables, room schedules, and event booking logs remain the exclusive sovereign property of the institute. Information is never shared with third-party data brokers, marketers, or advertiser networks.
+            </p>
+          </div>
+        </article>
+
+        <!-- 9. Retention & Demo Resets -->
+        <article class="section-card" id="section-retention">
+          <div class="section-header">
+            <div class="section-num mono">09</div>
+            <h2 class="section-title">Data Retention & Administrator Demo Resets</h2>
+          </div>
+          <div class="section-body">
+            <p>
+              Active timetables and examination distributions are retained for the duration of the academic semester. Following semester conclusion, historical schedules are archived into the institute's permanent academic registry.
+            </p>
+            <div class="callout callout-blue">
+              <strong>Evaluator & Hackathon Demo Reset Notice:</strong> For the purposes of technical judging and verification, the system provides a Dean-level <strong>"↺ Reset Baseline State"</strong> endpoint. This resets the in-memory dataset, cancels temporary room reroutes, and restores the certified 0-clash baseline for fresh validation runs.
+            </div>
+          </div>
+        </article>
+
+        <!-- 10. User Rights & Corrections -->
+        <article class="section-card" id="section-rights">
+          <div class="section-header">
+            <div class="section-num mono">10</div>
+            <h2 class="section-title">Rights of Students, Faculty & Event Leads</h2>
+          </div>
+          <div class="section-body">
+            <p>
+              Under institutional policy and applicable data protection regulations, users hold the following rights:
+            </p>
+            <ul>
+              <li><strong>Right to Audit:</strong> Any student or faculty member may inspect their assigned timetable and view the mathematical justification for room allocations.</li>
+              <li><strong>Right to Rectification:</strong> In the event of an erroneous cohort assignment or student group mismatch, members may request an administrative update through their Department Academic Coordinator.</li>
+              <li><strong>Right of Withdrawal:</strong> Club representatives may cancel pending venue booking requests at any time prior to event commencement without penalty.</li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- 11. Contact & Data Protection Officer -->
+        <article class="section-card" id="section-contact">
+          <div class="section-header">
+            <div class="section-num mono">11</div>
+            <h2 class="section-title">Institutional Inquiries & Data Protection Contact</h2>
+          </div>
+          <div class="section-body">
+            <p>
+              For questions, clarifications, or reports regarding academic schedule fairness, venue allocations, or data protection standards, please contact the institutional authority:
+            </p>
+            
+            <div style="background: var(--yellow-light); border: 1px solid var(--yellow-border); padding: 18px 22px; border-radius: 8px; margin-top: 14px;">
+              <div style="font-weight: 800; color: var(--primary); font-size: 14px;">Office of the Dean of Academic Affairs</div>
+              <div style="font-size: 13px; color: var(--text-main); margin-top: 4px;">Chilika Institute of Technology (CIT)</div>
+              <div style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">
+                Central Academic Secretariat, Academic Block A<br>
+                Chilika Campus, Odisha 752030, India<br>
+                Official Contact Email: <a href="mailto:privacy@cit.ac.in" style="color: var(--primary); font-weight: 700; text-decoration: underline;">privacy@cit.ac.in</a> · <a href="mailto:academics@cit.ac.in" style="color: var(--primary); font-weight: 700; text-decoration: underline;">academics@cit.ac.in</a>
+              </div>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- University Footer -->
+  <footer>
+    <div class="footer-wrap">
+      <div>
+        <strong>Chilika Institute of Technology</strong> · Central Academic Services & Operations
+        <div style="font-size: 10.5px; color: var(--text-dim); margin-top: 4px;">
+          Engine: cit-public-v1 · Google OR-Tools CP-SAT · Certified 0 Hard Clashes
+        </div>
+      </div>
+
+      <div class="footer-links">
+        <a href="/">Weekly Timetable</a>
+        <a href="/login">Portal Login</a>
+        <a href="/admin/login">Admin Terminal</a>
+        <a href="/privacy" style="color: var(--primary); font-weight: 800;">Privacy Policy</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

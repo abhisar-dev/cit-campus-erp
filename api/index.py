@@ -109,6 +109,11 @@ class handler(http.server.BaseHTTPRequestHandler):
             if self.serve_file("admin.html"):
                 return
 
+        # Dedicated Privacy Policy Route
+        if req_path in ("/privacy", "/privacy-policy", "/privacy.html", "/privacy-policy.html"):
+            if self.serve_file("privacy.html"):
+                return
+
         # User portal routes
         if req_path in ("/", "/index.html", "/portal", "/dashboard", "/timetable", "/bookings"):
             if self.serve_file("index.html"):
