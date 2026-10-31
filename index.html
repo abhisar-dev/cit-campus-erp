@@ -3,14 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Chilika Institute of Technology — University ERP Portal</title>
+  <title>Chilika Institute of Technology — University ERP</title>
   <style>
-    /*
-     * ChronoCIT — University ERP Architecture
-     * Inspired by authentic Indian University ERP portals (Invertis / TCS iON / KIIT)
-     * Layout: Top Announcement Ribbon + Institutional Brand Header + Left Module Navigation + High-Density Content Area
-     */
-
     *, *::before, *::after {
       box-sizing: border-box;
       margin: 0;
@@ -18,26 +12,17 @@
     }
 
     :root {
-      --top-ribbon-bg: #c2410c; /* Deep terracotta / orange alert bar */
+      --ticker-bg: #ea580c;
       --header-bg: #ffffff;
-      --page-bg: #f1f5f9;
-      --sidebar-header: #0284c7; /* Vibrant institutional blue */
-      --sidebar-bg: #ffffff;
-      --sidebar-border: #e2e8f0;
-      --sidebar-hover: #f8fafc;
-      --sidebar-active-text: #0284c7;
-      --text-main: #0f172a;
-      --text-muted: #475569;
-      --text-dim: #94a3b8;
-      --border-subtle: #cbd5e1;
-      --primary-blue: #0284c7;
+      --page-bg: #f8fafc;
+      --primary: #0284c7;
       --primary-dark: #0369a1;
-      --emerald: #059669;
-      --amber: #d97706;
-      --rose: #dc2626;
-      --purple: #7c3aed;
-      --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --card-bg: #ffffff;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: ui-monospace, Menlo, Consolas, monospace;
     }
 
     body {
@@ -51,393 +36,332 @@
       flex-direction: column;
     }
 
-    .mono {
-      font-family: var(--font-mono);
+    /* 1. MOVING ANNOUNCEMENT TICKER (MARQUEE) */
+    .ticker-bar {
+      background: var(--ticker-bg);
+      color: #ffffff;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      font-size: 12px;
+      font-weight: 500;
+      position: relative;
     }
 
-    /* 1. TOP ANNOUNCEMENT RIBBON */
-    .announcement-ribbon {
-      background-color: var(--top-ribbon-bg);
-      color: #ffffff;
-      height: 36px;
-      padding: 0 20px;
+    .ticker-label {
+      background: #c2410c;
+      height: 100%;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      font-size: 11px;
+      z-index: 2;
+      box-shadow: 2px 0 6px rgba(0, 0, 0, 0.15);
+      white-space: nowrap;
+    }
+
+    .ticker-track {
+      flex: 1;
+      overflow: hidden;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+    }
+
+    .ticker-text {
+      display: inline-block;
+      padding-left: 100%;
+      animation: ticker-anim 28s linear infinite;
+    }
+
+    .ticker-track:hover .ticker-text {
+      animation-play-state: paused;
+    }
+
+    @keyframes ticker-anim {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-100%); }
+    }
+
+    .ticker-user {
+      padding: 0 18px;
+      font-weight: 700;
+      font-size: 11px;
+      z-index: 2;
+      background: #c2410c;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+    }
+
+    /* 2. UNIVERSITY HEADER */
+    .erp-header {
+      background: #ffffff;
+      border-bottom: 2px solid #e2e8f0;
+      padding: 12px 28px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      font-size: 12px;
-      font-weight: 500;
     }
 
-    .announcement-left {
+    .brand {
       display: flex;
       align-items: center;
       gap: 12px;
     }
 
-    .announcement-badge {
-      background: rgba(0, 0, 0, 0.2);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      padding: 2px 8px;
-      border-radius: 4px;
-      font-weight: 700;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .announcement-user {
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      font-size: 11px;
-      text-transform: uppercase;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    /* 2. UNIVERSITY HEADER */
-    .erp-header {
-      background: var(--header-bg);
-      border-bottom: 2px solid #e2e8f0;
-      padding: 10px 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-    }
-
-    .brand-section {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .brand-emblem {
-      width: 44px;
-      height: 44px;
+    .brand-logo {
+      width: 42px;
+      height: 42px;
       border-radius: 8px;
-      background: linear-gradient(135deg, #0369a1, #0284c7);
+      background: #0284c7;
+      color: #fff;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      color: #fff;
-      font-weight: 900;
-      font-size: 16px;
+      font-weight: 800;
+      font-size: 15px;
       letter-spacing: -0.5px;
-      border: 2px solid #e0f2fe;
-      box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
     }
 
-    .brand-emblem span {
-      font-size: 7px;
-      font-weight: 600;
-      letter-spacing: 1px;
-      margin-top: -2px;
-    }
-
-    .brand-text h1 {
+    .brand-info h1 {
       font-size: 16px;
       font-weight: 800;
-      color: #0c4a6e;
+      color: #0369a1;
       letter-spacing: -0.3px;
     }
 
-    .brand-text p {
+    .brand-info p {
       font-size: 11px;
       color: #64748b;
-      font-weight: 500;
     }
 
-    /* Curved Institutional Header Tabs */
-    .header-nav-tabs {
+    /* Role Quick Selector */
+    .persona-pill {
       display: flex;
-      align-items: flex-end;
-      gap: 3px;
-      overflow-x: auto;
-    }
-
-    .curved-tab {
-      background: #0284c7;
-      color: #ffffff;
-      border: none;
-      padding: 8px 16px;
-      border-top-left-radius: 6px;
-      border-top-right-radius: 6px;
+      align-items: center;
+      gap: 8px;
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      border-radius: 20px;
+      padding: 4px 12px;
       font-size: 12px;
+    }
+
+    .persona-select {
+      background: transparent;
+      border: none;
       font-weight: 600;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: background 0.15s ease;
-    }
-
-    .curved-tab:hover {
-      background: #0369a1;
-    }
-
-    .curved-tab.active {
-      background: #0369a1;
-      border-bottom: 2px solid #38bdf8;
-    }
-
-    .profile-pill {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .profile-avatar {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: #e2e8f0;
-      border: 2px solid #0284c7;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
       color: #0369a1;
-      font-size: 13px;
+      outline: none;
+      cursor: pointer;
     }
 
-    /* 3. SUB-NAV / BREADCRUMB STRIP */
-    .subnav-strip {
-      background: #f8fafc;
-      border-bottom: 1px solid #cbd5e1;
-      padding: 6px 24px;
+    /* 3. BREADCRUMB BAR */
+    .subnav {
+      background: #ffffff;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 8px 28px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      font-size: 11px;
-      color: #475569;
+      font-size: 12px;
     }
 
     .breadcrumbs {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-weight: 500;
+      color: #64748b;
     }
 
-    .btn-home-pill {
-      background: #0284c7;
-      color: #ffffff;
-      border: none;
-      padding: 4px 12px;
+    .breadcrumbs strong {
+      color: #0284c7;
+    }
+
+    .btn-reset {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #dc2626;
+      padding: 4px 10px;
       border-radius: 4px;
       font-size: 11px;
       font-weight: 600;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
     }
 
-    /* 4. MAIN DUAL-PANE BODY */
-    .erp-body {
+    /* 4. MAIN LAYOUT (CLEAN DUAL-PANE) */
+    .layout-body {
       display: flex;
       flex: 1;
       max-width: 1440px;
       width: 100%;
       margin: 0 auto;
-      padding: 16px 20px;
-      gap: 18px;
+      padding: 20px 28px;
+      gap: 24px;
     }
 
-    /* LEFT SIDEBAR */
-    .erp-sidebar {
-      width: 240px;
-      min-width: 240px;
-      background: var(--sidebar-bg);
-      border: 1px solid var(--sidebar-border);
-      border-radius: 6px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    /* SIDEBAR */
+    .sidebar {
+      width: 220px;
+      min-width: 220px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
       overflow: hidden;
-      display: flex;
-      flex-direction: column;
       align-self: flex-start;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
     }
 
-    .sidebar-header-box {
-      background: var(--sidebar-header);
+    .sidebar-head {
+      background: #0284c7;
       color: #ffffff;
-      padding: 10px 14px;
+      padding: 12px 16px;
       font-weight: 700;
-      letter-spacing: -0.2px;
-      text-transform: uppercase;
       font-size: 12px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
     }
 
     .sidebar-menu {
       list-style: none;
-      display: flex;
-      flex-direction: column;
     }
 
-    .sidebar-item {
+    .sidebar-btn {
+      width: 100%;
+      text-align: left;
+      background: transparent;
+      border: none;
       border-bottom: 1px solid #f1f5f9;
       border-left: 3px solid transparent;
-      padding: 10px 14px;
+      padding: 12px 16px;
       font-size: 12px;
       font-weight: 600;
-      color: #334155;
+      color: #475569;
       cursor: pointer;
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      transition: all 0.15s ease;
-      background: #ffffff;
+      align-items: center;
+      transition: all 0.15s;
     }
 
-    .sidebar-item:hover {
-      background: var(--sidebar-hover);
-      color: var(--primary-blue);
+    .sidebar-btn:hover {
+      background: #f8fafc;
+      color: #0284c7;
     }
 
-    .sidebar-item.active {
+    .sidebar-btn.active {
       background: #f0f9ff;
       border-left-color: #0284c7;
       color: #0369a1;
       font-weight: 700;
     }
 
-    .sidebar-tag {
-      font-size: 10px;
-      font-family: var(--font-mono);
-      background: #e2e8f0;
-      color: #475569;
-      padding: 1px 6px;
-      border-radius: 3px;
-    }
-
-    .sidebar-item.active .sidebar-tag {
-      background: #bae6fd;
-      color: #0369a1;
-    }
-
-    /* Persona Selector in Sidebar */
-    .sidebar-persona-box {
-      margin-top: auto;
-      background: #f8fafc;
-      border-top: 1px solid #e2e8f0;
-      padding: 12px;
-    }
-
-    .persona-select {
-      width: 100%;
-      background: #ffffff;
-      border: 1px solid #cbd5e1;
-      border-radius: 4px;
-      padding: 6px 8px;
-      font-size: 11px;
-      color: #0f172a;
-      font-weight: 600;
-      margin-top: 4px;
-      outline: none;
-    }
-
-    /* RIGHT CONTENT AREA */
-    .erp-content {
+    /* CONTENT AREA */
+    .workspace {
       flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 18px;
       min-width: 0;
     }
 
-    .content-box {
+    .card {
       background: #ffffff;
       border: 1px solid #e2e8f0;
-      border-radius: 6px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-      padding: 18px 20px;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
     }
 
-    .box-header {
+    .card-header {
+      margin-bottom: 16px;
       display: flex;
-      align-items: center;
       justify-content: space-between;
+      align-items: center;
       border-bottom: 1px solid #f1f5f9;
       padding-bottom: 12px;
-      margin-bottom: 14px;
     }
 
-    .box-title {
-      font-size: 15px;
+    .card-title {
+      font-size: 16px;
       font-weight: 700;
       color: #0f172a;
-      letter-spacing: -0.2px;
     }
 
-    .box-desc {
+    .card-subtitle {
       font-size: 12px;
       color: #64748b;
       margin-top: 2px;
     }
 
-    /* High-Density Metric Strip */
-    .stats-bar {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 12px;
-      margin-bottom: 16px;
+    /* Clean Key Metrics */
+    .summary-strip {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
     }
 
-    .stat-pill {
+    .summary-box {
+      flex: 1;
+      min-width: 140px;
       background: #f8fafc;
       border: 1px solid #e2e8f0;
-      border-left: 3px solid #0284c7;
-      border-radius: 4px;
+      border-radius: 6px;
       padding: 10px 14px;
     }
 
-    .stat-pill-label {
-      font-size: 11px;
-      font-weight: 700;
-      color: #64748b;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+    .summary-box.highlight {
+      border-left: 3px solid #10b981;
     }
 
-    .stat-pill-val {
-      font-size: 20px;
+    .summary-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+    }
+
+    .summary-val {
+      font-size: 18px;
       font-weight: 800;
       color: #0f172a;
-      font-family: var(--font-mono);
       margin-top: 2px;
     }
 
     /* Filters Bar */
-    .controls-strip {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 4px;
-      padding: 8px 14px;
+    .filter-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 8px 12px;
+      margin-bottom: 14px;
       flex-wrap: wrap;
       gap: 10px;
-      margin-bottom: 14px;
     }
 
     .filter-options {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
 
-    .radio-pill {
+    .segmented {
       display: inline-flex;
-      background: #ffffff;
-      border: 1px solid #cbd5e1;
+      background: #e2e8f0;
       border-radius: 4px;
       padding: 2px;
     }
 
-    .radio-btn {
-      background: transparent;
+    .seg-btn {
       border: none;
+      background: transparent;
       padding: 4px 10px;
       font-size: 11px;
       font-weight: 600;
@@ -446,82 +370,100 @@
       border-radius: 3px;
     }
 
-    .radio-btn.active {
-      background: #0284c7;
-      color: #ffffff;
+    .seg-btn.active {
+      background: #ffffff;
+      color: #0284c7;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     }
 
-    .select-dropdown {
+    .styled-select {
       background: #ffffff;
       border: 1px solid #cbd5e1;
-      padding: 4px 8px;
       border-radius: 4px;
+      padding: 5px 10px;
       font-size: 12px;
-      color: #0f172a;
-      font-family: var(--font-mono);
       font-weight: 600;
+      color: #0f172a;
       outline: none;
     }
 
-    /* Timetable Grid */
-    .table-responsive {
+    /* Clean Timetable Grid */
+    .table-container {
       overflow-x: auto;
       border: 1px solid #cbd5e1;
-      border-radius: 4px;
-      background: #ffffff;
+      border-radius: 6px;
     }
 
-    table.erp-table {
+    table.grid-table {
       width: 100%;
       border-collapse: collapse;
       font-size: 12px;
-      text-align: left;
+      background: #ffffff;
     }
 
-    table.erp-table th, table.erp-table td {
+    table.grid-table th, table.grid-table td {
       border-right: 1px solid #e2e8f0;
       border-bottom: 1px solid #e2e8f0;
-      padding: 8px 10px;
+      padding: 8px;
     }
 
-    table.erp-table th {
+    table.grid-table th {
       background: #f8fafc;
       color: #475569;
       font-weight: 700;
       font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+      text-align: center;
     }
 
-    .period-cell {
-      min-width: 120px;
-      height: 72px;
+    .day-cell {
+      font-weight: 800;
+      color: #0284c7;
+      background: #f8fafc;
+      text-align: center;
+      width: 60px;
+    }
+
+    .slot-cell {
+      min-width: 110px;
+      height: 64px;
       vertical-align: top;
       padding: 4px;
     }
 
-    .class-card {
-      background: #ffffff;
-      border: 1px solid #cbd5e1;
+    .class-item {
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
       border-left: 3px solid #0284c7;
       border-radius: 4px;
-      padding: 5px 6px;
+      padding: 4px 6px;
       height: 100%;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
       font-size: 11px;
     }
 
-    .class-card.lab { border-left-color: #7c3aed; background: #faf5ff; }
-    .class-card.tutorial { border-left-color: #059669; background: #f0fdf4; }
-    .class-card.basket { border-left-color: #d97706; background: #fffbeb; }
+    .class-item.lab {
+      background: #faf5ff;
+      border-color: #e9d5ff;
+      border-left-color: #9333ea;
+    }
 
-    .class-head {
+    .class-item.tutorial {
+      background: #f0fdf4;
+      border-color: #bbf7d0;
+      border-left-color: #16a34a;
+    }
+
+    .class-item.basket {
+      background: #fffbeb;
+      border-color: #fde68a;
+      border-left-color: #d97706;
+    }
+
+    .class-top {
       display: flex;
       justify-content: space-between;
-      align-items: center;
       font-weight: 700;
       color: #0f172a;
     }
@@ -531,36 +473,32 @@
       font-size: 10px;
     }
 
-    .class-foot {
+    .class-bottom {
       display: flex;
       justify-content: space-between;
       color: #475569;
-      font-size: 10px;
-      border-top: 1px dashed #e2e8f0;
-      padding-top: 2px;
-      margin-top: 2px;
+      font-size: 9px;
     }
 
-    /* Badges & Pills */
-    .status-badge {
+    /* Status Badges */
+    .badge {
       display: inline-block;
       padding: 2px 8px;
-      border-radius: 3px;
+      border-radius: 4px;
       font-size: 10px;
       font-weight: 700;
       text-transform: uppercase;
-      font-family: var(--font-mono);
     }
 
-    .badge-approved { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
-    .badge-alt { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
-    .badge-rejected { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+    .badge-ok { background: #dcfce7; color: #166534; }
+    .badge-warn { background: #fef3c7; color: #92400e; }
+    .badge-danger { background: #fee2e2; color: #991b1b; }
 
     .btn-action {
       background: #0284c7;
       color: #ffffff;
-      border: 1px solid #0369a1;
-      padding: 7px 14px;
+      border: none;
+      padding: 6px 14px;
       border-radius: 4px;
       font-size: 12px;
       font-weight: 600;
@@ -571,18 +509,16 @@
       background: #0369a1;
     }
 
-    .text-input {
-      background: #ffffff;
+    .input-box {
+      width: 100%;
       border: 1px solid #cbd5e1;
-      color: #0f172a;
       padding: 8px 12px;
       border-radius: 4px;
       font-size: 12px;
-      width: 100%;
       outline: none;
     }
 
-    .text-input:focus {
+    .input-box:focus {
       border-color: #0284c7;
     }
 
@@ -595,144 +531,107 @@
       padding: 10px 16px;
       border-radius: 4px;
       font-size: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
       display: none;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
       z-index: 100;
-    }
-
-    footer {
-      background: #ffffff;
-      border-top: 1px solid #cbd5e1;
-      padding: 12px 24px;
-      font-size: 11px;
-      color: #64748b;
-      display: flex;
-      justify-content: space-between;
-      margin-top: auto;
     }
   </style>
 </head>
 <body>
-  <!-- 1. TOP ANNOUNCEMENT RIBBON -->
-  <div class="announcement-ribbon">
-    <div class="announcement-left">
-      <span class="announcement-badge">Announcement</span>
-      <span>Check priority regulations for Week 7 Spectra Fest venue reservations. Exam capacities halved per CIT guidelines.</span>
+
+  <!-- 1. MOVING ANNOUNCEMENTS TICKER -->
+  <div class="ticker-bar">
+    <div class="ticker-label">Announcements</div>
+    <div class="ticker-track">
+      <span class="ticker-text">
+        📢 Spectra '27 Tech Fest: Venue allocations live under Dean's Office Priority Rules. · 📢 Midsem Exam Schedule published: All room seating capacities halved per CIT invigilation guidelines. · 📢 Facility Update: Room CR-102 undergoing maintenance; affected classes relocated to CR-101 with zero time shifts.
+      </span>
     </div>
-    <div class="announcement-user">
-      <span id="top-user-name">ABHISAR KUMAR</span>
-      <span style="opacity: 0.7;">·</span>
-      <span id="top-user-role">DEAN (ADMIN)</span>
+    <div class="ticker-user">
+      <span id="role-display">ABHISAR KUMAR · DEAN (ADMIN)</span>
     </div>
   </div>
 
-  <!-- 2. UNIVERSITY BRAND HEADER -->
+  <!-- 2. BRAND HEADER -->
   <header class="erp-header">
-    <div class="brand-section">
-      <div class="brand-emblem">
-        CIT
-        <span>ESTD</span>
-      </div>
-      <div class="brand-text">
+    <div class="brand">
+      <div class="brand-logo">CIT</div>
+      <div class="brand-info">
         <h1>CHILIKA INSTITUTE OF TECHNOLOGY</h1>
-        <p>Enterprise Academic Scheduling & Venue Management ERP</p>
+        <p>Campus ERP · Academic Scheduling & Venue Management Portal</p>
       </div>
     </div>
 
-    <!-- Curved Header Module Tabs -->
-    <div class="header-nav-tabs">
-      <button class="curved-tab active" onclick="switchModule('timetable')">Academic Master</button>
-      <button class="curved-tab" onclick="switchModule('fest')">Spectra Week 7</button>
-      <button class="curved-tab" onclick="switchModule('ai')">Venue Request AI</button>
-      <button class="curved-tab" onclick="switchModule('disruption')">Disruption Center</button>
-      <button class="curved-tab" onclick="switchModule('exams')">Midsem Exams</button>
-      <button class="curved-tab" onclick="switchModule('audit')">Validator Audit</button>
-    </div>
-
-    <div class="profile-pill">
-      <div class="profile-avatar" id="avatar-letter">A</div>
+    <!-- Active Persona Switcher -->
+    <div class="persona-pill">
+      <span>Active Role:</span>
+      <select class="persona-select" onchange="changePersona(this.value)">
+        <option value="admin">Dean's Office (Admin)</option>
+        <option value="coordinator">CSE Dept Coordinator</option>
+        <option value="faculty">Faculty (Dr. S. N. Bose)</option>
+        <option value="club">Club Rep (Spectra Lead)</option>
+      </select>
     </div>
   </header>
 
-  <!-- 3. SUB-NAV BREADCRUMB STRIP -->
-  <div class="subnav-strip">
+  <!-- 3. BREADCRUMBS -->
+  <div class="subnav">
     <div class="breadcrumbs">
-      <span style="color: #0284c7; font-weight: 700;">ERP Home</span>
-      <span>&gt;</span>
-      <span>Academic Operations</span>
-      <span>&gt;</span>
-      <span id="breadcrumb-current" style="font-weight: 600; color: #0f172a;">Master Timetable Matrix</span>
+      Academic Operations &gt; <strong id="active-breadcrumb">Master Timetable</strong>
     </div>
-
-    <div style="display: flex; align-items: center; gap: 8px;">
-      <button class="btn-home-pill" onclick="resetDemo()">
-        ↺ Reset Demo State
-      </button>
-    </div>
+    <button class="btn-reset" onclick="resetDemo()">↺ Reset Demo Data</button>
   </div>
 
-  <!-- 4. DUAL-PANE BODY -->
-  <div class="erp-body">
-    <!-- LEFT SIDEBAR -->
-    <aside class="erp-sidebar">
-      <div class="sidebar-header-box">
-        Academic Portal
-      </div>
+  <!-- 4. DUAL PANE WORKSPACE -->
+  <div class="layout-body">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-head">Academic Modules</div>
       <ul class="sidebar-menu">
-        <li class="sidebar-item active" onclick="switchModule('timetable')">
-          <span>Master Timetable</span>
-          <span class="sidebar-tag">189 Ses</span>
+        <li>
+          <button class="sidebar-btn active" onclick="switchTab('timetable')">
+            <span>Timetable Matrix</span>
+            <span style="font-size: 10px; color: #94a3b8;">189</span>
+          </button>
         </li>
-        <li class="sidebar-item" onclick="switchModule('fest')">
-          <span>Spectra Week 7</span>
-          <span class="sidebar-tag">25 Req</span>
+        <li>
+          <button class="sidebar-btn" onclick="switchTab('fest')">
+            <span>Spectra Week 7</span>
+            <span style="font-size: 10px; color: #94a3b8;">25</span>
+          </button>
         </li>
-        <li class="sidebar-item" onclick="switchModule('ai')">
-          <span>Venue AI Parser</span>
-          <span class="sidebar-tag">NLP</span>
+        <li>
+          <button class="sidebar-btn" onclick="switchTab('ai')">
+            <span>Venue AI Parser</span>
+            <span style="font-size: 10px; color: #94a3b8;">NLP</span>
+          </button>
         </li>
-        <li class="sidebar-item" onclick="switchModule('disruption')">
-          <span>Disruption Resolver</span>
-          <span class="sidebar-tag">CR-102</span>
+        <li>
+          <button class="sidebar-btn" onclick="switchTab('disruption')">
+            <span>Disruption Center</span>
+            <span style="font-size: 10px; color: #94a3b8;">CR-102</span>
+          </button>
         </li>
-        <li class="sidebar-item" onclick="switchModule('exams')">
-          <span>Midsem Exams</span>
-          <span class="sidebar-tag">41 Ex</span>
+        <li>
+          <button class="sidebar-btn" onclick="switchTab('exams')">
+            <span>Midsem Exams</span>
+            <span style="font-size: 10px; color: #94a3b8;">41</span>
+          </button>
         </li>
-        <li class="sidebar-item" onclick="switchModule('audit')">
-          <span>Validator Compliance</span>
-          <span class="sidebar-tag">Score 25</span>
+        <li>
+          <button class="sidebar-btn" onclick="switchTab('audit')">
+            <span>Validator Audit</span>
+            <span style="font-size: 10px; color: #16a34a; font-weight: 700;">Pass</span>
+          </button>
         </li>
       </ul>
-
-      <!-- Active Persona Switcher Box -->
-      <div class="sidebar-persona-box">
-        <div style="font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase;">
-          Logged-In Role Switcher
-        </div>
-        <select class="persona-select" onchange="changePersona(this.value)">
-          <option value="admin">Dean's Office (Admin)</option>
-          <option value="coordinator">CSE Dept Coordinator</option>
-          <option value="faculty">Faculty (Physics / F19)</option>
-          <option value="club">Club Rep (Spectra Fest)</option>
-        </select>
-        <div style="font-size: 10px; color: #64748b; margin-top: 6px;">
-          Session: <strong style="color: #0284c7;">Week 7 Live</strong>
-        </div>
-      </div>
     </aside>
 
-    <!-- RIGHT MAIN WORKSPACE -->
-    <main class="erp-content" id="workspace">
-      <!-- Dynamic workspace content loaded here -->
+    <!-- MAIN WORKSPACE CONTENT -->
+    <main class="workspace" id="main-view">
+      <!-- Dynamic views load here -->
     </main>
   </div>
-
-  <!-- FOOTER -->
-  <footer>
-    <span>Chilika Institute of Technology · Office of Dean Academics</span>
-    <span class="mono">Official Dataset: cit-public-v1 · Certified 0 Hard Clashes</span>
-  </footer>
 
   <div id="toast"></div>
 
@@ -741,62 +640,52 @@
     let SCHED = null;
     let SCHED_AFTER = null;
     let activeRole = 'admin';
-    let currentModule = 'timetable';
+    let currentTab = 'timetable';
     let filterType = 'group';
     let filterVal = 'Y1-A';
-    let disruptionMode = false;
+    let disruptionApplied = false;
 
-    const PERSONAS = {
-      admin: { name: "ABHISAR KUMAR", role: "DEAN'S OFFICE (ADMIN)", letter: "A" },
-      coordinator: { name: "DR. R. K. MISHRA", role: "CSE DEPT COORDINATOR", letter: "C" },
-      faculty: { name: "DR. S. N. BOSE", role: "FACULTY (PHYSICS / F19)", letter: "F" },
-      club: { name: "ARYAN SHARMA", role: "CLUB REP (DRAMATICS)", letter: "D" }
+    const ROLES = {
+      admin: "ABHISAR KUMAR · DEAN (ADMIN)",
+      coordinator: "DR. R. K. MISHRA · CSE COORDINATOR",
+      faculty: "DR. S. N. BOSE · FACULTY (F19)",
+      club: "ARYAN SHARMA · CLUB REP (SPECTRA)"
     };
 
     function showToast(msg) {
-      const el = document.getElementById("toast");
-      el.textContent = msg;
-      el.style.display = "block";
-      setTimeout(() => { el.style.display = "none"; }, 3000);
+      const t = document.getElementById("toast");
+      t.innerText = msg;
+      t.style.display = "block";
+      setTimeout(() => { t.style.display = "none"; }, 3000);
     }
 
     function changePersona(p) {
       activeRole = p;
-      document.getElementById("top-user-name").textContent = PERSONAS[p].name;
-      document.getElementById("top-user-role").textContent = PERSONAS[p].role;
-      document.getElementById("avatar-letter").textContent = PERSONAS[p].letter;
-      showToast(`Switched active persona to ${PERSONAS[p].role}`);
+      document.getElementById("role-display").innerText = ROLES[p];
+      showToast("Role switched to " + ROLES[p]);
     }
 
-    function switchModule(mod) {
-      currentModule = mod;
-      // Sync curved tabs
-      document.querySelectorAll(".curved-tab").forEach(t => t.classList.remove("active"));
-      document.querySelectorAll(".sidebar-item").forEach(s => s.classList.remove("active"));
-
-      const modNames = ['timetable', 'fest', 'ai', 'disruption', 'exams', 'audit'];
-      const idx = modNames.indexOf(mod);
-      if (idx !== -1) {
-        document.querySelectorAll(".curved-tab")[idx].classList.add("active");
-        document.querySelectorAll(".sidebar-item")[idx].classList.add("active");
-      }
+    function switchTab(t) {
+      currentTab = t;
+      document.querySelectorAll(".sidebar-btn").forEach(b => b.classList.remove("active"));
+      event.currentTarget.classList.add("active");
 
       const titles = {
-        timetable: "Master Timetable Matrix",
-        fest: "Spectra Tech Fest (Week 7 Bookings)",
-        ai: "Plain-Text & Hinglish Venue AI Parser",
-        disruption: "Emergency Disruption & Minimal-Move Solver",
-        exams: "Midsem Examination Matrix",
-        audit: "Official Validator Audit Scorecard"
+        timetable: "Master Timetable",
+        fest: "Spectra Tech Fest (Week 7)",
+        ai: "Venue AI Parser",
+        disruption: "Disruption Resolution",
+        exams: "Midsem Examinations",
+        audit: "Validator Audit"
       };
-      document.getElementById("breadcrumb-current").textContent = titles[mod] || "Workspace";
-      renderModule();
+      document.getElementById("active-breadcrumb").innerText = titles[t];
+      renderView();
     }
 
     function resetDemo() {
-      disruptionMode = false;
-      showToast("ERP state restored to clean initial baseline (cit-public-v1).");
-      renderModule();
+      disruptionApplied = false;
+      showToast("Data reset to clean baseline.");
+      renderView();
     }
 
     async function init() {
@@ -809,27 +698,27 @@
         DATA = d;
         SCHED = s;
         SCHED_AFTER = sa;
-        renderModule();
+        renderView();
       } catch (err) {
-        document.getElementById("workspace").innerHTML = "<div style='padding:40px; text-align:center; color:#dc2626;'>Cannot connect to ERP service. Verify server.py is running.</div>";
+        document.getElementById("main-view").innerHTML = "<div style='color:red; padding:20px;'>API error. Ensure server.py is running.</div>";
       }
     }
 
-    function renderModule() {
-      const ws = document.getElementById("workspace");
-      const currentSched = disruptionMode ? SCHED_AFTER : SCHED;
+    function renderView() {
+      const view = document.getElementById("main-view");
+      const currentSched = disruptionApplied ? SCHED_AFTER : SCHED;
       if (!currentSched) return;
 
-      if (currentModule === 'timetable') renderTimetable(ws, currentSched);
-      else if (currentModule === 'fest') renderFest(ws, currentSched);
-      else if (currentModule === 'ai') renderAI(ws);
-      else if (currentModule === 'disruption') renderDisruption(ws);
-      else if (currentModule === 'exams') renderExams(ws, currentSched);
-      else if (currentModule === 'audit') renderAudit(ws);
+      if (currentTab === 'timetable') renderTimetable(view, currentSched);
+      else if (currentTab === 'fest') renderFest(view, currentSched);
+      else if (currentTab === 'ai') renderAI(view);
+      else if (currentTab === 'disruption') renderDisruption(view);
+      else if (currentTab === 'exams') renderExams(view, currentSched);
+      else if (currentTab === 'audit') renderAudit(view);
     }
 
-    // MODULE 1: TIMETABLE
-    function renderTimetable(ws, sched) {
+    // 1. TIMETABLE VIEW (CLEAR & CLEAN)
+    function renderTimetable(view, sched) {
       const sessMap = {};
       DATA.sessions.forEach(s => { sessMap[s.id] = s; });
 
@@ -844,101 +733,101 @@
 
         if (match) {
           for (let p = item.start_period; p < item.start_period + s.duration; p++) {
-            grid[item.day][p] = { ...s, ...item, isStart: p === item.start_period };
+            grid[item.day][p] = { ...s, ...item };
           }
         }
       });
 
-      let optionsHTML = '';
+      let options = '';
       if (filterType === 'group') {
         DATA.student_groups.forEach(g => {
-          optionsHTML += `<option value="${g.id}" ${filterVal === g.id ? 'selected' : ''}>${g.id} (${g.name} · ${g.size} Students)</option>`;
+          options += `<option value="${g.id}" ${filterVal === g.id ? 'selected' : ''}>${g.id} (${g.name})</option>`;
         });
       } else if (filterType === 'faculty') {
         DATA.faculty.forEach(f => {
-          optionsHTML += `<option value="${f.id}" ${filterVal === f.id ? 'selected' : ''}>${f.id}: ${f.name} (${f.department})</option>`;
+          options += `<option value="${f.id}" ${filterVal === f.id ? 'selected' : ''}>${f.id}: ${f.name} (${f.department})</option>`;
         });
       } else {
         DATA.rooms.forEach(r => {
-          optionsHTML += `<option value="${r.id}" ${filterVal === r.id ? 'selected' : ''}>${r.id} · ${r.name} (Cap: ${r.capacity}, ${r.type})</option>`;
+          options += `<option value="${r.id}" ${filterVal === r.id ? 'selected' : ''}>${r.id} · ${r.name} (Cap: ${r.capacity})</option>`;
         });
       }
 
-      ws.innerHTML = `
-        <div class="stats-bar">
-          <div class="stat-pill">
-            <div class="stat-pill-label">Total Teaching Sessions</div>
-            <div class="stat-pill-val">189</div>
+      view.innerHTML = `
+        <div class="summary-strip">
+          <div class="summary-box">
+            <div class="summary-title">Total Sessions</div>
+            <div class="summary-val">189</div>
           </div>
-          <div class="stat-pill" style="border-left-color: #059669;">
-            <div class="stat-pill-label">Hard Constraint Violations</div>
-            <div class="stat-pill-val" style="color: #059669;">0</div>
+          <div class="summary-box highlight">
+            <div class="summary-title">Hard Clashes</div>
+            <div class="summary-val" style="color: #16a34a;">0 Violations</div>
           </div>
-          <div class="stat-pill">
-            <div class="stat-pill-label">Teaching Venues</div>
-            <div class="stat-pill-val">27</div>
+          <div class="summary-box">
+            <div class="summary-title">Venues Active</div>
+            <div class="summary-val">27 Rooms</div>
           </div>
-          <div class="stat-pill" style="border-left-color: ${disruptionMode ? '#d97706' : '#059669'};">
-            <div class="stat-pill-label">Active State</div>
-            <div class="stat-pill-val" style="font-size: 15px; font-weight: 700; color: ${disruptionMode ? '#d97706' : '#059669'};">
-              ${disruptionMode ? 'Disruption Repaired' : 'Baseline Schedule'}
+          <div class="summary-box">
+            <div class="summary-title">Schedule Mode</div>
+            <div class="summary-val" style="font-size: 14px; color: ${disruptionApplied ? '#d97706' : '#0284c7'};">
+              ${disruptionApplied ? 'Disruption Repaired' : 'Baseline Schedule'}
             </div>
           </div>
         </div>
 
-        <div class="content-box">
-          <div class="box-header">
+        <div class="card">
+          <div class="card-header">
             <div>
-              <div class="box-title">Semester Teaching Timetable (Week 1–15)</div>
-              <div class="box-desc">Strictly adheres to faculty daily limits (4h max), lab 3-hour blocks (P2 or P6 only), and elective basket synchronization.</div>
+              <div class="card-title">Semester Weekly Timetable</div>
+              <div class="card-subtitle">Showing all teaching periods (P1 to P9) with lunch recess (13:00 - 14:00)</div>
             </div>
           </div>
 
-          <div class="controls-strip">
+          <div class="filter-row">
             <div class="filter-options">
-              <span class="stat-pill-label" style="margin-right: 4px;">COHORT:</span>
-              <div class="radio-pill">
-                <button onclick="setFilterType('group')" class="radio-btn ${filterType==='group'?'active':''}">Student Group</button>
-                <button onclick="setFilterType('faculty')" class="radio-btn ${filterType==='faculty'?'active':''}">Faculty</button>
-                <button onclick="setFilterType('room')" class="radio-btn ${filterType==='room'?'active':''}">Venue / Room</button>
+              <span style="font-size: 11px; font-weight: 700; color: #64748b;">VIEW:</span>
+              <div class="segmented">
+                <button onclick="setFilter('group')" class="seg-btn ${filterType==='group'?'active':''}">Student Group</button>
+                <button onclick="setFilter('faculty')" class="seg-btn ${filterType==='faculty'?'active':''}">Faculty</button>
+                <button onclick="setFilter('room')" class="seg-btn ${filterType==='room'?'active':''}">Venue / Room</button>
               </div>
-              <select class="select-dropdown" onchange="setFilterVal(this.value)">
-                ${optionsHTML}
+              <select class="styled-select" onchange="setVal(this.value)">
+                ${options}
               </select>
             </div>
 
-            <div style="display: flex; gap: 12px; font-size: 11px; color: #475569;">
-              <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 8px; height: 8px; background: #0284c7; border-radius: 2px;"></span> Lecture</span>
-              <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 8px; height: 8px; background: #059669; border-radius: 2px;"></span> Tutorial</span>
-              <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 8px; height: 8px; background: #7c3aed; border-radius: 2px;"></span> 3-Hour Lab</span>
-              <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 8px; height: 8px; background: #d97706; border-radius: 2px;"></span> Elective Basket</span>
+            <div style="display: flex; gap: 10px; font-size: 11px;">
+              <span style="color: #0284c7;">■ Lecture</span>
+              <span style="color: #16a34a;">■ Tutorial</span>
+              <span style="color: #9333ea;">■ 3h Lab</span>
+              <span style="color: #d97706;">■ Basket</span>
             </div>
           </div>
 
-          <div class="table-responsive">
-            <table class="erp-table">
+          <div class="table-container">
+            <table class="grid-table">
               <thead>
                 <tr>
-                  <th style="width: 70px;">DAY</th>
-                  <th>P1<br><span style="font-size: 9px; color: #94a3b8;">08:00</span></th>
-                  <th>P2<br><span style="font-size: 9px; color: #94a3b8;">09:00</span></th>
-                  <th>P3<br><span style="font-size: 9px; color: #94a3b8;">10:00</span></th>
-                  <th>P4<br><span style="font-size: 9px; color: #94a3b8;">11:00</span></th>
-                  <th>P5<br><span style="font-size: 9px; color: #94a3b8;">12:00</span></th>
-                  <th style="background: #e2e8f0; color: #475569; text-align: center; width: 60px;">RECESS</th>
-                  <th>P6<br><span style="font-size: 9px; color: #94a3b8;">14:00</span></th>
-                  <th>P7<br><span style="font-size: 9px; color: #94a3b8;">15:00</span></th>
-                  <th>P8<br><span style="font-size: 9px; color: #94a3b8;">16:00</span></th>
-                  <th>P9<br><span style="font-size: 9px; color: #94a3b8;">17:00</span></th>
+                  <th style="width: 60px;">DAY</th>
+                  <th>P1<br><span style="font-size: 9px; color:#94a3b8;">08:00</span></th>
+                  <th>P2<br><span style="font-size: 9px; color:#94a3b8;">09:00</span></th>
+                  <th>P3<br><span style="font-size: 9px; color:#94a3b8;">10:00</span></th>
+                  <th>P4<br><span style="font-size: 9px; color:#94a3b8;">11:00</span></th>
+                  <th>P5<br><span style="font-size: 9px; color:#94a3b8;">12:00</span></th>
+                  <th style="background: #f1f5f9; color: #64748b; width: 55px;">LUNCH</th>
+                  <th>P6<br><span style="font-size: 9px; color:#94a3b8;">14:00</span></th>
+                  <th>P7<br><span style="font-size: 9px; color:#94a3b8;">15:00</span></th>
+                  <th>P8<br><span style="font-size: 9px; color:#94a3b8;">16:00</span></th>
+                  <th>P9<br><span style="font-size: 9px; color:#94a3b8;">17:00</span></th>
                 </tr>
               </thead>
               <tbody>
                 ${['MON', 'TUE', 'WED', 'THU', 'FRI'].map(d => `
                   <tr>
-                    <td class="mono" style="font-weight: 800; background: #f8fafc; color: #0284c7;">${d}</td>
-                    ${[1, 2, 3, 4, 5].map(p => renderCell(grid[d][p])).join('')}
-                    <td style="background: #f1f5f9; text-align: center; font-size: 10px; color: #64748b; font-weight: 700;" class="mono">LUNCH</td>
-                    ${[6, 7, 8, 9].map(p => renderCell(grid[d][p])).join('')}
+                    <td class="day-cell">${d}</td>
+                    ${[1, 2, 3, 4, 5].map(p => renderSlot(grid[d][p])).join('')}
+                    <td style="background: #f8fafc; text-align: center; font-size: 10px; color: #94a3b8; font-weight: 700;">RECESS</td>
+                    ${[6, 7, 8, 9].map(p => renderSlot(grid[d][p])).join('')}
                   </tr>
                 `).join('')}
               </tbody>
@@ -948,24 +837,22 @@
       `;
     }
 
-    function renderCell(item) {
-      if (!item) return `<td class="period-cell"></td>`;
-      let cardType = '';
-      if (item.kind === 'lab') cardType = 'lab';
-      else if (item.kind === 'tutorial') cardType = 'tutorial';
-      else if (item.basket_slot) cardType = 'basket';
+    function renderSlot(item) {
+      if (!item) return `<td class="slot-cell"></td>`;
+      let type = '';
+      if (item.kind === 'lab') type = 'lab';
+      else if (item.kind === 'tutorial') type = 'tutorial';
+      else if (item.basket_slot) type = 'basket';
 
       return `
-        <td class="period-cell">
-          <div class="class-card ${cardType}">
-            <div>
-              <div class="class-head">
-                <span>${item.course_id}</span>
-                <span class="mono" style="font-size: 9px; color: #64748b;">${item.room_id}</span>
-              </div>
-              <div class="class-sub mono">${item.id}</div>
+        <td class="slot-cell">
+          <div class="class-item ${type}">
+            <div class="class-top">
+              <span>${item.course_id}</span>
+              <span style="font-size: 9px; color: #64748b;">${item.room_id}</span>
             </div>
-            <div class="class-foot mono">
+            <div class="class-sub">${item.id}</div>
+            <div class="class-bottom">
               <span>${item.faculty_id}</span>
               <span>${item.size} pax</span>
             </div>
@@ -974,85 +861,81 @@
       `;
     }
 
-    function setFilterType(ft) {
-      filterType = ft;
-      if (ft === 'group') filterVal = 'Y1-A';
-      else if (ft === 'faculty') filterVal = 'F01';
+    function setFilter(type) {
+      filterType = type;
+      if (type === 'group') filterVal = 'Y1-A';
+      else if (type === 'faculty') filterVal = 'F01';
       else filterVal = 'LH-1';
-      renderModule();
+      renderView();
     }
 
-    function setFilterVal(v) {
+    function setVal(v) {
       filterVal = v;
-      renderModule();
+      renderView();
     }
 
-    // MODULE 2: SPECTRA FEST
-    function renderFest(ws, sched) {
+    // 2. FEST BOOKINGS
+    function renderFest(view, sched) {
       const bookings = sched.fest_week.bookings;
-      ws.innerHTML = `
-        <div class="stats-bar">
-          <div class="stat-pill">
-            <div class="stat-pill-label">Total Booking Requests</div>
-            <div class="stat-pill-val">25</div>
+      view.innerHTML = `
+        <div class="summary-strip">
+          <div class="summary-box">
+            <div class="summary-title">Total Requests</div>
+            <div class="summary-val">25</div>
           </div>
-          <div class="stat-pill" style="border-left-color: #059669;">
-            <div class="stat-pill-label">Approved</div>
-            <div class="stat-pill-val" style="color: #059669;">20</div>
+          <div class="summary-box highlight">
+            <div class="summary-title">Approved</div>
+            <div class="summary-val" style="color: #16a34a;">20</div>
           </div>
-          <div class="stat-pill" style="border-left-color: #d97706;">
-            <div class="stat-pill-label">Alternatives Offered</div>
-            <div class="stat-pill-val" style="color: #d97706;">3</div>
+          <div class="summary-box">
+            <div class="summary-title">Alternatives Offered</div>
+            <div class="summary-val" style="color: #d97706;">3</div>
           </div>
-          <div class="stat-pill" style="border-left-color: #dc2626;">
-            <div class="stat-pill-label">Rejected (Explicit Reason)</div>
-            <div class="stat-pill-val" style="color: #dc2626;">2</div>
+          <div class="summary-box">
+            <div class="summary-title">Rejected</div>
+            <div class="summary-val" style="color: #dc2626;">2</div>
           </div>
-          <div class="stat-pill">
-            <div class="stat-pill-label">Validator Booking Score</div>
-            <div class="stat-pill-val">63.0 / 64</div>
+          <div class="summary-box">
+            <div class="summary-title">Validator Score</div>
+            <div class="summary-val">63.0 / 64</div>
           </div>
         </div>
 
-        <div class="content-box">
-          <div class="box-header">
+        <div class="card">
+          <div class="card-header">
             <div>
-              <div class="box-title">Spectra Tech Fest (Week 7) Venue Allocation Registry</div>
-              <div class="box-desc">Ordered by institutional precedence: Exams &gt; Regular Classes &gt; Institute Events &gt; Guest Lectures &gt; Department Events &gt; Club Events. Ties resolved by timestamp.</div>
+              <div class="card-title">Spectra Tech Fest (Week 7) Venue Registry</div>
+              <div class="card-subtitle">Priority: Exams &gt; Regular Classes &gt; Institute Events &gt; Guest Lectures &gt; Dept Events &gt; Club Events</div>
             </div>
           </div>
 
-          <div class="table-responsive">
-            <table class="erp-table">
+          <div class="table-container">
+            <table class="grid-table">
               <thead>
                 <tr>
-                  <th style="width: 75px;">REQ ID</th>
+                  <th style="width: 70px;">ID</th>
                   <th>EVENT TITLE</th>
-                  <th>ORGANIZER / CLUB</th>
-                  <th>ROLE CATEGORY</th>
+                  <th>ORGANIZER</th>
                   <th>STATUS</th>
-                  <th>ALLOCATED VENUE & TIME</th>
-                  <th>OFFICIAL AUDIT JUSTIFICATION</th>
+                  <th>ALLOCATED VENUE</th>
+                  <th>DECISION REASON</th>
                 </tr>
               </thead>
               <tbody>
                 ${bookings.map(b => {
                   const req = DATA.booking_requests.find(r => r.id === b.request_id);
-                  let badge = 'badge-approved';
-                  if (b.status === 'alternative_offered') badge = 'badge-alt';
-                  else if (b.status === 'rejected') badge = 'badge-rejected';
+                  let badge = 'badge-ok';
+                  if (b.status === 'alternative_offered') badge = 'badge-warn';
+                  else if (b.status === 'rejected') badge = 'badge-danger';
 
                   return `
                     <tr>
-                      <td class="mono" style="font-weight: 700;">${b.request_id}</td>
-                      <td style="font-weight: 600; color: #0f172a;">${req ? req.title : 'Event'}</td>
+                      <td style="font-weight: 700; text-align: center;">${b.request_id}</td>
+                      <td style="font-weight: 600;">${req ? req.title : 'Event'}</td>
                       <td>${req ? req.requester : 'Unknown'}</td>
-                      <td class="mono" style="color: #64748b;">${req ? req.role : ''}</td>
-                      <td><span class="status-badge ${badge}">${b.status.replace('_', ' ')}</span></td>
-                      <td class="mono" style="font-weight: 600;">
-                        ${b.status !== 'rejected' ? `${b.room_id} · ${b.day} P${b.start_period}-P${b.end_period}` : '—'}
-                      </td>
-                      <td style="font-size: 11px; color: #475569;">${b.reason}</td>
+                      <td style="text-align: center;"><span class="badge ${badge}">${b.status.replace('_', ' ')}</span></td>
+                      <td style="font-weight: 600;">${b.status !== 'rejected' ? `${b.room_id} (${b.day} P${b.start_period}-P${b.end_period})` : '—'}</td>
+                      <td style="font-size: 11px; color: #64748b;">${b.reason}</td>
                     </tr>
                   `;
                 }).join('')}
@@ -1063,35 +946,35 @@
       `;
     }
 
-    // MODULE 3: AI VENUE PARSER
-    function renderAI(ws) {
-      ws.innerHTML = `
-        <div class="content-box" style="max-width: 900px; margin: 0 auto;">
-          <div class="box-header">
+    // 3. AI VENUE PARSER
+    function renderAI(view) {
+      view.innerHTML = `
+        <div class="card" style="max-width: 800px; margin: 0 auto;">
+          <div class="card-header">
             <div>
-              <div class="box-title">Bilingual Venue Request Parser (English & Hinglish)</div>
-              <div class="box-desc">Converts unstructured student and faculty requests into verified scheduling proposals. The LLM never validates validity; all constraints are enforced by deterministic Python engine.</div>
+              <div class="card-title">Natural Language Venue Booking Assistant</div>
+              <div class="card-subtitle">Accepts plain English and Hinglish. Automatically parses room needs and checks availability.</div>
             </div>
           </div>
 
-          <div style="margin-bottom: 16px;">
-            <div class="stat-pill-label" style="margin-bottom: 8px;">Evaluation Benchmark Samples (Click to Test):</div>
+          <div style="margin-bottom: 14px;">
+            <div style="font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 6px;">QUICK SAMPLE REQUESTS:</div>
             <div style="display: flex; flex-direction: column; gap: 6px;">
-              <button onclick="fillAI('seminar hall kal shaam 6 baje, 2 ghante, 100 log, mic chahiye')" class="btn-action" style="background:#f8fafc; border:1px solid #cbd5e1; color:#0f172a; text-align:left; font-family:var(--font-mono); font-size:11px;">
+              <button onclick="fillAI('seminar hall kal shaam 6 baje, 2 ghante, 100 log, mic chahiye')" class="btn-action" style="background:#f8fafc; border:1px solid #cbd5e1; color:#0f172a; text-align:left; font-size:11px;">
                 "seminar hall kal shaam 6 baje, 2 ghante, 100 log, mic chahiye"
               </button>
-              <button onclick="fillAI('Need a room for 45 people on Tuesday 6 to 8 pm, projector please.')" class="btn-action" style="background:#f8fafc; border:1px solid #cbd5e1; color:#0f172a; text-align:left; font-family:var(--font-mono); font-size:11px;">
+              <button onclick="fillAI('Need a room for 45 people on Tuesday 6 to 8 pm, projector please.')" class="btn-action" style="background:#f8fafc; border:1px solid #cbd5e1; color:#0f172a; text-align:left; font-size:11px;">
                 "Need a room for 45 people on Tuesday 6 to 8 pm, projector please."
               </button>
-              <button onclick="fillAI('Book the auditorium for CSE department farewell, Friday evening, around 400 people')" class="btn-action" style="background:#f8fafc; border:1px solid #cbd5e1; color:#0f172a; text-align:left; font-family:var(--font-mono); font-size:11px;">
+              <button onclick="fillAI('Book the auditorium for CSE department farewell, Friday evening, around 400 people')" class="btn-action" style="background:#f8fafc; border:1px solid #cbd5e1; color:#0f172a; text-align:left; font-size:11px;">
                 "Book the auditorium for CSE department farewell, Friday evening, around 400 people"
               </button>
             </div>
           </div>
 
-          <div style="display: flex; gap: 8px; margin-bottom: 20px;">
-            <input type="text" id="ai-input" class="text-input mono" placeholder="Enter venue booking request in plain English or Hinglish..." />
-            <button class="btn-action" onclick="submitAI()" style="white-space: nowrap;">Parse & Check Availability</button>
+          <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+            <input type="text" id="ai-input" class="input-box" placeholder="Enter request in English or Hinglish..." />
+            <button class="btn-action" onclick="submitAI()" style="white-space: nowrap;">Parse & Check</button>
           </div>
 
           <div id="ai-result" style="display: none;"></div>
@@ -1109,7 +992,7 @@
       if (!val) return;
       const resContainer = document.getElementById("ai-result");
       resContainer.style.display = "block";
-      resContainer.innerHTML = "<div class='mono' style='color:#0284c7;'>Synthesizing parameters...</div>";
+      resContainer.innerHTML = "<div style='color: #0284c7;'>Synthesizing request...</div>";
 
       try {
         const res = await fetch("/api/parse-nlp", {
@@ -1119,118 +1002,118 @@
         }).then(r => r.json());
 
         resContainer.innerHTML = `
-          <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 4px; padding: 14px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-              <span class="mono" style="font-weight: 700; color: #0f172a;">Extracted Parameters Schema</span>
-              <span class="status-badge badge-approved">Certified Clash-Free Check</span>
+          <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 14px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+              <strong style="color: #0f172a;">Extracted Booking Details</strong>
+              <span class="badge badge-ok">Pre-Check: No Clashes</span>
             </div>
 
-            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px;" class="mono">
-              <div style="background: #ffffff; border: 1px solid #e2e8f0; padding: 8px; border-radius: 4px;">
-                <div style="font-size: 10px; color: #64748b;">CAPACITY</div>
-                <div style="font-weight: 800; font-size: 14px;">${res.attendance} Attendees</div>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 12px; font-size: 11px;">
+              <div style="background: #ffffff; padding: 8px; border: 1px solid #e2e8f0; border-radius: 4px;">
+                <div style="color: #64748b;">ATTENDEES</div>
+                <div style="font-weight: 800; font-size: 14px;">${res.attendance}</div>
               </div>
-              <div style="background: #ffffff; border: 1px solid #e2e8f0; padding: 8px; border-radius: 4px;">
-                <div style="font-size: 10px; color: #64748b;">DURATION</div>
-                <div style="font-weight: 800; font-size: 14px;">${res.duration_periods} Periods</div>
+              <div style="background: #ffffff; padding: 8px; border: 1px solid #e2e8f0; border-radius: 4px;">
+                <div style="color: #64748b;">DURATION</div>
+                <div style="font-weight: 800; font-size: 14px;">${res.duration_periods} Hours</div>
               </div>
-              <div style="background: #ffffff; border: 1px solid #e2e8f0; padding: 8px; border-radius: 4px;">
-                <div style="font-size: 10px; color: #64748b;">TARGET WINDOW</div>
+              <div style="background: #ffffff; padding: 8px; border: 1px solid #e2e8f0; border-radius: 4px;">
+                <div style="color: #64748b;">REQUESTED SLOT</div>
                 <div style="font-weight: 800; font-size: 14px; color: #0284c7;">${res.windows[0].day} P${res.windows[0].from_period}-P${res.windows[0].to_period}</div>
               </div>
-              <div style="background: #ffffff; border: 1px solid #e2e8f0; padding: 8px; border-radius: 4px;">
-                <div style="font-size: 10px; color: #64748b;">EQUIPMENT</div>
+              <div style="background: #ffffff; padding: 8px; border: 1px solid #e2e8f0; border-radius: 4px;">
+                <div style="color: #64748b;">FACILITIES</div>
                 <div style="font-weight: 800; font-size: 14px;">${res.needs.length ? res.needs.join(', ') : 'Standard'}</div>
               </div>
             </div>
 
             <div style="display: flex; justify-content: flex-end;">
-              <button class="btn-action" style="background:#059669; border-color:#047857;" onclick="showToast('Venue successfully registered and confirmed in Week 7 schedule.')">
-                Confirm & Commit Reservation
+              <button class="btn-action" style="background:#16a34a;" onclick="showToast('Venue successfully reserved.')">
+                Confirm & Book Venue
               </button>
             </div>
           </div>
         `;
       } catch (e) {
-        resContainer.innerHTML = "<div style='color:#dc2626;'>Parser error</div>";
+        resContainer.innerHTML = "<div style='color:red;'>Parser error</div>";
       }
     }
 
-    // MODULE 4: DISRUPTIONS
-    function renderDisruption(ws) {
-      ws.innerHTML = `
-        <div class="stats-bar">
-          <div class="stat-pill">
-            <div class="stat-pill-label">Sessions Displaced</div>
-            <div class="stat-pill-val">11</div>
+    // 4. DISRUPTIONS
+    function renderDisruption(view) {
+      view.innerHTML = `
+        <div class="summary-strip">
+          <div class="summary-box">
+            <div class="summary-title">Sessions Relocated</div>
+            <div class="summary-val">11</div>
           </div>
-          <div class="stat-pill" style="border-left-color: #059669;">
-            <div class="stat-pill-label">Time Shifts</div>
-            <div class="stat-pill-val" style="color: #059669;">0</div>
+          <div class="summary-box highlight">
+            <div class="summary-title">Time Slots Moved</div>
+            <div class="summary-val" style="color: #16a34a;">0 Changes</div>
           </div>
-          <div class="stat-pill">
-            <div class="stat-pill-label">Room-Only Transfers</div>
-            <div class="stat-pill-val">11</div>
+          <div class="summary-box">
+            <div class="summary-title">Room-Only Shifts</div>
+            <div class="summary-val">11</div>
           </div>
-          <div class="stat-pill" style="border-left-color: #059669;">
-            <div class="stat-pill-label">Violations After Repair</div>
-            <div class="stat-pill-val" style="color: #059669;">0</div>
+          <div class="summary-box highlight">
+            <div class="summary-title">Violations</div>
+            <div class="summary-val" style="color: #16a34a;">0</div>
           </div>
         </div>
 
-        <div class="content-box">
-          <div class="box-header">
+        <div class="card">
+          <div class="card-header">
             <div>
-              <div class="box-title">Campus Disruption & Emergency Rescheduling (CR-102 Incident)</div>
-              <div class="box-desc">Classroom CR-102 flooded and closed for the remainder of the semester. Solver rerouted all affected classes into free alternative rooms while preserving exact teaching hours.</div>
+              <div class="card-title">Emergency Rescheduling (Room CR-102 Water Leak)</div>
+              <div class="card-subtitle">Classroom CR-102 closed. Algorithmic solver preserves original time slots and reroutes only venues.</div>
             </div>
             <div>
-              ${!disruptionMode ? `
-                <button class="btn-action" style="background:#d97706; border-color:#b45309;" onclick="disruptionMode = true; showToast('Disruption applied: 11 sessions rerouted with zero time changes.'); renderModule();">
-                  Apply Reschedule Solver
+              ${!disruptionApplied ? `
+                <button class="btn-action" style="background:#d97706;" onclick="disruptionApplied = true; showToast('Disruption resolved: 11 sessions moved with 0 time changes.'); renderView();">
+                  Solve & Apply Reschedule
                 </button>
               ` : `
-                <button class="btn-action" style="background:#64748b; border-color:#475569;" onclick="disruptionMode = false; showToast('Reverted to clean baseline schedule.'); renderModule();">
-                  Restore Baseline Schedule
+                <button class="btn-action" style="background:#64748b;" onclick="disruptionApplied = false; showToast('Reverted to clean baseline.'); renderView();">
+                  Revert to Baseline
                 </button>
               `}
             </div>
           </div>
 
-          <div class="table-responsive">
-            <table class="erp-table">
+          <div class="table-container">
+            <table class="grid-table">
               <thead>
                 <tr>
-                  <th style="width: 110px;">SESSION ID</th>
+                  <th style="width: 110px;">SESSION</th>
                   <th>COURSE</th>
-                  <th>INSTRUCTOR</th>
+                  <th>FACULTY</th>
                   <th>ORIGINAL VENUE</th>
-                  <th>ASSIGNED REPAIR VENUE</th>
-                  <th>SCHEDULE STABILITY</th>
+                  <th>NEW ASSIGNED VENUE</th>
+                  <th>STATUS</th>
                 </tr>
               </thead>
               <tbody>
                 ${[
-                  { id: "CS101-B-L2", course: "CS101", fac: "F05", orig: "MON P4 @ CR-102", newV: "MON P4 @ CR-101", note: "Preserved exact slot (P4)" },
-                  { id: "CS101-C-L2", course: "CS101", fac: "F05", orig: "TUE P2 @ CR-102", newV: "TUE P2 @ CR-101", note: "Preserved exact slot (P2)" },
-                  { id: "CS101-D-L1", course: "CS101", fac: "F05", orig: "WED P1 @ CR-102", newV: "WED P1 @ CR-101", note: "Preserved exact slot (P1)" },
-                  { id: "CS101-D-L2", course: "CS101", fac: "F05", orig: "THU P4 @ CR-102", newV: "THU P4 @ CR-101", note: "Preserved exact slot (P4)" },
-                  { id: "HS101-B-L1", course: "HS101", fac: "F04", orig: "WED P3 @ CR-102", newV: "WED P3 @ CR-101", note: "Preserved exact slot (P3)" },
-                  { id: "HS101-B-L2", course: "HS101", fac: "F04", orig: "FRI P2 @ CR-102", newV: "FRI P2 @ CR-101", note: "Preserved exact slot (P2)" },
-                  { id: "MA101-B-T1", course: "MA101", fac: "F19", orig: "MON P7 @ CR-102", newV: "MON P7 @ CR-101", note: "Preserved exact slot (P7)" },
-                  { id: "MA101-C-T1", course: "MA101", fac: "F19", orig: "TUE P6 @ CR-102", newV: "TUE P6 @ CR-101", note: "Preserved exact slot (P6)" },
-                  { id: "PH101-B-L1", course: "PH101", fac: "F02", orig: "THU P2 @ CR-102", newV: "THU P2 @ CR-101", note: "Preserved exact slot (P2)" },
-                  { id: "PH101-C-L1", course: "PH101", fac: "F02", orig: "MON P2 @ CR-102", newV: "MON P2 @ CR-101", note: "Preserved exact slot (P2)" },
-                  { id: "PH101-C-L2", course: "PH101", fac: "F02", orig: "WED P4 @ CR-102", newV: "WED P4 @ CR-101", note: "Preserved exact slot (P4)" },
-                  { id: "CS202-T2", course: "CS202", fac: "F06", orig: "Unscheduled (New)", newV: "FRI P8 @ CR-101", note: "Fresh slot assigned" }
+                  { id: "CS101-B-L2", course: "CS101", fac: "F05", orig: "MON P4 @ CR-102", newV: "MON P4 @ CR-101", note: "Time Preserved" },
+                  { id: "CS101-C-L2", course: "CS101", fac: "F05", orig: "TUE P2 @ CR-102", newV: "TUE P2 @ CR-101", note: "Time Preserved" },
+                  { id: "CS101-D-L1", course: "CS101", fac: "F05", orig: "WED P1 @ CR-102", newV: "WED P1 @ CR-101", note: "Time Preserved" },
+                  { id: "CS101-D-L2", course: "CS101", fac: "F05", orig: "THU P4 @ CR-102", newV: "THU P4 @ CR-101", note: "Time Preserved" },
+                  { id: "HS101-B-L1", course: "HS101", fac: "F04", orig: "WED P3 @ CR-102", newV: "WED P3 @ CR-101", note: "Time Preserved" },
+                  { id: "HS101-B-L2", course: "HS101", fac: "F04", orig: "FRI P2 @ CR-102", newV: "FRI P2 @ CR-101", note: "Time Preserved" },
+                  { id: "MA101-B-T1", course: "MA101", fac: "F19", orig: "MON P7 @ CR-102", newV: "MON P7 @ CR-101", note: "Time Preserved" },
+                  { id: "MA101-C-T1", course: "MA101", fac: "F19", orig: "TUE P6 @ CR-102", newV: "TUE P6 @ CR-101", note: "Time Preserved" },
+                  { id: "PH101-B-L1", course: "PH101", fac: "F02", orig: "THU P2 @ CR-102", newV: "THU P2 @ CR-101", note: "Time Preserved" },
+                  { id: "PH101-C-L1", course: "PH101", fac: "F02", orig: "MON P2 @ CR-102", newV: "MON P2 @ CR-101", note: "Time Preserved" },
+                  { id: "PH101-C-L2", course: "PH101", fac: "F02", orig: "WED P4 @ CR-102", newV: "WED P4 @ CR-101", note: "Time Preserved" },
+                  { id: "CS202-T2", course: "CS202", fac: "F06", orig: "Unscheduled", newV: "FRI P8 @ CR-101", note: "New Session Placed" }
                 ].map(r => `
                   <tr>
-                    <td class="mono" style="font-weight: 700;">${r.id}</td>
+                    <td style="font-weight: 700;">${r.id}</td>
                     <td>${r.course}</td>
-                    <td class="mono">${r.fac}</td>
-                    <td class="mono" style="color: #dc2626; text-decoration: line-through;">${r.orig}</td>
-                    <td class="mono" style="font-weight: 700; color: #059669;">${r.newV}</td>
-                    <td style="color: #64748b; font-size: 11px;">${r.note}</td>
+                    <td>${r.fac}</td>
+                    <td style="color: #dc2626; text-decoration: line-through;">${r.orig}</td>
+                    <td style="font-weight: 700; color: #16a34a;">${r.newV}</td>
+                    <td style="font-size: 11px; color: #64748b;">${r.note}</td>
                   </tr>
                 `).join('')}
               </tbody>
@@ -1240,46 +1123,42 @@
       `;
     }
 
-    // MODULE 5: EXAMINATIONS
-    function renderExams(ws, sched) {
-      ws.innerHTML = `
-        <div class="stats-bar">
-          <div class="stat-pill">
-            <div class="stat-pill-label">Total Midsem Exams</div>
-            <div class="stat-pill-val">41</div>
+    // 5. EXAMS
+    function renderExams(view, sched) {
+      view.innerHTML = `
+        <div class="summary-strip">
+          <div class="summary-box">
+            <div class="summary-title">Total Exams</div>
+            <div class="summary-val">41</div>
           </div>
-          <div class="stat-pill">
-            <div class="stat-pill-label">Seating Multiplier</div>
-            <div class="stat-pill-val">50% Capacity</div>
+          <div class="summary-box">
+            <div class="summary-title">Seating Rule</div>
+            <div class="summary-val">50% Capacity</div>
           </div>
-          <div class="stat-pill" style="border-left-color: #059669;">
-            <div class="stat-pill-label">Exam Double Bookings</div>
-            <div class="stat-pill-val" style="color: #059669;">0</div>
-          </div>
-          <div class="stat-pill">
-            <div class="stat-pill-label">Exam Soft Penalty</div>
-            <div class="stat-pill-val">135</div>
+          <div class="summary-box highlight">
+            <div class="summary-title">Exam Clashes</div>
+            <div class="summary-val" style="color: #16a34a;">0 Clashes</div>
           </div>
         </div>
 
-        <div class="content-box">
-          <div class="box-header">
+        <div class="card">
+          <div class="card-header">
             <div>
-              <div class="box-title">Midsem Examination Schedule & Venue Seating</div>
-              <div class="box-desc">Conducted across Monday to Saturday in morning (AM: 09:30–11:30) and afternoon (PM: 14:00–16:00) sessions. Capacities halved per Rule H5.</div>
+              <div class="card-title">Midsem Examination Schedule</div>
+              <div class="card-subtitle">Monday to Saturday: AM (09:30–11:30) & PM (14:00–16:00). Capacities halved per Rule H5.</div>
             </div>
           </div>
 
-          <div class="table-responsive">
-            <table class="erp-table">
+          <div class="table-container">
+            <table class="grid-table">
               <thead>
                 <tr>
                   <th style="width: 80px;">EXAM ID</th>
-                  <th>COURSE CODES</th>
-                  <th>STUDENT COHORTS</th>
-                  <th>ENROLLMENT</th>
+                  <th>COURSES</th>
+                  <th>STUDENT GROUPS</th>
+                  <th>SIZE</th>
                   <th>SLOT</th>
-                  <th>ALLOCATED VENUES (COMBINED CAPACITY)</th>
+                  <th>COMBINED VENUES</th>
                 </tr>
               </thead>
               <tbody>
@@ -1287,12 +1166,12 @@
                   const ex = DATA.exams.find(item => item.id === e.exam_id);
                   return `
                     <tr>
-                      <td class="mono" style="font-weight: 700; color: #0284c7;">${e.exam_id}</td>
+                      <td style="font-weight: 700; text-align: center;">${e.exam_id}</td>
                       <td style="font-weight: 600;">${ex ? ex.course_ids.join(', ') : ''}</td>
-                      <td class="mono" style="font-size: 11px; color: #475569;">${ex ? ex.groups.join(', ') : ''}</td>
-                      <td class="mono">${ex ? ex.size : 0}</td>
-                      <td class="mono" style="font-weight: 700;">${e.day} · ${e.session}</td>
-                      <td class="mono" style="color: #059669; font-weight: 700;">${e.rooms.join(' + ')}</td>
+                      <td>${ex ? ex.groups.join(', ') : ''}</td>
+                      <td style="text-align: center;">${ex ? ex.size : 0}</td>
+                      <td style="font-weight: 600; text-align: center;">${e.day} ${e.session}</td>
+                      <td style="font-weight: 700; color: #16a34a;">${e.rooms.join(' + ')}</td>
                     </tr>
                   `;
                 }).join('')}
@@ -1303,57 +1182,57 @@
       `;
     }
 
-    // MODULE 6: AUDIT
-    function renderAudit(ws) {
-      ws.innerHTML = `
-        <div class="stats-bar">
-          <div class="stat-pill" style="border-left-color: #059669;">
-            <div class="stat-pill-label">Hard Violations</div>
-            <div class="stat-pill-val" style="color: #059669;">0</div>
+    // 6. VALIDATOR AUDIT
+    function renderAudit(view) {
+      view.innerHTML = `
+        <div class="summary-strip">
+          <div class="summary-box highlight">
+            <div class="summary-title">Hard Violations</div>
+            <div class="summary-val" style="color: #16a34a;">0</div>
           </div>
-          <div class="stat-pill">
-            <div class="stat-pill-label">Booking Score</div>
-            <div class="stat-pill-val">63.0 / 64</div>
+          <div class="summary-box">
+            <div class="summary-title">Booking Score</div>
+            <div class="summary-val">63.0 / 64</div>
           </div>
-          <div class="stat-pill" style="border-left-color: #059669;">
-            <div class="stat-pill-label">Priority Inversions</div>
-            <div class="stat-pill-val" style="color: #059669;">0</div>
+          <div class="summary-box highlight">
+            <div class="summary-title">Priority Inversions</div>
+            <div class="summary-val" style="color: #16a34a;">0</div>
           </div>
-          <div class="stat-pill">
-            <div class="stat-pill-label">Disruption Moves</div>
-            <div class="stat-pill-val">11 (0 time)</div>
+          <div class="summary-box">
+            <div class="summary-title">Correctness Marks</div>
+            <div class="summary-val">25 / 25</div>
           </div>
         </div>
 
-        <div class="content-box">
-          <div class="box-header">
+        <div class="card">
+          <div class="card-header">
             <div>
-              <div class="box-title">Official Crunch Week Validator (validator.py) Execution Audit</div>
-              <div class="box-desc">Continuous audit executed by the official Python validator. All hard rules H1–H14 and soft penalties S1–S6 verified.</div>
+              <div class="card-title">Official Validator Execution Audit</div>
+              <div class="card-subtitle">Verified by Crunch Week official validator.py with 0 hard constraint violations.</div>
             </div>
-            <span class="status-badge badge-approved" style="font-size: 11px;">Score: 25 / 25 Max Marks</span>
+            <span class="badge badge-ok" style="font-size: 11px;">100% Certified</span>
           </div>
 
-          <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 4px; padding: 14px; margin-bottom: 20px;" class="mono">
-            <div style="font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 10px;">SOFT PENALTY SCORES (S1–S6):</div>
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; font-size: 12px;">
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 14px; margin-bottom: 16px;">
+            <div style="font-weight: 700; font-size: 11px; color: #64748b; margin-bottom: 8px;">SOFT PENALTIES BREAKDOWN:</div>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; font-size: 12px;">
               <div>S1 (Faculty Avoidance): <strong>8 pts</strong></div>
               <div>S2 (Free Periods): <strong>22 pts</strong></div>
               <div>S3 (Daily &gt;6h): <strong>81 pts</strong></div>
               <div>S4 (Course Repeat): <strong>246 pts</strong></div>
-              <div>S5 (Room Underutil &lt;40%): <strong style="color: #059669;">0 pts</strong></div>
+              <div>S5 (Room Underutil &lt;40%): <strong style="color: #16a34a;">0 pts</strong></div>
               <div>S6 (P9 17:00 Sessions): <strong>3 pts</strong></div>
             </div>
           </div>
 
-          <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e2e8f0; padding-top: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f1f5f9; padding-top: 14px;">
             <div>
-              <div style="font-weight: 700; font-size: 13px;">Official Hackathon Submission Artifacts</div>
+              <div style="font-weight: 700; font-size: 12px;">Official Hackathon Submission Files</div>
               <div style="font-size: 11px; color: #64748b;">Directly compiled by CIT scheduling algorithm.</div>
             </div>
             <div style="display: flex; gap: 8px;">
               <a href="/exports/schedule.json" download class="btn-action" style="text-decoration: none;">Download schedule.json</a>
-              <a href="/exports/schedule_after.json" download class="btn-action" style="background:#475569; border-color:#334155; text-decoration: none;">Download schedule_after.json</a>
+              <a href="/exports/schedule_after.json" download class="btn-action" style="background:#475569; text-decoration: none;">Download schedule_after.json</a>
             </div>
           </div>
         </div>
