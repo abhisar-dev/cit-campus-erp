@@ -10,6 +10,7 @@
     }
   </script>
   <script src="/cookie-consent.js" defer></script>
+  <script src="/analytics.js" defer></script>
   <title>Sign In — CIT Campus ERP & Student Portal | Chilika Institute of Technology</title>
   <meta name="description" content="Secure authentication portal for students, faculty, and campus clubs at Chilika Institute of Technology (CIT). Sign in to access your personalized academic timetable, venue booking clearances, and technical support." />
   <meta name="keywords" content="CIT login, student login, faculty sign in, CIT campus ERP, Chilika Institute student portal, academic clearance" />
@@ -106,7 +107,7 @@
       z-index: 1;
       min-height: 100vh;
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between; max-width: 1240px; margin: 0 auto;
       align-items: center;
       padding: 40px 70px 40px 24px;
     }
@@ -121,6 +122,70 @@
       .page-wrapper {
         justify-content: center;
         padding: 30px 16px;
+      }
+    }
+
+    .login-hero-left {
+      flex: 1;
+      max-width: 520px;
+      margin-right: 36px;
+      background: rgba(96, 15, 28, 0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 14px;
+      padding: 34px 38px;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
+      color: #ffffff;
+      z-index: 2;
+    }
+    .hero-brand-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10.5px;
+      font-weight: 800;
+      color: #fde68a;
+      letter-spacing: 0.8px;
+      margin-bottom: 12px;
+    }
+    .login-hero-heading {
+      font-size: 26px;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.25;
+      margin-bottom: 12px;
+      letter-spacing: -0.4px;
+    }
+    .login-hero-text {
+      font-size: 13.5px;
+      color: #fef2f2;
+      line-height: 1.6;
+      margin-bottom: 22px;
+      opacity: 0.92;
+    }
+    .btn-hero-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #ffffff;
+      color: var(--primary);
+      font-size: 13.5px;
+      font-weight: 800;
+      padding: 12px 24px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+      transition: all 0.15s ease;
+    }
+    .btn-hero-cta:hover {
+      background: #fef3c7;
+      transform: translateY(-1px);
+    }
+    @media (max-width: 900px) {
+      .login-hero-left {
+        display: none;
       }
     }
 
@@ -397,6 +462,33 @@
       color: var(--text-muted);
       margin-top: 2px;
     }
+    @media (max-width: 600px) {
+      .page-wrapper {
+        padding: 16px 12px !important;
+        min-height: 100vh;
+        justify-content: center;
+      }
+      .auth-container {
+        margin-top: 10px !important;
+        max-width: 100% !important;
+      }
+      .auth-card {
+        padding: 22px 18px !important;
+      }
+      .form-input, .form-select, select, input {
+        font-size: 16px !important; /* Prevents iOS Safari auto-zoom */
+      }
+      #google-btn-container {
+        max-width: 100% !important;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+      }
+      .modal-box {
+        padding: 18px 14px !important;
+        max-width: 100% !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -406,6 +498,27 @@
 
   <!-- Page Wrapper with Right-Aligned Box positioned slightly down -->
   <div class="page-wrapper">
+    <!-- Left Institutional Welcome Hero with Call to Action -->
+    <div class="login-hero-left">
+      <div class="hero-brand-pill mono">
+        <span>●</span>
+        <span>CHILIKA INSTITUTE OF TECHNOLOGY</span>
+      </div>
+      <h1 class="login-hero-heading">Central Campus Academic Scheduling & Venue Operations</h1>
+      <p class="login-hero-text">
+        Powered by Google OR-Tools CP-SAT. Access certified conflict-free cohort timetables, midsem exam seating with 50% physical distancing, and natural language AI venue bookings.
+      </p>
+      <div>
+        <button type="button" class="btn-hero-cta" onclick="document.getElementById('login-email').focus()">
+          <span>Sign In to Access Timetable</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </button>
+      </div>
+    </div>
+
     <div class="auth-container">
       <div class="auth-card">
         <div class="card-header">
@@ -449,12 +562,9 @@
             </div>
             <div class="field-error-msg" id="login-password-err"></div>
           </div>
+          <!-- Anti-Bot Honeypot Trap -->
           <input type="text" name="hp_field" id="login-hp-field" style="display:none !important; position:absolute; left:-9999px;" tabindex="-1" autocomplete="off" aria-hidden="true" /><!--
               </button>
-            </div>
-
-
-
             </div>
           </div>
 
@@ -478,15 +588,11 @@
                 <input type="text" id="human-captcha-input" class="form-input" placeholder="Type code" style="height: 36px; font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;" autocomplete="off" />
               </div>
               <button type="button" onclick="verifyHumanCaptcha()" id="btn-verify-human" style="width: 100%; height: 32px; background: #f59e0b; color: #ffffff; border: none; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer;">
-                Verify Human Security Code</button></div><!--
+                Verify Human Security Code
               </button>
             </div>
 
-
-
-            </div>
-
--->            <div id="captcha-verified-badge" style="display: none; background: #f0fdf4; border: 1px solid #86efac; color: #166534; padding: 8px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; align-items: center; gap: 6px;">
+            <div id="captcha-verified-badge" style="display: none; background: #f0fdf4; border: 1px solid #86efac; color: #166534; padding: 8px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; align-items: center; gap: 6px;">
               <span>✓</span> Human Identity Confirmed. Clearance Granted.
             </div>
 

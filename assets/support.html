@@ -10,6 +10,7 @@
     }
   </script>
   <script src="/cookie-consent.js" defer></script>
+  <script src="/analytics.js" defer></script>
   <title>Support & Help Center — Academic Grievances & IT Assistance | Chilika Institute of Technology</title>
   <meta name="description" content="Official Help Center and IT Support Desk for Chilika Institute of Technology (CIT). Submit timetable clash grievances, request venue reservation adjustments, view FAQs, and connect with campus academic coordinators." />
   <meta name="keywords" content="CIT support, campus helpdesk, timetable grievance, IT cell, academic support, classroom help, CIT contact" />
@@ -607,6 +608,68 @@
     .footer-links a:hover {
       text-decoration: underline;
     }
+    @media (max-width: 768px) {
+      header.site-header {
+        padding: 10px 14px !important;
+      }
+      .header-inner {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 10px !important;
+      }
+      .header-nav {
+        width: 100% !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        white-space: nowrap !important;
+        gap: 8px !important;
+        scrollbar-width: none !important;
+        padding-bottom: 2px !important;
+      }
+      .header-nav::-webkit-scrollbar {
+        display: none;
+      }
+      main.content-wrap {
+        padding: 16px 12px 40px 12px !important;
+      }
+      .hero-banner {
+        padding: 22px 18px !important;
+        margin-bottom: 20px !important;
+      }
+      .hero-title {
+        font-size: 22px !important;
+      }
+      .btn-hero-cta {
+        width: 100% !important;
+        justify-content: center !important;
+      }
+      .support-grid {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+      }
+      .support-card {
+        padding: 18px 14px !important;
+      }
+      .footer-inner {
+        flex-direction: column !important;
+        text-align: center !important;
+      }
+    }
+    @media (max-width: 600px) {
+      input, select, textarea {
+        font-size: 16px !important; /* Prevents iOS Safari auto-zoom */
+      }
+      .ticket-grid-2col {
+        grid-template-columns: 1fr !important;
+      }
+      .quick-nav-pills {
+        gap: 8px !important;
+      }
+      .quick-pill {
+        padding: 6px 10px !important;
+        font-size: 11px !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -649,6 +712,18 @@
       <p class="hero-desc">
         Welcome to the central support desk for Chilika Institute of Technology. Whether you need to report timetable scheduling anomalies, submit venue booking queries, troubleshoot credentials, or contact administrative officers, our automated systems and academic coordinators are here to assist.
       </p>
+
+      <div style="margin-bottom: 20px;">
+        <a href="#bug-report" class="btn-hero-cta" style="display: inline-flex; align-items: center; gap: 10px; background: var(--primary); color: #ffffff !important; padding: 12px 24px; border-radius: 8px; font-weight: 800; font-size: 13.5px; text-decoration: none; box-shadow: 0 4px 14px rgba(96, 15, 28, 0.28); transition: all 0.15s ease;" onmouseover="this.style.background='var(--primary-hover)'" onmouseout="this.style.background='var(--primary)'">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m8 2 1.88 1.88"></path>
+            <path d="M14.12 3.88 16 2"></path>
+            <path d="M9 7.13v-1a3.003 3.003 0 1 1 6 0v1"></path>
+            <path d="M12 20c-3.3 0-6-2.7-6-6v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3c0 3.3-2.7 6-6 6"></path>
+          </svg>
+          <span>Log an Academic Grievance or Bug Report →</span>
+        </a>
+      </div>
 
       <div class="quick-nav-pills">
         <a href="#contact" class="quick-pill">
@@ -784,7 +859,7 @@
             <div class="field-error-msg" id="ticket-name-err"></div>
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div class="ticket-grid-2col" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
             <div class="form-group">
               <label class="form-label" for="ticket-email">CIT Email Address</label>
               <input type="email" id="ticket-email" class="form-input" placeholder="student@cit.ac.in" required />

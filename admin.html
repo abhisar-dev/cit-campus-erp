@@ -10,6 +10,7 @@
     }
   </script>
   <script src="/cookie-consent.js" defer></script>
+  <script src="/analytics.js" defer></script>
   <title>Admin Command Terminal — Academic Operations & Schedule Optimization | Chilika Institute of Technology</title>
   <meta name="description" content="Central administrative command and timetable orchestration console for Chilika Institute of Technology. Execute constraint validation, live schedule adjustments, crunch week disruption recovery, and venue allocation audits." />
   <meta name="keywords" content="CIT admin console, timetable optimization, CP-SAT solver, academic schedule manager, classroom allocations, constraint audit" />
@@ -565,6 +566,126 @@
       z-index: 100;
       box-shadow: 0 4px 14px rgba(96, 15, 28, 0.25);
     }
+    /* Mobile-Friendly Administration Console Styles */
+    .terminal-table-wrapper {
+      -webkit-overflow-scrolling: touch;
+    }
+    table.terminal-table {
+      min-width: 600px;
+    }
+    .admin-tt-grid {
+      min-width: 640px;
+    }
+    .mobile-swipe-hint {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 7px 12px;
+      margin-bottom: 10px;
+      background: var(--yellow-light);
+      border: 1px dashed var(--yellow-border);
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--gold-dark);
+      letter-spacing: 0.2px;
+    }
+    @media (max-width: 900px) {
+      .mobile-swipe-hint {
+        display: flex;
+      }
+      header {
+        height: auto !important;
+        min-height: 54px;
+        padding: 10px 14px !important;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .brand {
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .brand > span:last-child {
+        display: none;
+      }
+      .nav-actions {
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .admin-layout {
+        flex-direction: column !important;
+        padding: 12px 10px !important;
+        gap: 14px !important;
+      }
+      .terminal-sidebar {
+        width: 100% !important;
+        min-width: 100% !important;
+      }
+      .admin-menu {
+        display: flex !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        white-space: nowrap !important;
+        scrollbar-width: none !important;
+        gap: 4px;
+        padding: 4px;
+      }
+      .admin-menu::-webkit-scrollbar {
+        display: none;
+      }
+      .admin-menu li {
+        flex-shrink: 0;
+        display: inline-block;
+        border-top: none !important;
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+      }
+      .admin-tab {
+        width: auto !important;
+        white-space: nowrap !important;
+        padding: 8px 12px !important;
+        border-bottom: 3px solid transparent !important;
+        border-left: none !important;
+        border-right: 1px solid var(--border-subtle) !important;
+        border-radius: 6px !important;
+        gap: 6px;
+      }
+      .admin-tab.active {
+        border-bottom-color: var(--primary) !important;
+        border-left-color: transparent !important;
+        background: var(--yellow-light) !important;
+      }
+      .panel {
+        padding: 16px 12px !important;
+      }
+      .panel-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 10px !important;
+      }
+      .stat-row {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+      }
+      footer {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+        padding: 16px 14px;
+      }
+    }
+    @media (max-width: 600px) {
+      input, select, textarea {
+        font-size: 16px !important; /* Prevents iOS Safari auto-zoom */
+      }
+      .stat-row {
+        grid-template-columns: 1fr !important;
+      }
+      #admin-user-email {
+        display: none;
+      }
+    }
   </style>
 </head>
 <body>
@@ -619,6 +740,12 @@
           <button class="admin-tab" onclick="switchAdminTab('audit', this)">
             <span>Validation & Submission</span>
             <span class="mono" style="font-size: 10px; color: var(--green); font-weight: 700;">25/25</span>
+          </button>
+        </li>
+        <li>
+          <button class="admin-tab" onclick="switchAdminTab('analytics', this)">
+            <span>Analytics & Telemetry</span>
+            <span class="mono" style="font-size: 10px; color: var(--gold-dark); font-weight: 700;">Live 📊</span>
           </button>
         </li>
         <li style="border-top: 1px solid var(--border-subtle); margin-top: 6px; padding-top: 6px;">
@@ -758,6 +885,7 @@
       else if (activeTab === 'timetable') renderTimetable(ws);
       else if (activeTab === 'exams') renderExams(ws);
       else if (activeTab === 'audit') renderAudit(ws);
+      else if (activeTab === 'analytics') renderAnalytics(ws);
     }
 
     // 1. DISRUPTION ENGINE (MINIMAL-MOVE REPAIR & APPROVAL)
@@ -801,6 +929,7 @@
             </div>
           </div>
 
+          <div class="mobile-swipe-hint"><span>⇄ Swipe horizontally to inspect complete table</span></div>
           <div class="terminal-table-wrapper">
             <table class="terminal-table mono">
               <thead>
@@ -883,6 +1012,7 @@
             </div>
           </div>
 
+          <div class="mobile-swipe-hint"><span>⇄ Swipe horizontally to inspect complete table</span></div>
           <div class="terminal-table-wrapper">
             <table class="terminal-table">
               <thead>
@@ -1052,7 +1182,8 @@
             </div>
           </div>
 
-          <div style="overflow-x: auto; margin-bottom: 20px;">
+          <div class="mobile-swipe-hint"><span>⇄ Swipe horizontally to view full admin timetable</span></div>
+          <div style="overflow-x: auto; margin-bottom: 20px; -webkit-overflow-scrolling: touch;">
             <div class="admin-tt-grid" style="min-width: 900px;">
               <div class="admin-tt-header">PERIOD / TIME</div>
               ${days.map(d => `<div class="admin-tt-header">${d.label}</div>`).join('')}
@@ -1165,6 +1296,7 @@
             <span class="mono" style="font-size: 11px; color: var(--green); font-weight: 700; background: var(--green-bg); border: 1px solid var(--green-border); padding: 4px 10px; border-radius: 4px;">41 / 41 Validated</span>
           </div>
 
+          <div class="mobile-swipe-hint"><span>⇄ Swipe horizontally to inspect complete table</span></div>
           <div class="terminal-table-wrapper">
             <table class="terminal-table">
               <thead>
@@ -1277,6 +1409,154 @@
               </div>
               <a href="/exports/schedule_after.json" download class="btn-solid" style="text-decoration: none;">Download JSON</a>
             </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // 6. ANALYTICS & TELEMETRY DASHBOARD
+    async function renderAnalytics(ws) {
+      ws.innerHTML = `<div style="padding: 24px; text-align: center; color: var(--text-muted);">Loading live analytics and telemetry stream...</div>`;
+      
+      let metrics = null;
+      try {
+        metrics = await fetch("/api/analytics/metrics").then(r => r.json());
+      } catch (e) {
+        metrics = null;
+      }
+
+      if (!metrics || !metrics.success) {
+        ws.innerHTML = `<div style="padding: 24px; color: var(--red); font-weight:700;">Unable to retrieve telemetry feed. Verify /api/analytics/metrics is operational.</div>`;
+        return;
+      }
+
+      const paths = metrics.page_views_by_path || {};
+      const totalViews = metrics.total_page_views || 1;
+      const sortedPaths = Object.keys(paths).sort((a, b) => paths[b] - paths[a]);
+      const devices = metrics.device_breakdown || {};
+      const eventsByCat = metrics.events_by_category || {};
+      const recent = metrics.recent_events || [];
+
+      ws.innerHTML = `
+        <div class="panel" style="max-width: 1040px; margin: 0 auto; width: 100%;">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">Institutional Telemetry & Real-Time Analytics</div>
+              <div class="panel-desc">DPDP Act 2023 compliant · Anonymous client-side telemetry, Core Web Vitals, and route engagement.</div>
+            </div>
+            <button class="btn-solid" onclick="renderAnalytics(document.getElementById('admin-workspace'))">↻ Refresh Telemetry</button>
+          </div>
+
+          <!-- Top Metric KPI Cards -->
+          <div class="stat-row">
+            <div class="stat-box">
+              <div class="stat-box-title">Total Platform Views</div>
+              <div class="stat-box-val mono" style="color: var(--primary);">${metrics.total_page_views}</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-box-title">Active Unique Sessions</div>
+              <div class="stat-box-val mono" style="color: var(--green);">${metrics.unique_sessions_count}</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-box-title">Average TTFB Latency</div>
+              <div class="stat-box-val mono" style="color: var(--gold-dark);">${metrics.avg_ttfb_ms} ms</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-box-title">DOM Load Speed</div>
+              <div class="stat-box-val mono" style="color: var(--green);">${metrics.avg_load_ms} ms</div>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; margin-bottom: 24px;">
+            <!-- Route Engagement Breakdown -->
+            <div style="background: #ffffff; border: 1px solid var(--border); border-radius: 8px; padding: 18px;">
+              <div style="font-weight: 700; color: var(--primary); font-size: 14px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+                <span>Route Popularity & Traffic Share</span>
+                <span class="mono" style="font-size: 11px; color: var(--text-muted);">${sortedPaths.length} Active Routes</span>
+              </div>
+              <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                <thead>
+                  <tr style="border-bottom: 1px solid var(--border); text-align: left; color: var(--text-muted);">
+                    <th style="padding: 6px 0;">URL PATH</th>
+                    <th style="padding: 6px 0; text-align: right;">VIEWS</th>
+                    <th style="padding: 6px 0; text-align: right;">SHARE</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${sortedPaths.map(p => {
+                    const cnt = paths[p];
+                    const pct = Math.round((cnt / totalViews) * 100);
+                    return `
+                      <tr style="border-bottom: 1px solid rgba(0,0,0,0.04);">
+                        <td style="padding: 8px 0;" class="mono"><strong>${p}</strong></td>
+                        <td style="padding: 8px 0; text-align: right;" class="mono">${cnt}</td>
+                        <td style="padding: 8px 0; text-align: right;" class="mono">
+                          <span style="background: var(--yellow-light); border: 1px solid var(--yellow-border); padding: 2px 6px; border-radius: 4px; font-weight: 700; color: var(--gold-dark);">${pct}%</span>
+                        </td>
+                      </tr>
+                    `;
+                  }).join('')}
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Device & Interaction Breakdown -->
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+              <div style="background: #ffffff; border: 1px solid var(--border); border-radius: 8px; padding: 18px;">
+                <div style="font-weight: 700; color: var(--primary); font-size: 14px; margin-bottom: 10px;">Device Form Factors</div>
+                <div style="display: flex; flex-direction: column; gap: 8px; font-size: 12px;">
+                  <div style="display: flex; justify-content: space-between;">
+                    <span>🖥️ Desktop Browsers:</span>
+                    <strong class="mono">${devices.desktop || 0}</strong>
+                  </div>
+                  <div style="display: flex; justify-content: space-between;">
+                    <span>📱 Mobile Devices:</span>
+                    <strong class="mono">${devices.mobile || 0}</strong>
+                  </div>
+                  <div style="display: flex; justify-content: space-between;">
+                    <span>📟 Tablets & iPads:</span>
+                    <strong class="mono">${devices.tablet || 0}</strong>
+                  </div>
+                </div>
+              </div>
+
+              <div style="background: #ffffff; border: 1px solid var(--border); border-radius: 8px; padding: 18px;">
+                <div style="font-weight: 700; color: var(--primary); font-size: 14px; margin-bottom: 10px;">Interactions by Category</div>
+                <div style="display: flex; flex-direction: column; gap: 8px; font-size: 12px;">
+                  ${Object.keys(eventsByCat).map(k => `
+                    <div style="display: flex; justify-content: space-between;">
+                      <span>● ${k}:</span>
+                      <strong class="mono">${eventsByCat[k]}</strong>
+                    </div>
+                  `).join('') || '<div style="color:var(--text-muted);">No interactions recorded yet.</div>'}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Real-Time Activity Log -->
+          <div style="background: #ffffff; border: 1px solid var(--border); border-radius: 8px; padding: 18px;">
+            <div style="font-weight: 700; color: var(--primary); font-size: 14px; margin-bottom: 12px;">Live Telemetry Event Feed (Last 20 Recorded)</div>
+            <table style="width: 100%; border-collapse: collapse; font-size: 11.5px;" class="mono">
+              <thead>
+                <tr style="border-bottom: 1px solid var(--border); text-align: left; color: var(--text-muted);">
+                  <th style="padding: 6px 0;">EVENT TYPE</th>
+                  <th style="padding: 6px 0;">PATH</th>
+                  <th style="padding: 6px 0;">DEVICE</th>
+                  <th style="padding: 6px 0; text-align: right;">TIMESTAMP</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${recent.slice().reverse().map(ev => `
+                  <tr style="border-bottom: 1px solid rgba(0,0,0,0.04);">
+                    <td style="padding: 6px 0;"><span style="background: var(--yellow-badge); color: var(--gold-dark); padding: 1px 6px; border-radius: 3px; font-weight: 700;">${ev.type}</span></td>
+                    <td style="padding: 6px 0;">${ev.path}</td>
+                    <td style="padding: 6px 0;">${ev.device}</td>
+                    <td style="padding: 6px 0; text-align: right; color: var(--text-muted);">${ev.timestamp.replace('T', ' ').substring(0, 19)}</td>
+                  </tr>
+                `).join('') || '<tr><td colspan="4" style="padding: 12px; text-align: center;">No events logged yet.</td></tr>'}
+              </tbody>
+            </table>
           </div>
         </div>
       `;

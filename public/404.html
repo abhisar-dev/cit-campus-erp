@@ -10,6 +10,7 @@
     }
   </script>
   <script src="/cookie-consent.js" defer></script>
+  <script src="/analytics.js" defer></script>
   <title>404 Page Not Found — Academic Resource Unavailable | Chilika Institute of Technology</title>
   <meta name="description" content="The requested campus timetable, classroom venue, or academic portal page could not be found on the Chilika Institute of Technology (CIT) Campus ERP." />
   <meta name="keywords" content="CIT 404, page not found, timetable missing, campus portal error, Chilika Institute of Technology" />
@@ -400,6 +401,47 @@
       font-weight: 700;
       text-decoration: underline;
     }
+    @media (max-width: 768px) {
+      header.site-header {
+        padding: 10px 14px !important;
+      }
+      .header-inner {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 10px !important;
+      }
+      .header-nav {
+        width: 100% !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        white-space: nowrap !important;
+        gap: 8px !important;
+        scrollbar-width: none !important;
+        padding-bottom: 2px !important;
+      }
+      .header-nav::-webkit-scrollbar {
+        display: none;
+      }
+      main.error-main {
+        padding: 24px 12px !important;
+      }
+      .error-card {
+        padding: 28px 16px !important;
+      }
+      .error-num {
+        font-size: 64px !important;
+      }
+      .error-title {
+        font-size: 19px !important;
+      }
+      .action-grid {
+        grid-template-columns: 1fr !important;
+      }
+      .footer-inner {
+        flex-direction: column !important;
+        text-align: center !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -522,6 +564,9 @@
       const p = document.getElementById('requested-path');
       if (p) {
         p.innerText = window.location.pathname || '/unknown';
+        if (window.CITAnalytics) {
+          window.CITAnalytics.trackEvent('Error', '404_Not_Found', window.location.pathname || '/unknown');
+        }
       }
     })();
   </script>

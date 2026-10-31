@@ -10,6 +10,7 @@
     }
   </script>
   <script src="/cookie-consent.js" defer></script>
+  <script src="/analytics.js" defer></script>
   <title>Administrative Command Sign In — CIT Campus Operations | Chilika Institute of Technology</title>
   <meta name="description" content="Dedicated institutional clearance terminal for the Dean of Academic Affairs and authorized system administrators at Chilika Institute of Technology (CIT). Secure elevated access for timetable solver control and venue management." />
   <meta name="keywords" content="CIT admin login, Dean clearance, academic operations, admin terminal, timetable solver admin, institutional administration" />
@@ -427,13 +428,34 @@
       .left-pane {
         padding: 24px;
         flex: none;
-        min-height: 320px;
+        min-height: auto;
       }
       .right-pane {
         padding: 30px 20px;
       }
       .illustration-img {
         max-height: 240px;
+      }
+      .illustration-wrap {
+        display: none !important;
+      }
+      .left-footer {
+        display: none !important;
+      }
+      .title-main {
+        font-size: 26px;
+        margin-bottom: 18px;
+      }
+    }
+    @media (max-width: 600px) {
+      .input-field-wrap input, .form-select, select, textarea {
+        font-size: 16px !important; /* Prevents iOS Safari auto-zoom */
+      }
+      .form-box {
+        max-width: 100% !important;
+      }
+      .right-pane {
+        padding: 20px 14px 32px 14px !important;
       }
     }
   </style>

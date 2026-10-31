@@ -10,6 +10,7 @@
     }
   </script>
   <script src="/cookie-consent.js" defer></script>
+  <script src="/analytics.js" defer></script>
   <title>Terms & Conditions — Academic Code of Conduct & Portal Regulations | Chilika Institute of Technology</title>
   <meta name="description" content="Official Terms & Conditions and Student Academic Code of Conduct for Chilika Institute of Technology (CIT) Campus ERP. Covers portal usage standards, venue reservation protocols, and academic honor code obligations." />
   <meta name="keywords" content="CIT terms and conditions, student code of conduct, portal regulations, venue booking policy, academic integrity, CIT rules" />
@@ -521,6 +522,60 @@
         box-shadow: none;
         padding: 12px 0;
         page-break-inside: avoid;
+      }
+    }
+    @media (max-width: 768px) {
+      header {
+        height: auto !important;
+        min-height: 56px;
+        padding: 10px 14px !important;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .brand-wrap {
+        gap: 8px;
+      }
+      .brand-sub {
+        display: none;
+      }
+      .nav-actions {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        white-space: nowrap;
+        gap: 8px;
+        scrollbar-width: none;
+      }
+      .nav-actions::-webkit-scrollbar {
+        display: none;
+      }
+      main {
+        margin: 16px auto !important;
+        padding: 0 12px !important;
+      }
+      .hero-banner {
+        padding: 20px 16px !important;
+      }
+      .hero-title {
+        font-size: 22px !important;
+      }
+      .section-card {
+        padding: 20px 16px !important;
+      }
+      .terms-table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        min-width: 100%;
+      }
+      .footer-wrap {
+        flex-direction: column !important;
+        text-align: center !important;
+      }
+    }
+    @media (max-width: 600px) {
+      input, select, textarea {
+        font-size: 16px !important; /* Prevents iOS Safari auto-zoom */
       }
     }
   </style>

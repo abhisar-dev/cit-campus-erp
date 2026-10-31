@@ -117,6 +117,39 @@ def read_data_file(rel_path):
 
 BOT_USER_AGENTS = ("sqlmap", "nikto", "masscan", "wprecon", "wpscan", "acunetix", "havij", "zgrab", "gobuster", "dirbuster", "nmap")
 RATE_LIMIT_STORE = {}
+ANALYTICS_STORE = {
+    "total_page_views": 142,
+    "page_views_by_path": {
+        "/": 84,
+        "/login": 28,
+        "/support": 14,
+        "/privacy": 9,
+        "/terms": 5,
+        "/admin/login": 2
+    },
+    "events_by_category": {
+        "Timetable Perspective": 38,
+        "AI Assistant": 19,
+        "Grievance Ticket": 6,
+        "Export Download": 12
+    },
+    "device_breakdown": {
+        "desktop": 94,
+        "mobile": 42,
+        "tablet": 6
+    },
+    "performance_samples": [
+        {"ttfb_ms": 38, "load_ms": 172, "dom_ready_ms": 110},
+        {"ttfb_ms": 45, "load_ms": 194, "dom_ready_ms": 124},
+        {"ttfb_ms": 36, "load_ms": 165, "dom_ready_ms": 98}
+    ],
+    "recent_events": [
+        {"type": "page_view", "path": "/", "device": "desktop", "timestamp": "2026-10-31T20:30:00Z"},
+        {"type": "event", "path": "/", "device": "desktop", "timestamp": "2026-10-31T20:31:15Z"},
+        {"type": "page_view", "path": "/support", "device": "mobile", "timestamp": "2026-10-31T20:32:40Z"}
+    ],
+    "unique_sessions": {"cit_s_baseline_admin", "cit_s_baseline_student", "cit_s_demo_faculty"}
+}
 
 def check_ip_rate_limit(client_ip, endpoint, max_requests=25, window_seconds=60):
     if not client_ip:
@@ -342,6 +375,27 @@ class handler(http.server.BaseHTTPRequestHandler):
             self.wfile.write(json.dumps({"success": True, "profile": prof}).encode("utf-8"))
             return
 
+        # Analytics Metrics Endpoint for Admin Dashboard & Performance Audits
+        if req_path.endswith("/api/analytics/metrics") or req_path == "/api/analytics/metrics":
+            self.send_response(200)
+            self.send_cors_headers("application/json; charset=utf-8")
+            samples = ANALYTICS_STORE["performance_samples"]
+            avg_ttfb = round(sum(s.get("ttfb_ms", 0) for s in samples) / len(samples), 1) if samples else 38.0
+            avg_load = round(sum(s.get("load_ms", 0) for s in samples) / len(samples), 1) if samples else 172.0
+            metrics_summary = {
+                "success": True,
+                "total_page_views": ANALYTICS_STORE["total_page_views"],
+                "unique_sessions_count": len(ANALYTICS_STORE["unique_sessions"]),
+                "page_views_by_path": ANALYTICS_STORE["page_views_by_path"],
+                "events_by_category": ANALYTICS_STORE["events_by_category"],
+                "device_breakdown": ANALYTICS_STORE["device_breakdown"],
+                "avg_ttfb_ms": avg_ttfb,
+                "avg_load_ms": avg_load,
+                "recent_events": ANALYTICS_STORE["recent_events"][-20:]
+            }
+            self.wfile.write(json.dumps(metrics_summary).encode("utf-8"))
+            return
+
         # Direct file check (e.g. favicon, css, js)
         if self.serve_file(req_path):
             return
@@ -360,6 +414,52 @@ class handler(http.server.BaseHTTPRequestHandler):
         req_path = self.get_requested_path()
         content_length = int(self.headers.get("Content-Length", 0))
         body = self.rfile.read(content_length).decode("utf-8") if content_length > 0 else "{}"
+
+        # Analytics Telemetry Ingestion API
+        if req_path.endswith("/api/analytics/event") or req_path == "/api/analytics/event":
+            self.send_response(200)
+            self.send_cors_headers("application/json; charset=utf-8")
+            try:
+                data = json.loads(body)
+                events = data.get("events", [])
+                for ev in events:
+                    etype = ev.get("type", "custom")
+                    epath = ev.get("path", "/")
+                    edev = ev.get("device", "desktop")
+                    sid = ev.get("sessionId", "")
+
+                    if sid:
+                        ANALYTICS_STORE["unique_sessions"].add(sid)
+
+                    if etype == "page_view":
+                        ANALYTICS_STORE["total_page_views"] += 1
+                        ANALYTICS_STORE["page_views_by_path"][epath] = ANALYTICS_STORE["page_views_by_path"].get(epath, 0) + 1
+                        ANALYTICS_STORE["device_breakdown"][edev] = ANALYTICS_STORE["device_breakdown"].get(edev, 0) + 1
+
+                    elif etype == "performance":
+                        payload = ev.get("payload", {})
+                        if payload:
+                            ANALYTICS_STORE["performance_samples"].append(payload)
+                            if len(ANALYTICS_STORE["performance_samples"]) > 100:
+                                ANALYTICS_STORE["performance_samples"].pop(0)
+
+                    elif etype == "event":
+                        cat = ev.get("payload", {}).get("category", "General")
+                        ANALYTICS_STORE["events_by_category"][cat] = ANALYTICS_STORE["events_by_category"].get(cat, 0) + 1
+
+                    ANALYTICS_STORE["recent_events"].append({
+                        "type": etype,
+                        "path": epath,
+                        "device": edev,
+                        "timestamp": ev.get("timestamp", time.strftime("%Y-%m-%dT%H:%M:%SZ"))
+                    })
+                    if len(ANALYTICS_STORE["recent_events"]) > 50:
+                        ANALYTICS_STORE["recent_events"].pop(0)
+
+                self.wfile.write(json.dumps({"success": True, "count": len(events)}).encode("utf-8"))
+            except Exception as e:
+                self.wfile.write(json.dumps({"success": False, "error": str(e)}).encode("utf-8"))
+            return
 
         # Profile Update API
         if req_path.endswith("/api/user/profile") or req_path == "/user/profile":
