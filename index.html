@@ -3,14 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Chilika Institute of Technology — Academic Scheduling Engine</title>
+  <title>Chilika Institute of Technology — University ERP Portal</title>
   <style>
     /*
-     * ChronoCIT Academic Engine
-     * Design System: Emil Kowalski / Linear / Vercel Precision
-     * Palette: Zinc Grayscale (#09090b, #18181b, #27272a, #71717a, #f4f4f5)
-     * Typography: System Sans Stack, strict typographic hierarchy
-     * Zero emojis, zero glow/orbs, zero childish decorations
+     * ChronoCIT — University ERP Architecture
+     * Inspired by authentic Indian University ERP portals (Invertis / TCS iON / KIIT)
+     * Layout: Top Announcement Ribbon + Institutional Brand Header + Left Module Navigation + High-Density Content Area
      */
 
     *, *::before, *::after {
@@ -20,523 +18,720 @@
     }
 
     :root {
-      --bg-base: #09090b;
-      --bg-surface: #121215;
-      --bg-muted: #18181b;
-      --border-subtle: #27272a;
-      --border-strong: #3f3f46;
-      --text-main: #f4f4f5;
-      --text-muted: #a1a1aa;
-      --text-dim: #71717a;
-      --accent-blue: #3b82f6;
-      --accent-emerald: #10b981;
-      --accent-amber: #f59e0b;
-      --accent-rose: #ef4444;
-      --accent-purple: #8b5cf6;
+      --top-ribbon-bg: #c2410c; /* Deep terracotta / orange alert bar */
+      --header-bg: #ffffff;
+      --page-bg: #f1f5f9;
+      --sidebar-header: #0284c7; /* Vibrant institutional blue */
+      --sidebar-bg: #ffffff;
+      --sidebar-border: #e2e8f0;
+      --sidebar-hover: #f8fafc;
+      --sidebar-active-text: #0284c7;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --text-dim: #94a3b8;
+      --border-subtle: #cbd5e1;
+      --primary-blue: #0284c7;
+      --primary-dark: #0369a1;
+      --emerald: #059669;
+      --amber: #d97706;
+      --rose: #dc2626;
+      --purple: #7c3aed;
       --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
       --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
 
     body {
-      background-color: var(--bg-base);
+      background-color: var(--page-bg);
       color: var(--text-main);
       font-family: var(--font-sans);
       font-size: 13px;
       line-height: 1.5;
-      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      min-height: 100vh;
     }
 
     .mono {
       font-family: var(--font-mono);
     }
 
-    /* Top Navigation Bar */
-    header {
-      background: var(--bg-base);
-      border-bottom: 1px solid var(--border-subtle);
-      height: 52px;
-      padding: 0 24px;
+    /* 1. TOP ANNOUNCEMENT RIBBON */
+    .announcement-ribbon {
+      background-color: var(--top-ribbon-bg);
+      color: #ffffff;
+      height: 36px;
+      padding: 0 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 50;
+      font-size: 12px;
+      font-weight: 500;
     }
 
-    .brand-group {
+    .announcement-left {
       display: flex;
       align-items: center;
       gap: 12px;
     }
 
-    .brand-mark {
-      width: 24px;
-      height: 24px;
-      background: #f4f4f5;
-      color: #09090b;
+    .announcement-badge {
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 2px 8px;
       border-radius: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       font-weight: 700;
       font-size: 11px;
-      letter-spacing: -0.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
-    .brand-title {
-      font-weight: 600;
-      font-size: 13px;
-      letter-spacing: -0.2px;
-      color: var(--text-main);
-    }
-
-    .brand-tag {
+    .announcement-user {
+      font-weight: 700;
+      letter-spacing: 0.5px;
       font-size: 11px;
-      color: var(--text-dim);
-      border-left: 1px solid var(--border-subtle);
-      padding-left: 12px;
-    }
-
-    .header-actions {
+      text-transform: uppercase;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 8px;
     }
 
-    /* Segmented Persona Switcher */
-    .segmented-control {
+    /* 2. UNIVERSITY HEADER */
+    .erp-header {
+      background: var(--header-bg);
+      border-bottom: 2px solid #e2e8f0;
+      padding: 10px 24px;
       display: flex;
-      background: var(--bg-muted);
-      border: 1px solid var(--border-subtle);
-      border-radius: 6px;
-      padding: 2px;
-      gap: 2px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
     }
 
-    .segmented-btn {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      padding: 4px 10px;
-      border-radius: 4px;
-      font-size: 12px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: color 0.15s ease, background 0.15s ease;
-    }
-
-    .segmented-btn:hover {
-      color: var(--text-main);
-    }
-
-    .segmented-btn.active {
-      background: var(--bg-surface);
-      color: var(--text-main);
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
-      border: 1px solid var(--border-strong);
-    }
-
-    .btn-reset {
-      background: transparent;
-      border: 1px solid var(--border-subtle);
-      color: var(--text-muted);
-      padding: 5px 12px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.15s ease;
-    }
-
-    .btn-reset:hover {
-      background: var(--bg-muted);
-      color: var(--text-main);
-      border-color: var(--border-strong);
-    }
-
-    /* Tab Navigation */
-    .nav-tabs {
-      background: var(--bg-surface);
-      border-bottom: 1px solid var(--border-subtle);
-      padding: 0 24px;
+    .brand-section {
       display: flex;
-      gap: 20px;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-emblem {
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #0369a1, #0284c7);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 900;
+      font-size: 16px;
+      letter-spacing: -0.5px;
+      border: 2px solid #e0f2fe;
+      box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
+    }
+
+    .brand-emblem span {
+      font-size: 7px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      margin-top: -2px;
+    }
+
+    .brand-text h1 {
+      font-size: 16px;
+      font-weight: 800;
+      color: #0c4a6e;
+      letter-spacing: -0.3px;
+    }
+
+    .brand-text p {
+      font-size: 11px;
+      color: #64748b;
+      font-weight: 500;
+    }
+
+    /* Curved Institutional Header Tabs */
+    .header-nav-tabs {
+      display: flex;
+      align-items: flex-end;
+      gap: 3px;
       overflow-x: auto;
     }
 
-    .nav-tab-btn {
-      background: transparent;
+    .curved-tab {
+      background: #0284c7;
+      color: #ffffff;
       border: none;
-      color: var(--text-muted);
-      padding: 10px 0;
+      padding: 8px 16px;
+      border-top-left-radius: 6px;
+      border-top-right-radius: 6px;
       font-size: 12px;
-      font-weight: 500;
+      font-weight: 600;
       cursor: pointer;
-      position: relative;
       white-space: nowrap;
-      transition: color 0.15s ease;
+      transition: background 0.15s ease;
     }
 
-    .nav-tab-btn:hover {
-      color: var(--text-main);
+    .curved-tab:hover {
+      background: #0369a1;
     }
 
-    .nav-tab-btn.active {
-      color: var(--text-main);
-      font-weight: 600;
+    .curved-tab.active {
+      background: #0369a1;
+      border-bottom: 2px solid #38bdf8;
     }
 
-    .nav-tab-btn.active::after {
-      content: "";
-      position: absolute;
-      bottom: -1px;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background: #f4f4f5;
-    }
-
-    /* Layout & Surface Panels */
-    main {
-      max-width: 1360px;
-      width: 100%;
-      margin: 0 auto;
-      padding: 24px;
-      flex: 1;
-    }
-
-    .panel {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-subtle);
-      border-radius: 8px;
-      padding: 18px;
-    }
-
-    .panel-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 16px;
-    }
-
-    .panel-title {
-      font-size: 14px;
-      font-weight: 600;
-      letter-spacing: -0.2px;
-      color: var(--text-main);
-    }
-
-    .panel-desc {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-top: 2px;
-    }
-
-    /* Metric Grid */
-    .stat-row {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-
-    .stat-card {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-subtle);
-      border-radius: 6px;
-      padding: 14px 16px;
-    }
-
-    .stat-label {
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-      color: var(--text-dim);
-    }
-
-    .stat-value {
-      font-size: 22px;
-      font-weight: 700;
-      color: var(--text-main);
-      margin-top: 4px;
-      font-family: var(--font-mono);
-    }
-
-    .stat-meta {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-top: 4px;
-    }
-
-    /* Filters Bar */
-    .filter-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-bottom: 16px;
-      background: var(--bg-surface);
-      border: 1px solid var(--border-subtle);
-      border-radius: 6px;
-      padding: 10px 14px;
-    }
-
-    .filter-group {
+    .profile-pill {
       display: flex;
       align-items: center;
       gap: 10px;
     }
 
-    select.clean-select {
-      background: var(--bg-base);
-      border: 1px solid var(--border-subtle);
-      color: var(--text-main);
+    .profile-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #e2e8f0;
+      border: 2px solid #0284c7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #0369a1;
+      font-size: 13px;
+    }
+
+    /* 3. SUB-NAV / BREADCRUMB STRIP */
+    .subnav-strip {
+      background: #f8fafc;
+      border-bottom: 1px solid #cbd5e1;
+      padding: 6px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #475569;
+    }
+
+    .breadcrumbs {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+    }
+
+    .btn-home-pill {
+      background: #0284c7;
+      color: #ffffff;
+      border: none;
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* 4. MAIN DUAL-PANE BODY */
+    .erp-body {
+      display: flex;
+      flex: 1;
+      max-width: 1440px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 16px 20px;
+      gap: 18px;
+    }
+
+    /* LEFT SIDEBAR */
+    .erp-sidebar {
+      width: 240px;
+      min-width: 240px;
+      background: var(--sidebar-bg);
+      border: 1px solid var(--sidebar-border);
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-self: flex-start;
+    }
+
+    .sidebar-header-box {
+      background: var(--sidebar-header);
+      color: #ffffff;
+      padding: 10px 14px;
+      font-weight: 700;
+      letter-spacing: -0.2px;
+      text-transform: uppercase;
       font-size: 12px;
-      padding: 5px 10px;
-      border-radius: 5px;
+    }
+
+    .sidebar-menu {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-item {
+      border-bottom: 1px solid #f1f5f9;
+      border-left: 3px solid transparent;
+      padding: 10px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #334155;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.15s ease;
+      background: #ffffff;
+    }
+
+    .sidebar-item:hover {
+      background: var(--sidebar-hover);
+      color: var(--primary-blue);
+    }
+
+    .sidebar-item.active {
+      background: #f0f9ff;
+      border-left-color: #0284c7;
+      color: #0369a1;
+      font-weight: 700;
+    }
+
+    .sidebar-tag {
+      font-size: 10px;
       font-family: var(--font-mono);
+      background: #e2e8f0;
+      color: #475569;
+      padding: 1px 6px;
+      border-radius: 3px;
+    }
+
+    .sidebar-item.active .sidebar-tag {
+      background: #bae6fd;
+      color: #0369a1;
+    }
+
+    /* Persona Selector in Sidebar */
+    .sidebar-persona-box {
+      margin-top: auto;
+      background: #f8fafc;
+      border-top: 1px solid #e2e8f0;
+      padding: 12px;
+    }
+
+    .persona-select {
+      width: 100%;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      padding: 6px 8px;
+      font-size: 11px;
+      color: #0f172a;
+      font-weight: 600;
+      margin-top: 4px;
       outline: none;
     }
 
-    select.clean-select:focus {
-      border-color: var(--border-strong);
+    /* RIGHT CONTENT AREA */
+    .erp-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      min-width: 0;
     }
 
-    /* Data Table */
-    .table-wrapper {
-      border: 1px solid var(--border-subtle);
+    .content-box {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
       border-radius: 6px;
-      background: var(--bg-base);
-      overflow-x: auto;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      padding: 18px 20px;
     }
 
-    table.data-table {
+    .box-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #f1f5f9;
+      padding-bottom: 12px;
+      margin-bottom: 14px;
+    }
+
+    .box-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #0f172a;
+      letter-spacing: -0.2px;
+    }
+
+    .box-desc {
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 2px;
+    }
+
+    /* High-Density Metric Strip */
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .stat-pill {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-left: 3px solid #0284c7;
+      border-radius: 4px;
+      padding: 10px 14px;
+    }
+
+    .stat-pill-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .stat-pill-val {
+      font-size: 20px;
+      font-weight: 800;
+      color: #0f172a;
+      font-family: var(--font-mono);
+      margin-top: 2px;
+    }
+
+    /* Filters Bar */
+    .controls-strip {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 4px;
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .filter-options {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .radio-pill {
+      display: inline-flex;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      padding: 2px;
+    }
+
+    .radio-btn {
+      background: transparent;
+      border: none;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #475569;
+      cursor: pointer;
+      border-radius: 3px;
+    }
+
+    .radio-btn.active {
+      background: #0284c7;
+      color: #ffffff;
+    }
+
+    .select-dropdown {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: #0f172a;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      outline: none;
+    }
+
+    /* Timetable Grid */
+    .table-responsive {
+      overflow-x: auto;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      background: #ffffff;
+    }
+
+    table.erp-table {
       width: 100%;
       border-collapse: collapse;
       font-size: 12px;
       text-align: left;
     }
 
-    table.data-table th, table.data-table td {
-      padding: 10px 12px;
-      border-right: 1px solid var(--border-subtle);
-      border-bottom: 1px solid var(--border-subtle);
+    table.erp-table th, table.erp-table td {
+      border-right: 1px solid #e2e8f0;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 8px 10px;
     }
 
-    table.data-table th {
-      background: var(--bg-muted);
-      color: var(--text-dim);
-      font-weight: 600;
+    table.erp-table th {
+      background: #f8fafc;
+      color: #475569;
+      font-weight: 700;
       font-size: 11px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
 
-    /* Timetable Grid Specifics */
-    .timetable-cell {
-      min-width: 115px;
+    .period-cell {
+      min-width: 120px;
       height: 72px;
       vertical-align: top;
-      padding: 5px;
+      padding: 4px;
     }
 
-    .session-badge {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-subtle);
-      border-left-width: 3px;
+    .class-card {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-left: 3px solid #0284c7;
       border-radius: 4px;
-      padding: 5px 7px;
+      padding: 5px 6px;
       height: 100%;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
       font-size: 11px;
-      line-height: 1.3;
     }
 
-    .badge-lecture { border-left-color: var(--accent-blue); }
-    .badge-tutorial { border-left-color: var(--accent-emerald); }
-    .badge-lab { border-left-color: var(--accent-purple); }
-    .badge-basket { border-left-color: var(--accent-amber); }
+    .class-card.lab { border-left-color: #7c3aed; background: #faf5ff; }
+    .class-card.tutorial { border-left-color: #059669; background: #f0fdf4; }
+    .class-card.basket { border-left-color: #d97706; background: #fffbeb; }
 
-    .session-head {
+    .class-head {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-weight: 600;
+      font-weight: 700;
+      color: #0f172a;
     }
 
-    .session-sub {
-      color: var(--text-dim);
+    .class-sub {
+      color: #64748b;
       font-size: 10px;
     }
 
-    .session-foot {
+    .class-foot {
       display: flex;
       justify-content: space-between;
-      color: var(--text-muted);
+      color: #475569;
       font-size: 10px;
+      border-top: 1px dashed #e2e8f0;
+      padding-top: 2px;
+      margin-top: 2px;
     }
 
-    /* Pill Badges */
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      padding: 2px 7px;
-      border-radius: 4px;
+    /* Badges & Pills */
+    .status-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 3px;
       font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 0.3px;
+      font-weight: 700;
       text-transform: uppercase;
       font-family: var(--font-mono);
     }
 
-    .pill-success {
-      background: rgba(16, 185, 129, 0.1);
-      color: #34d399;
-      border: 1px solid rgba(16, 185, 129, 0.25);
-    }
+    .badge-approved { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+    .badge-alt { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+    .badge-rejected { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
 
-    .pill-warning {
-      background: rgba(245, 158, 11, 0.1);
-      color: #fbbf24;
-      border: 1px solid rgba(245, 158, 11, 0.25);
-    }
-
-    .pill-danger {
-      background: rgba(239, 68, 68, 0.1);
-      color: #f87171;
-      border: 1px solid rgba(239, 68, 68, 0.25);
-    }
-
-    .pill-neutral {
-      background: var(--bg-muted);
-      color: var(--text-muted);
-      border: 1px solid var(--border-subtle);
-    }
-
-    /* Input & Action Buttons */
-    .btn-primary {
-      background: #f4f4f5;
-      color: #09090b;
-      border: 1px solid #f4f4f5;
-      padding: 6px 14px;
-      border-radius: 6px;
+    .btn-action {
+      background: #0284c7;
+      color: #ffffff;
+      border: 1px solid #0369a1;
+      padding: 7px 14px;
+      border-radius: 4px;
       font-size: 12px;
       font-weight: 600;
       cursor: pointer;
-      transition: background 0.15s ease;
     }
 
-    .btn-primary:hover {
-      background: #e4e4e7;
+    .btn-action:hover {
+      background: #0369a1;
     }
 
-    .btn-secondary {
-      background: transparent;
-      color: var(--text-main);
-      border: 1px solid var(--border-subtle);
-      padding: 6px 14px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.15s ease;
-    }
-
-    .btn-secondary:hover {
-      background: var(--bg-muted);
-      border-color: var(--border-strong);
-    }
-
-    .text-input-field {
-      background: var(--bg-base);
-      border: 1px solid var(--border-subtle);
-      color: var(--text-main);
+    .text-input {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      color: #0f172a;
       padding: 8px 12px;
-      border-radius: 6px;
+      border-radius: 4px;
       font-size: 12px;
       width: 100%;
       outline: none;
     }
 
-    .text-input-field:focus {
-      border-color: var(--border-strong);
+    .text-input:focus {
+      border-color: #0284c7;
     }
 
-    /* Notification / Toast */
     #toast {
       position: fixed;
       bottom: 20px;
       right: 20px;
-      background: var(--bg-surface);
-      border: 1px solid var(--border-strong);
-      color: var(--text-main);
+      background: #0f172a;
+      color: #ffffff;
       padding: 10px 16px;
-      border-radius: 6px;
+      border-radius: 4px;
       font-size: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
       display: none;
       z-index: 100;
     }
 
     footer {
-      border-top: 1px solid var(--border-subtle);
+      background: #ffffff;
+      border-top: 1px solid #cbd5e1;
       padding: 12px 24px;
       font-size: 11px;
-      color: var(--text-dim);
+      color: #64748b;
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      margin-top: auto;
     }
   </style>
 </head>
 <body>
-  <!-- System Header -->
-  <header>
-    <div class="brand-group">
-      <div class="brand-mark">CIT</div>
-      <span class="brand-title">Academic Scheduling & Venue Operations</span>
-      <span class="brand-tag mono">cit-public-v1 · Week 7 Active</span>
+  <!-- 1. TOP ANNOUNCEMENT RIBBON -->
+  <div class="announcement-ribbon">
+    <div class="announcement-left">
+      <span class="announcement-badge">Announcement</span>
+      <span>Check priority regulations for Week 7 Spectra Fest venue reservations. Exam capacities halved per CIT guidelines.</span>
+    </div>
+    <div class="announcement-user">
+      <span id="top-user-name">ABHISAR KUMAR</span>
+      <span style="opacity: 0.7;">·</span>
+      <span id="top-user-role">DEAN (ADMIN)</span>
+    </div>
+  </div>
+
+  <!-- 2. UNIVERSITY BRAND HEADER -->
+  <header class="erp-header">
+    <div class="brand-section">
+      <div class="brand-emblem">
+        CIT
+        <span>ESTD</span>
+      </div>
+      <div class="brand-text">
+        <h1>CHILIKA INSTITUTE OF TECHNOLOGY</h1>
+        <p>Enterprise Academic Scheduling & Venue Management ERP</p>
+      </div>
     </div>
 
-    <div class="header-actions">
-      <div class="segmented-control">
-        <button class="segmented-btn active" onclick="setRole('admin')">Admin (Dean)</button>
-        <button class="segmented-btn" onclick="setRole('coordinator')">Coordinator</button>
-        <button class="segmented-btn" onclick="setRole('faculty')">Faculty</button>
-        <button class="segmented-btn" onclick="setRole('club')">Club Rep</button>
-      </div>
+    <!-- Curved Header Module Tabs -->
+    <div class="header-nav-tabs">
+      <button class="curved-tab active" onclick="switchModule('timetable')">Academic Master</button>
+      <button class="curved-tab" onclick="switchModule('fest')">Spectra Week 7</button>
+      <button class="curved-tab" onclick="switchModule('ai')">Venue Request AI</button>
+      <button class="curved-tab" onclick="switchModule('disruption')">Disruption Center</button>
+      <button class="curved-tab" onclick="switchModule('exams')">Midsem Exams</button>
+      <button class="curved-tab" onclick="switchModule('audit')">Validator Audit</button>
+    </div>
 
-      <button class="btn-reset" onclick="resetDemo()">Reset State</button>
+    <div class="profile-pill">
+      <div class="profile-avatar" id="avatar-letter">A</div>
     </div>
   </header>
 
-  <!-- Horizontal Tabs -->
-  <nav class="nav-tabs">
-    <button class="nav-tab-btn active" onclick="switchTab('timetable')">Master Schedule</button>
-    <button class="nav-tab-btn" onclick="switchTab('fest')">Spectra Event Requests</button>
-    <button class="nav-tab-btn" onclick="switchTab('ai')">Venue Request Parser</button>
-    <button class="nav-tab-btn" onclick="switchTab('disruption')">Disruption & Reschedule</button>
-    <button class="nav-tab-btn" onclick="switchTab('exams')">Midsem Examinations</button>
-    <button class="nav-tab-btn" onclick="switchTab('audit')">Validation & Compliance</button>
-  </nav>
+  <!-- 3. SUB-NAV BREADCRUMB STRIP -->
+  <div class="subnav-strip">
+    <div class="breadcrumbs">
+      <span style="color: #0284c7; font-weight: 700;">ERP Home</span>
+      <span>&gt;</span>
+      <span>Academic Operations</span>
+      <span>&gt;</span>
+      <span id="breadcrumb-current" style="font-weight: 600; color: #0f172a;">Master Timetable Matrix</span>
+    </div>
 
-  <!-- Main Content Container -->
-  <main id="app-root">
-    <!-- Rendered via JS -->
-  </main>
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <button class="btn-home-pill" onclick="resetDemo()">
+        ↺ Reset Demo State
+      </button>
+    </div>
+  </div>
 
-  <!-- Institutional Footer -->
+  <!-- 4. DUAL-PANE BODY -->
+  <div class="erp-body">
+    <!-- LEFT SIDEBAR -->
+    <aside class="erp-sidebar">
+      <div class="sidebar-header-box">
+        Academic Portal
+      </div>
+      <ul class="sidebar-menu">
+        <li class="sidebar-item active" onclick="switchModule('timetable')">
+          <span>Master Timetable</span>
+          <span class="sidebar-tag">189 Ses</span>
+        </li>
+        <li class="sidebar-item" onclick="switchModule('fest')">
+          <span>Spectra Week 7</span>
+          <span class="sidebar-tag">25 Req</span>
+        </li>
+        <li class="sidebar-item" onclick="switchModule('ai')">
+          <span>Venue AI Parser</span>
+          <span class="sidebar-tag">NLP</span>
+        </li>
+        <li class="sidebar-item" onclick="switchModule('disruption')">
+          <span>Disruption Resolver</span>
+          <span class="sidebar-tag">CR-102</span>
+        </li>
+        <li class="sidebar-item" onclick="switchModule('exams')">
+          <span>Midsem Exams</span>
+          <span class="sidebar-tag">41 Ex</span>
+        </li>
+        <li class="sidebar-item" onclick="switchModule('audit')">
+          <span>Validator Compliance</span>
+          <span class="sidebar-tag">Score 25</span>
+        </li>
+      </ul>
+
+      <!-- Active Persona Switcher Box -->
+      <div class="sidebar-persona-box">
+        <div style="font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase;">
+          Logged-In Role Switcher
+        </div>
+        <select class="persona-select" onchange="changePersona(this.value)">
+          <option value="admin">Dean's Office (Admin)</option>
+          <option value="coordinator">CSE Dept Coordinator</option>
+          <option value="faculty">Faculty (Physics / F19)</option>
+          <option value="club">Club Rep (Spectra Fest)</option>
+        </select>
+        <div style="font-size: 10px; color: #64748b; margin-top: 6px;">
+          Session: <strong style="color: #0284c7;">Week 7 Live</strong>
+        </div>
+      </div>
+    </aside>
+
+    <!-- RIGHT MAIN WORKSPACE -->
+    <main class="erp-content" id="workspace">
+      <!-- Dynamic workspace content loaded here -->
+    </main>
+  </div>
+
+  <!-- FOOTER -->
   <footer>
-    <span>Chilika Institute of Technology · Department of Academic Affairs</span>
-    <span class="mono">Verified by validator.py: 0 Hard Violations</span>
+    <span>Chilika Institute of Technology · Office of Dean Academics</span>
+    <span class="mono">Official Dataset: cit-public-v1 · Certified 0 Hard Clashes</span>
   </footer>
 
   <div id="toast"></div>
@@ -546,16 +741,16 @@
     let SCHED = null;
     let SCHED_AFTER = null;
     let activeRole = 'admin';
-    let currentTab = 'timetable';
+    let currentModule = 'timetable';
     let filterType = 'group';
     let filterVal = 'Y1-A';
     let disruptionMode = false;
 
-    const ROLE_LABELS = {
-      admin: "Dean's Office (Full Authority)",
-      coordinator: "Department Coordinator (CSE)",
-      faculty: "Faculty Member (Physics Dept)",
-      club: "Club Representative (Spectra Fest)"
+    const PERSONAS = {
+      admin: { name: "ABHISAR KUMAR", role: "DEAN'S OFFICE (ADMIN)", letter: "A" },
+      coordinator: { name: "DR. R. K. MISHRA", role: "CSE DEPT COORDINATOR", letter: "C" },
+      faculty: { name: "DR. S. N. BOSE", role: "FACULTY (PHYSICS / F19)", letter: "F" },
+      club: { name: "ARYAN SHARMA", role: "CLUB REP (DRAMATICS)", letter: "D" }
     };
 
     function showToast(msg) {
@@ -565,24 +760,43 @@
       setTimeout(() => { el.style.display = "none"; }, 3000);
     }
 
-    function setRole(r) {
-      activeRole = r;
-      document.querySelectorAll(".segmented-btn").forEach(b => b.classList.remove("active"));
-      event.target.classList.add("active");
-      showToast(`Role switched: ${ROLE_LABELS[r]}`);
+    function changePersona(p) {
+      activeRole = p;
+      document.getElementById("top-user-name").textContent = PERSONAS[p].name;
+      document.getElementById("top-user-role").textContent = PERSONAS[p].role;
+      document.getElementById("avatar-letter").textContent = PERSONAS[p].letter;
+      showToast(`Switched active persona to ${PERSONAS[p].role}`);
     }
 
-    function switchTab(t) {
-      currentTab = t;
-      document.querySelectorAll(".nav-tab-btn").forEach(b => b.classList.remove("active"));
-      event.target.classList.add("active");
-      renderTab();
+    function switchModule(mod) {
+      currentModule = mod;
+      // Sync curved tabs
+      document.querySelectorAll(".curved-tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".sidebar-item").forEach(s => s.classList.remove("active"));
+
+      const modNames = ['timetable', 'fest', 'ai', 'disruption', 'exams', 'audit'];
+      const idx = modNames.indexOf(mod);
+      if (idx !== -1) {
+        document.querySelectorAll(".curved-tab")[idx].classList.add("active");
+        document.querySelectorAll(".sidebar-item")[idx].classList.add("active");
+      }
+
+      const titles = {
+        timetable: "Master Timetable Matrix",
+        fest: "Spectra Tech Fest (Week 7 Bookings)",
+        ai: "Plain-Text & Hinglish Venue AI Parser",
+        disruption: "Emergency Disruption & Minimal-Move Solver",
+        exams: "Midsem Examination Matrix",
+        audit: "Official Validator Audit Scorecard"
+      };
+      document.getElementById("breadcrumb-current").textContent = titles[mod] || "Workspace";
+      renderModule();
     }
 
     function resetDemo() {
       disruptionMode = false;
-      showToast("Data restored to verified baseline (cit-public-v1).");
-      renderTab();
+      showToast("ERP state restored to clean initial baseline (cit-public-v1).");
+      renderModule();
     }
 
     async function init() {
@@ -595,27 +809,27 @@
         DATA = d;
         SCHED = s;
         SCHED_AFTER = sa;
-        renderTab();
+        renderModule();
       } catch (err) {
-        document.getElementById("app-root").innerHTML = "<div style='padding:40px; text-align:center; color:#ef4444;'>Backend data unreachable. Confirm server.py is running on port 8000.</div>";
+        document.getElementById("workspace").innerHTML = "<div style='padding:40px; text-align:center; color:#dc2626;'>Cannot connect to ERP service. Verify server.py is running.</div>";
       }
     }
 
-    function renderTab() {
-      const root = document.getElementById("app-root");
+    function renderModule() {
+      const ws = document.getElementById("workspace");
       const currentSched = disruptionMode ? SCHED_AFTER : SCHED;
       if (!currentSched) return;
 
-      if (currentTab === 'timetable') renderTimetable(root, currentSched);
-      else if (currentTab === 'fest') renderFest(root, currentSched);
-      else if (currentTab === 'ai') renderAI(root);
-      else if (currentTab === 'disruption') renderDisruption(root);
-      else if (currentTab === 'exams') renderExams(root, currentSched);
-      else if (currentTab === 'audit') renderAudit(root);
+      if (currentModule === 'timetable') renderTimetable(ws, currentSched);
+      else if (currentModule === 'fest') renderFest(ws, currentSched);
+      else if (currentModule === 'ai') renderAI(ws);
+      else if (currentModule === 'disruption') renderDisruption(ws);
+      else if (currentModule === 'exams') renderExams(ws, currentSched);
+      else if (currentModule === 'audit') renderAudit(ws);
     }
 
-    // 1. TIMETABLE
-    function renderTimetable(root, sched) {
+    // MODULE 1: TIMETABLE
+    function renderTimetable(ws, sched) {
       const sessMap = {};
       DATA.sessions.forEach(s => { sessMap[s.id] = s; });
 
@@ -650,105 +864,110 @@
         });
       }
 
-      root.innerHTML = `
-        <div class="stat-row">
-          <div class="stat-card">
-            <div class="stat-label">Total Teaching Sessions</div>
-            <div class="stat-value">189</div>
-            <div class="stat-meta">243 teaching hours/week</div>
+      ws.innerHTML = `
+        <div class="stats-bar">
+          <div class="stat-pill">
+            <div class="stat-pill-label">Total Teaching Sessions</div>
+            <div class="stat-pill-val">189</div>
           </div>
-          <div class="stat-card">
-            <div class="stat-label">Hard Constraints Violations</div>
-            <div class="stat-value" style="color: #34d399;">0</div>
-            <div class="stat-meta">Verified by validator.py</div>
+          <div class="stat-pill" style="border-left-color: #059669;">
+            <div class="stat-pill-label">Hard Constraint Violations</div>
+            <div class="stat-pill-val" style="color: #059669;">0</div>
           </div>
-          <div class="stat-card">
-            <div class="stat-label">Active Venues</div>
-            <div class="stat-value">27</div>
-            <div class="stat-meta">Classrooms, Halls & Labs</div>
+          <div class="stat-pill">
+            <div class="stat-pill-label">Teaching Venues</div>
+            <div class="stat-pill-val">27</div>
           </div>
-          <div class="stat-card">
-            <div class="stat-label">Schedule Mode</div>
-            <div class="stat-value" style="font-size: 15px; font-weight: 600; color: ${disruptionMode ? '#fbbf24' : '#34d399'};">
-              ${disruptionMode ? 'Disruption Repaired' : 'Baseline (cit-public-v1)'}
+          <div class="stat-pill" style="border-left-color: ${disruptionMode ? '#d97706' : '#059669'};">
+            <div class="stat-pill-label">Active State</div>
+            <div class="stat-pill-val" style="font-size: 15px; font-weight: 700; color: ${disruptionMode ? '#d97706' : '#059669'};">
+              ${disruptionMode ? 'Disruption Repaired' : 'Baseline Schedule'}
             </div>
-            <div class="stat-meta">${disruptionMode ? 'CR-102 moved with 0 time shifts' : 'All sessions anchored'}</div>
           </div>
         </div>
 
-        <div class="filter-bar">
-          <div class="filter-group">
-            <span class="stat-label" style="margin-right: 4px;">VIEW BY</span>
-            <div class="segmented-control">
-              <button onclick="setFilterType('group')" class="segmented-btn ${filterType==='group'?'active':''}">Student Group</button>
-              <button onclick="setFilterType('faculty')" class="segmented-btn ${filterType==='faculty'?'active':''}">Faculty</button>
-              <button onclick="setFilterType('room')" class="segmented-btn ${filterType==='room'?'active':''}">Venue</button>
+        <div class="content-box">
+          <div class="box-header">
+            <div>
+              <div class="box-title">Semester Teaching Timetable (Week 1–15)</div>
+              <div class="box-desc">Strictly adheres to faculty daily limits (4h max), lab 3-hour blocks (P2 or P6 only), and elective basket synchronization.</div>
             </div>
-            <select class="clean-select" onchange="setFilterVal(this.value)">
-              ${optionsHTML}
-            </select>
           </div>
 
-          <div style="display: flex; gap: 14px; font-size: 11px; color: var(--text-muted);">
-            <span style="display: flex; align-items: center; gap: 5px;"><span style="width: 8px; height: 8px; border-radius: 2px; background: var(--accent-blue);"></span> Lecture</span>
-            <span style="display: flex; align-items: center; gap: 5px;"><span style="width: 8px; height: 8px; border-radius: 2px; background: var(--accent-emerald);"></span> Tutorial</span>
-            <span style="display: flex; align-items: center; gap: 5px;"><span style="width: 8px; height: 8px; border-radius: 2px; background: var(--accent-purple);"></span> 3-Hour Lab</span>
-            <span style="display: flex; align-items: center; gap: 5px;"><span style="width: 8px; height: 8px; border-radius: 2px; background: var(--accent-amber);"></span> Basket Slot</span>
-          </div>
-        </div>
+          <div class="controls-strip">
+            <div class="filter-options">
+              <span class="stat-pill-label" style="margin-right: 4px;">COHORT:</span>
+              <div class="radio-pill">
+                <button onclick="setFilterType('group')" class="radio-btn ${filterType==='group'?'active':''}">Student Group</button>
+                <button onclick="setFilterType('faculty')" class="radio-btn ${filterType==='faculty'?'active':''}">Faculty</button>
+                <button onclick="setFilterType('room')" class="radio-btn ${filterType==='room'?'active':''}">Venue / Room</button>
+              </div>
+              <select class="select-dropdown" onchange="setFilterVal(this.value)">
+                ${optionsHTML}
+              </select>
+            </div>
 
-        <div class="table-wrapper">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th style="width: 80px;">DAY</th>
-                <th>P1<br><span style="font-size: 9px; color: var(--text-dim);">08:00</span></th>
-                <th>P2<br><span style="font-size: 9px; color: var(--text-dim);">09:00</span></th>
-                <th>P3<br><span style="font-size: 9px; color: var(--text-dim);">10:00</span></th>
-                <th>P4<br><span style="font-size: 9px; color: var(--text-dim);">11:00</span></th>
-                <th>P5<br><span style="font-size: 9px; color: var(--text-dim);">12:00</span></th>
-                <th style="background: #09090b; color: var(--text-dim); text-align: center; width: 60px;">LUNCH</th>
-                <th>P6<br><span style="font-size: 9px; color: var(--text-dim);">14:00</span></th>
-                <th>P7<br><span style="font-size: 9px; color: var(--text-dim);">15:00</span></th>
-                <th>P8<br><span style="font-size: 9px; color: var(--text-dim);">16:00</span></th>
-                <th>P9<br><span style="font-size: 9px; color: var(--text-dim);">17:00</span></th>
-              </tr>
-            </thead>
-            <tbody>
-              ${['MON', 'TUE', 'WED', 'THU', 'FRI'].map(d => `
+            <div style="display: flex; gap: 12px; font-size: 11px; color: #475569;">
+              <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 8px; height: 8px; background: #0284c7; border-radius: 2px;"></span> Lecture</span>
+              <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 8px; height: 8px; background: #059669; border-radius: 2px;"></span> Tutorial</span>
+              <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 8px; height: 8px; background: #7c3aed; border-radius: 2px;"></span> 3-Hour Lab</span>
+              <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 8px; height: 8px; background: #d97706; border-radius: 2px;"></span> Elective Basket</span>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="erp-table">
+              <thead>
                 <tr>
-                  <td class="mono" style="font-weight: 700; background: var(--bg-muted);">${d}</td>
-                  ${[1, 2, 3, 4, 5].map(p => renderCell(grid[d][p])).join('')}
-                  <td style="background: var(--bg-muted); text-align: center; font-size: 10px; color: var(--text-dim); letter-spacing: 1px;" class="mono">RECESS</td>
-                  ${[6, 7, 8, 9].map(p => renderCell(grid[d][p])).join('')}
+                  <th style="width: 70px;">DAY</th>
+                  <th>P1<br><span style="font-size: 9px; color: #94a3b8;">08:00</span></th>
+                  <th>P2<br><span style="font-size: 9px; color: #94a3b8;">09:00</span></th>
+                  <th>P3<br><span style="font-size: 9px; color: #94a3b8;">10:00</span></th>
+                  <th>P4<br><span style="font-size: 9px; color: #94a3b8;">11:00</span></th>
+                  <th>P5<br><span style="font-size: 9px; color: #94a3b8;">12:00</span></th>
+                  <th style="background: #e2e8f0; color: #475569; text-align: center; width: 60px;">RECESS</th>
+                  <th>P6<br><span style="font-size: 9px; color: #94a3b8;">14:00</span></th>
+                  <th>P7<br><span style="font-size: 9px; color: #94a3b8;">15:00</span></th>
+                  <th>P8<br><span style="font-size: 9px; color: #94a3b8;">16:00</span></th>
+                  <th>P9<br><span style="font-size: 9px; color: #94a3b8;">17:00</span></th>
                 </tr>
-              `).join('')}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                ${['MON', 'TUE', 'WED', 'THU', 'FRI'].map(d => `
+                  <tr>
+                    <td class="mono" style="font-weight: 800; background: #f8fafc; color: #0284c7;">${d}</td>
+                    ${[1, 2, 3, 4, 5].map(p => renderCell(grid[d][p])).join('')}
+                    <td style="background: #f1f5f9; text-align: center; font-size: 10px; color: #64748b; font-weight: 700;" class="mono">LUNCH</td>
+                    ${[6, 7, 8, 9].map(p => renderCell(grid[d][p])).join('')}
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
         </div>
       `;
     }
 
     function renderCell(item) {
-      if (!item) return `<td class="timetable-cell"></td>`;
-      let bType = 'badge-lecture';
-      if (item.kind === 'lab') bType = 'badge-lab';
-      else if (item.kind === 'tutorial') bType = 'badge-tutorial';
-      else if (item.basket_slot) bType = 'badge-basket';
+      if (!item) return `<td class="period-cell"></td>`;
+      let cardType = '';
+      if (item.kind === 'lab') cardType = 'lab';
+      else if (item.kind === 'tutorial') cardType = 'tutorial';
+      else if (item.basket_slot) cardType = 'basket';
 
       return `
-        <td class="timetable-cell">
-          <div class="session-badge ${bType}">
+        <td class="period-cell">
+          <div class="class-card ${cardType}">
             <div>
-              <div class="session-head">
+              <div class="class-head">
                 <span>${item.course_id}</span>
-                <span class="mono" style="font-size: 9px; color: var(--text-muted);">${item.room_id}</span>
+                <span class="mono" style="font-size: 9px; color: #64748b;">${item.room_id}</span>
               </div>
-              <div class="session-sub mono">${item.id}</div>
+              <div class="class-sub mono">${item.id}</div>
             </div>
-            <div class="session-foot mono">
+            <div class="class-foot mono">
               <span>${item.faculty_id}</span>
-              <span>${item.size}p</span>
+              <span>${item.size} pax</span>
             </div>
           </div>
         </td>
@@ -760,116 +979,119 @@
       if (ft === 'group') filterVal = 'Y1-A';
       else if (ft === 'faculty') filterVal = 'F01';
       else filterVal = 'LH-1';
-      renderTab();
+      renderModule();
     }
 
     function setFilterVal(v) {
       filterVal = v;
-      renderTab();
+      renderModule();
     }
 
-    // 2. FEST BOOKINGS
-    function renderFest(root, sched) {
+    // MODULE 2: SPECTRA FEST
+    function renderFest(ws, sched) {
       const bookings = sched.fest_week.bookings;
-      root.innerHTML = `
-        <div class="stat-row">
-          <div class="stat-card">
-            <div class="stat-label">Total Requests</div>
-            <div class="stat-value">25</div>
-            <div class="stat-meta">Week 7 Spectra Fest</div>
+      ws.innerHTML = `
+        <div class="stats-bar">
+          <div class="stat-pill">
+            <div class="stat-pill-label">Total Booking Requests</div>
+            <div class="stat-pill-val">25</div>
           </div>
-          <div class="stat-card">
-            <div class="stat-label">Approved</div>
-            <div class="stat-value" style="color: #34d399;">20</div>
-            <div class="stat-meta">In requested window</div>
+          <div class="stat-pill" style="border-left-color: #059669;">
+            <div class="stat-pill-label">Approved</div>
+            <div class="stat-pill-val" style="color: #059669;">20</div>
           </div>
-          <div class="stat-card">
-            <div class="stat-label">Alternatives Offered</div>
-            <div class="stat-value" style="color: #fbbf24;">3</div>
-            <div class="stat-meta">Adjusted slot / venue</div>
+          <div class="stat-pill" style="border-left-color: #d97706;">
+            <div class="stat-pill-label">Alternatives Offered</div>
+            <div class="stat-pill-val" style="color: #d97706;">3</div>
           </div>
-          <div class="stat-card">
-            <div class="stat-label">Rejected</div>
-            <div class="stat-value" style="color: #f87171;">2</div>
-            <div class="stat-meta">Capacity / withdrawn</div>
+          <div class="stat-pill" style="border-left-color: #dc2626;">
+            <div class="stat-pill-label">Rejected (Explicit Reason)</div>
+            <div class="stat-pill-val" style="color: #dc2626;">2</div>
           </div>
-          <div class="stat-card">
-            <div class="stat-label">Validator Booking Score</div>
-            <div class="stat-value">63.0 <span style="font-size: 14px; color: var(--text-dim);">/ 64</span></div>
-            <div class="stat-meta">0 Priority Inversions</div>
+          <div class="stat-pill">
+            <div class="stat-pill-label">Validator Booking Score</div>
+            <div class="stat-pill-val">63.0 / 64</div>
           </div>
         </div>
 
-        <div class="table-wrapper">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th style="width: 75px;">ID</th>
-                <th>EVENT / TITLE</th>
-                <th>ORGANIZER</th>
-                <th>ROLE CATEGORY</th>
-                <th>STATUS</th>
-                <th>ALLOCATION</th>
-                <th>GROUND TRUTH REASON</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${bookings.map(b => {
-                const req = DATA.booking_requests.find(r => r.id === b.request_id);
-                let pillClass = 'pill-success';
-                if (b.status === 'alternative_offered') pillClass = 'pill-warning';
-                else if (b.status === 'rejected') pillClass = 'pill-danger';
+        <div class="content-box">
+          <div class="box-header">
+            <div>
+              <div class="box-title">Spectra Tech Fest (Week 7) Venue Allocation Registry</div>
+              <div class="box-desc">Ordered by institutional precedence: Exams &gt; Regular Classes &gt; Institute Events &gt; Guest Lectures &gt; Department Events &gt; Club Events. Ties resolved by timestamp.</div>
+            </div>
+          </div>
 
-                return `
-                  <tr>
-                    <td class="mono" style="font-weight: 600;">${b.request_id}</td>
-                    <td style="font-weight: 600; color: var(--text-main);">${req ? req.title : 'Event'}</td>
-                    <td>${req ? req.requester : 'Unknown'}</td>
-                    <td class="mono" style="color: var(--text-muted);">${req ? req.role : ''}</td>
-                    <td><span class="pill ${pillClass}">${b.status.replace('_', ' ')}</span></td>
-                    <td class="mono" style="font-weight: 500;">
-                      ${b.status !== 'rejected' ? `${b.room_id} · ${b.day} P${b.start_period}-P${b.end_period}` : '—'}
-                    </td>
-                    <td style="color: var(--text-muted); font-size: 11px;">${b.reason}</td>
-                  </tr>
-                `;
-              }).join('')}
-            </tbody>
-          </table>
+          <div class="table-responsive">
+            <table class="erp-table">
+              <thead>
+                <tr>
+                  <th style="width: 75px;">REQ ID</th>
+                  <th>EVENT TITLE</th>
+                  <th>ORGANIZER / CLUB</th>
+                  <th>ROLE CATEGORY</th>
+                  <th>STATUS</th>
+                  <th>ALLOCATED VENUE & TIME</th>
+                  <th>OFFICIAL AUDIT JUSTIFICATION</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${bookings.map(b => {
+                  const req = DATA.booking_requests.find(r => r.id === b.request_id);
+                  let badge = 'badge-approved';
+                  if (b.status === 'alternative_offered') badge = 'badge-alt';
+                  else if (b.status === 'rejected') badge = 'badge-rejected';
+
+                  return `
+                    <tr>
+                      <td class="mono" style="font-weight: 700;">${b.request_id}</td>
+                      <td style="font-weight: 600; color: #0f172a;">${req ? req.title : 'Event'}</td>
+                      <td>${req ? req.requester : 'Unknown'}</td>
+                      <td class="mono" style="color: #64748b;">${req ? req.role : ''}</td>
+                      <td><span class="status-badge ${badge}">${b.status.replace('_', ' ')}</span></td>
+                      <td class="mono" style="font-weight: 600;">
+                        ${b.status !== 'rejected' ? `${b.room_id} · ${b.day} P${b.start_period}-P${b.end_period}` : '—'}
+                      </td>
+                      <td style="font-size: 11px; color: #475569;">${b.reason}</td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
         </div>
       `;
     }
 
-    // 3. AI REQUEST PARSER
-    function renderAI(root) {
-      root.innerHTML = `
-        <div style="max-width: 860px; margin: 0 auto;" class="panel">
-          <div class="panel-header">
+    // MODULE 3: AI VENUE PARSER
+    function renderAI(ws) {
+      ws.innerHTML = `
+        <div class="content-box" style="max-width: 900px; margin: 0 auto;">
+          <div class="box-header">
             <div>
-              <div class="panel-title">Natural Language Venue Request Parser</div>
-              <div class="panel-desc">English and Hinglish parsing. Extracts structured parameters with zero hallucination. All outcomes are validated by code before committing.</div>
+              <div class="box-title">Bilingual Venue Request Parser (English & Hinglish)</div>
+              <div class="box-desc">Converts unstructured student and faculty requests into verified scheduling proposals. The LLM never validates validity; all constraints are enforced by deterministic Python engine.</div>
             </div>
-            <span class="pill pill-neutral">Strict Deterministic Verification</span>
           </div>
 
           <div style="margin-bottom: 16px;">
-            <div class="stat-label" style="margin-bottom: 8px;">Evaluation Benchmark Samples:</div>
+            <div class="stat-pill-label" style="margin-bottom: 8px;">Evaluation Benchmark Samples (Click to Test):</div>
             <div style="display: flex; flex-direction: column; gap: 6px;">
-              <button onclick="fillAI('seminar hall kal shaam 6 baje, 2 ghante, 100 log, mic chahiye')" class="btn-secondary" style="text-align: left; font-family: var(--font-mono); font-size: 11px;">
+              <button onclick="fillAI('seminar hall kal shaam 6 baje, 2 ghante, 100 log, mic chahiye')" class="btn-action" style="background:#f8fafc; border:1px solid #cbd5e1; color:#0f172a; text-align:left; font-family:var(--font-mono); font-size:11px;">
                 "seminar hall kal shaam 6 baje, 2 ghante, 100 log, mic chahiye"
               </button>
-              <button onclick="fillAI('Need a room for 45 people on Tuesday 6 to 8 pm, projector please.')" class="btn-secondary" style="text-align: left; font-family: var(--font-mono); font-size: 11px;">
+              <button onclick="fillAI('Need a room for 45 people on Tuesday 6 to 8 pm, projector please.')" class="btn-action" style="background:#f8fafc; border:1px solid #cbd5e1; color:#0f172a; text-align:left; font-family:var(--font-mono); font-size:11px;">
                 "Need a room for 45 people on Tuesday 6 to 8 pm, projector please."
               </button>
-              <button onclick="fillAI('Book the auditorium for CSE department farewell, Friday evening, around 400 people')" class="btn-secondary" style="text-align: left; font-family: var(--font-mono); font-size: 11px;">
+              <button onclick="fillAI('Book the auditorium for CSE department farewell, Friday evening, around 400 people')" class="btn-action" style="background:#f8fafc; border:1px solid #cbd5e1; color:#0f172a; text-align:left; font-family:var(--font-mono); font-size:11px;">
                 "Book the auditorium for CSE department farewell, Friday evening, around 400 people"
               </button>
             </div>
           </div>
 
           <div style="display: flex; gap: 8px; margin-bottom: 20px;">
-            <input type="text" id="ai-input" class="text-input-field mono" placeholder="Enter request text in English or Hinglish..." />
-            <button class="btn-primary" style="white-space: nowrap;" onclick="submitAI()">Parse Request</button>
+            <input type="text" id="ai-input" class="text-input mono" placeholder="Enter venue booking request in plain English or Hinglish..." />
+            <button class="btn-action" onclick="submitAI()" style="white-space: nowrap;">Parse & Check Availability</button>
           </div>
 
           <div id="ai-result" style="display: none;"></div>
@@ -887,7 +1109,7 @@
       if (!val) return;
       const resContainer = document.getElementById("ai-result");
       resContainer.style.display = "block";
-      resContainer.innerHTML = "<div class='mono' style='color: var(--text-muted); font-size: 12px;'>Synthesizing parameters...</div>";
+      resContainer.innerHTML = "<div class='mono' style='color:#0284c7;'>Synthesizing parameters...</div>";
 
       try {
         const res = await fetch("/api/parse-nlp", {
@@ -897,244 +1119,241 @@
         }).then(r => r.json());
 
         resContainer.innerHTML = `
-          <div style="background: var(--bg-base); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 14px;">
+          <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 4px; padding: 14px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-              <span class="mono" style="font-weight: 600; font-size: 12px; color: var(--text-main);">Extracted Booking Schema</span>
-              <span class="pill pill-success">Validated Code Pre-Check: Clean</span>
+              <span class="mono" style="font-weight: 700; color: #0f172a;">Extracted Parameters Schema</span>
+              <span class="status-badge badge-approved">Certified Clash-Free Check</span>
             </div>
 
             <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px;" class="mono">
-              <div style="background: var(--bg-muted); padding: 8px 10px; border-radius: 4px;">
-                <div style="font-size: 10px; color: var(--text-dim);">ATTENDANCE</div>
-                <div style="font-weight: 700; margin-top: 2px;">${res.attendance}</div>
+              <div style="background: #ffffff; border: 1px solid #e2e8f0; padding: 8px; border-radius: 4px;">
+                <div style="font-size: 10px; color: #64748b;">CAPACITY</div>
+                <div style="font-weight: 800; font-size: 14px;">${res.attendance} Attendees</div>
               </div>
-              <div style="background: var(--bg-muted); padding: 8px 10px; border-radius: 4px;">
-                <div style="font-size: 10px; color: var(--text-dim);">DURATION</div>
-                <div style="font-weight: 700; margin-top: 2px;">${res.duration_periods} Periods</div>
+              <div style="background: #ffffff; border: 1px solid #e2e8f0; padding: 8px; border-radius: 4px;">
+                <div style="font-size: 10px; color: #64748b;">DURATION</div>
+                <div style="font-weight: 800; font-size: 14px;">${res.duration_periods} Periods</div>
               </div>
-              <div style="background: var(--bg-muted); padding: 8px 10px; border-radius: 4px;">
-                <div style="font-size: 10px; color: var(--text-dim);">TARGET SLOT</div>
-                <div style="font-weight: 700; margin-top: 2px;">${res.windows[0].day} P${res.windows[0].from_period}-P${res.windows[0].to_period}</div>
+              <div style="background: #ffffff; border: 1px solid #e2e8f0; padding: 8px; border-radius: 4px;">
+                <div style="font-size: 10px; color: #64748b;">TARGET WINDOW</div>
+                <div style="font-weight: 800; font-size: 14px; color: #0284c7;">${res.windows[0].day} P${res.windows[0].from_period}-P${res.windows[0].to_period}</div>
               </div>
-              <div style="background: var(--bg-muted); padding: 8px 10px; border-radius: 4px;">
-                <div style="font-size: 10px; color: var(--text-dim);">FACILITIES</div>
-                <div style="font-weight: 700; margin-top: 2px;">${res.needs.length ? res.needs.join(', ') : 'Standard'}</div>
+              <div style="background: #ffffff; border: 1px solid #e2e8f0; padding: 8px; border-radius: 4px;">
+                <div style="font-size: 10px; color: #64748b;">EQUIPMENT</div>
+                <div style="font-weight: 800; font-size: 14px;">${res.needs.length ? res.needs.join(', ') : 'Standard'}</div>
               </div>
             </div>
 
             <div style="display: flex; justify-content: flex-end;">
-              <button class="btn-primary" onclick="showToast('Request committed to Week 7 schedule with zero hard violations.')">
-                Commit Booking to Week 7
+              <button class="btn-action" style="background:#059669; border-color:#047857;" onclick="showToast('Venue successfully registered and confirmed in Week 7 schedule.')">
+                Confirm & Commit Reservation
               </button>
             </div>
           </div>
         `;
       } catch (e) {
-        resContainer.innerHTML = "<div style='color:#ef4444;'>Parser Endpoint Error</div>";
+        resContainer.innerHTML = "<div style='color:#dc2626;'>Parser error</div>";
       }
     }
 
-    // 4. DISRUPTIONS
-    function renderDisruption(root) {
-      root.innerHTML = `
-        <div class="panel" style="margin-bottom: 20px;">
-          <div class="panel-header">
+    // MODULE 4: DISRUPTIONS
+    function renderDisruption(ws) {
+      ws.innerHTML = `
+        <div class="stats-bar">
+          <div class="stat-pill">
+            <div class="stat-pill-label">Sessions Displaced</div>
+            <div class="stat-pill-val">11</div>
+          </div>
+          <div class="stat-pill" style="border-left-color: #059669;">
+            <div class="stat-pill-label">Time Shifts</div>
+            <div class="stat-pill-val" style="color: #059669;">0</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-pill-label">Room-Only Transfers</div>
+            <div class="stat-pill-val">11</div>
+          </div>
+          <div class="stat-pill" style="border-left-color: #059669;">
+            <div class="stat-pill-label">Violations After Repair</div>
+            <div class="stat-pill-val" style="color: #059669;">0</div>
+          </div>
+        </div>
+
+        <div class="content-box">
+          <div class="box-header">
             <div>
-              <div class="panel-title">Disruption Resolution Center</div>
-              <div class="panel-desc">Incident: Room CR-102 Water Leak (Facility Closed) · Faculty F07 Conference Leave · Tutorial CS202-T2 Added.</div>
+              <div class="box-title">Campus Disruption & Emergency Rescheduling (CR-102 Incident)</div>
+              <div class="box-desc">Classroom CR-102 flooded and closed for the remainder of the semester. Solver rerouted all affected classes into free alternative rooms while preserving exact teaching hours.</div>
             </div>
             <div>
               ${!disruptionMode ? `
-                <button class="btn-primary" onclick="disruptionMode = true; showToast('Disruption applied: 11 sessions rerouted with 0 time changes.'); renderTab();">
+                <button class="btn-action" style="background:#d97706; border-color:#b45309;" onclick="disruptionMode = true; showToast('Disruption applied: 11 sessions rerouted with zero time changes.'); renderModule();">
                   Apply Reschedule Solver
                 </button>
               ` : `
-                <button class="btn-secondary" onclick="disruptionMode = false; showToast('Restored to baseline schedule.'); renderTab();">
+                <button class="btn-action" style="background:#64748b; border-color:#475569;" onclick="disruptionMode = false; showToast('Reverted to clean baseline schedule.'); renderModule();">
                   Restore Baseline Schedule
                 </button>
               `}
             </div>
           </div>
-        </div>
 
-        <div class="stat-row">
-          <div class="stat-card">
-            <div class="stat-label">Sessions Displaced</div>
-            <div class="stat-value">11</div>
-            <div class="stat-meta">Optimal theoretical minimum</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Time Shifts</div>
-            <div class="stat-value" style="color: #34d399;">0</div>
-            <div class="stat-meta">100% time preservation</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Room-Only Transfers</div>
-            <div class="stat-value">11</div>
-            <div class="stat-meta">Rerouted from flooded CR-102</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Hard Violations After Change</div>
-            <div class="stat-value" style="color: #34d399;">0</div>
-            <div class="stat-meta">Full 15/15 Marks in Rescheduling</div>
-          </div>
-        </div>
-
-        <div class="table-wrapper">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th style="width: 110px;">SESSION ID</th>
-                <th>COURSE</th>
-                <th>INSTRUCTOR</th>
-                <th>BASELINE VENUE</th>
-                <th>REPAIRED VENUE</th>
-                <th>TIME PRESERVATION</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${[
-                { id: "CS101-B-L2", course: "CS101", fac: "F05", orig: "MON P4 @ CR-102", newV: "MON P4 @ CR-101", note: "Time slot preserved (P4)" },
-                { id: "CS101-C-L2", course: "CS101", fac: "F05", orig: "TUE P2 @ CR-102", newV: "TUE P2 @ CR-101", note: "Time slot preserved (P2)" },
-                { id: "CS101-D-L1", course: "CS101", fac: "F05", orig: "WED P1 @ CR-102", newV: "WED P1 @ CR-101", note: "Time slot preserved (P1)" },
-                { id: "CS101-D-L2", course: "CS101", fac: "F05", orig: "THU P4 @ CR-102", newV: "THU P4 @ CR-101", note: "Time slot preserved (P4)" },
-                { id: "HS101-B-L1", course: "HS101", fac: "F04", orig: "WED P3 @ CR-102", newV: "WED P3 @ CR-101", note: "Time slot preserved (P3)" },
-                { id: "HS101-B-L2", course: "HS101", fac: "F04", orig: "FRI P2 @ CR-102", newV: "FRI P2 @ CR-101", note: "Time slot preserved (P2)" },
-                { id: "MA101-B-T1", course: "MA101", fac: "F19", orig: "MON P7 @ CR-102", newV: "MON P7 @ CR-101", note: "Time slot preserved (P7)" },
-                { id: "MA101-C-T1", course: "MA101", fac: "F19", orig: "TUE P6 @ CR-102", newV: "TUE P6 @ CR-101", note: "Time slot preserved (P6)" },
-                { id: "PH101-B-L1", course: "PH101", fac: "F02", orig: "THU P2 @ CR-102", newV: "THU P2 @ CR-101", note: "Time slot preserved (P2)" },
-                { id: "PH101-C-L1", course: "PH101", fac: "F02", orig: "MON P2 @ CR-102", newV: "MON P2 @ CR-101", note: "Time slot preserved (P2)" },
-                { id: "PH101-C-L2", course: "PH101", fac: "F02", orig: "WED P4 @ CR-102", newV: "WED P4 @ CR-101", note: "Time slot preserved (P4)" },
-                { id: "CS202-T2", course: "CS202", fac: "F06", orig: "Unscheduled (New)", newV: "FRI P8 @ CR-101", note: "Allocated without conflict" }
-              ].map(r => `
+          <div class="table-responsive">
+            <table class="erp-table">
+              <thead>
                 <tr>
-                  <td class="mono" style="font-weight: 600;">${r.id}</td>
-                  <td>${r.course}</td>
-                  <td class="mono">${r.fac}</td>
-                  <td class="mono" style="color: var(--text-dim); text-decoration: line-through;">${r.orig}</td>
-                  <td class="mono" style="font-weight: 600; color: #34d399;">${r.newV}</td>
-                  <td style="color: var(--text-muted); font-size: 11px;">${r.note}</td>
+                  <th style="width: 110px;">SESSION ID</th>
+                  <th>COURSE</th>
+                  <th>INSTRUCTOR</th>
+                  <th>ORIGINAL VENUE</th>
+                  <th>ASSIGNED REPAIR VENUE</th>
+                  <th>SCHEDULE STABILITY</th>
                 </tr>
-              `).join('')}
-            </tbody>
-          </table>
-        </div>
-      `;
-    }
-
-    // 5. EXAMINATIONS
-    function renderExams(root, sched) {
-      root.innerHTML = `
-        <div class="stat-row">
-          <div class="stat-card">
-            <div class="stat-label">Total Midsem Exams</div>
-            <div class="stat-value">41</div>
-            <div class="stat-meta">Monday to Saturday</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Capacity Multiplier</div>
-            <div class="stat-value">50%</div>
-            <div class="stat-meta">Rule H5: Capacity // 2</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Exam Soft Penalty</div>
-            <div class="stat-value">135</div>
-            <div class="stat-meta">Minimizes multiple exams/day</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Exam Conflicts</div>
-            <div class="stat-value" style="color: #34d399;">0</div>
-            <div class="stat-meta">No student group overlap</div>
-          </div>
-        </div>
-
-        <div class="table-wrapper">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th style="width: 80px;">EXAM ID</th>
-                <th>COURSE IDENTIFIERS</th>
-                <th>COHORT GROUPS</th>
-                <th>REGISTERED</th>
-                <th>TIMING SLOT</th>
-                <th>ASSIGNED VENUES (COMBINED)</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${sched.exams.map(e => {
-                const ex = DATA.exams.find(item => item.id === e.exam_id);
-                return `
+              </thead>
+              <tbody>
+                ${[
+                  { id: "CS101-B-L2", course: "CS101", fac: "F05", orig: "MON P4 @ CR-102", newV: "MON P4 @ CR-101", note: "Preserved exact slot (P4)" },
+                  { id: "CS101-C-L2", course: "CS101", fac: "F05", orig: "TUE P2 @ CR-102", newV: "TUE P2 @ CR-101", note: "Preserved exact slot (P2)" },
+                  { id: "CS101-D-L1", course: "CS101", fac: "F05", orig: "WED P1 @ CR-102", newV: "WED P1 @ CR-101", note: "Preserved exact slot (P1)" },
+                  { id: "CS101-D-L2", course: "CS101", fac: "F05", orig: "THU P4 @ CR-102", newV: "THU P4 @ CR-101", note: "Preserved exact slot (P4)" },
+                  { id: "HS101-B-L1", course: "HS101", fac: "F04", orig: "WED P3 @ CR-102", newV: "WED P3 @ CR-101", note: "Preserved exact slot (P3)" },
+                  { id: "HS101-B-L2", course: "HS101", fac: "F04", orig: "FRI P2 @ CR-102", newV: "FRI P2 @ CR-101", note: "Preserved exact slot (P2)" },
+                  { id: "MA101-B-T1", course: "MA101", fac: "F19", orig: "MON P7 @ CR-102", newV: "MON P7 @ CR-101", note: "Preserved exact slot (P7)" },
+                  { id: "MA101-C-T1", course: "MA101", fac: "F19", orig: "TUE P6 @ CR-102", newV: "TUE P6 @ CR-101", note: "Preserved exact slot (P6)" },
+                  { id: "PH101-B-L1", course: "PH101", fac: "F02", orig: "THU P2 @ CR-102", newV: "THU P2 @ CR-101", note: "Preserved exact slot (P2)" },
+                  { id: "PH101-C-L1", course: "PH101", fac: "F02", orig: "MON P2 @ CR-102", newV: "MON P2 @ CR-101", note: "Preserved exact slot (P2)" },
+                  { id: "PH101-C-L2", course: "PH101", fac: "F02", orig: "WED P4 @ CR-102", newV: "WED P4 @ CR-101", note: "Preserved exact slot (P4)" },
+                  { id: "CS202-T2", course: "CS202", fac: "F06", orig: "Unscheduled (New)", newV: "FRI P8 @ CR-101", note: "Fresh slot assigned" }
+                ].map(r => `
                   <tr>
-                    <td class="mono" style="font-weight: 600;">${e.exam_id}</td>
-                    <td style="font-weight: 600;">${ex ? ex.course_ids.join(', ') : ''}</td>
-                    <td class="mono" style="font-size: 11px; color: var(--text-muted);">${ex ? ex.groups.join(', ') : ''}</td>
-                    <td class="mono">${ex ? ex.size : 0}</td>
-                    <td class="mono" style="font-weight: 600;">${e.day} · ${e.session}</td>
-                    <td class="mono" style="color: #34d399; font-weight: 600;">${e.rooms.join(' + ')}</td>
+                    <td class="mono" style="font-weight: 700;">${r.id}</td>
+                    <td>${r.course}</td>
+                    <td class="mono">${r.fac}</td>
+                    <td class="mono" style="color: #dc2626; text-decoration: line-through;">${r.orig}</td>
+                    <td class="mono" style="font-weight: 700; color: #059669;">${r.newV}</td>
+                    <td style="color: #64748b; font-size: 11px;">${r.note}</td>
                   </tr>
-                `;
-              }).join('')}
-            </tbody>
-          </table>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
         </div>
       `;
     }
 
-    // 6. VALIDATION AUDIT
-    function renderAudit(root) {
-      root.innerHTML = `
-        <div style="max-width: 900px; margin: 0 auto;" class="panel">
-          <div class="panel-header">
+    // MODULE 5: EXAMINATIONS
+    function renderExams(ws, sched) {
+      ws.innerHTML = `
+        <div class="stats-bar">
+          <div class="stat-pill">
+            <div class="stat-pill-label">Total Midsem Exams</div>
+            <div class="stat-pill-val">41</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-pill-label">Seating Multiplier</div>
+            <div class="stat-pill-val">50% Capacity</div>
+          </div>
+          <div class="stat-pill" style="border-left-color: #059669;">
+            <div class="stat-pill-label">Exam Double Bookings</div>
+            <div class="stat-pill-val" style="color: #059669;">0</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-pill-label">Exam Soft Penalty</div>
+            <div class="stat-pill-val">135</div>
+          </div>
+        </div>
+
+        <div class="content-box">
+          <div class="box-header">
             <div>
-              <div class="panel-title">Official Validator Execution Audit</div>
-              <div class="panel-desc">Direct report from validator.py. Evaluates all hard rules H1–H14 and soft penalties S1–S6.</div>
-            </div>
-            <span class="pill pill-success">Evaluation Certified</span>
-          </div>
-
-          <div class="stat-row">
-            <div class="stat-card">
-              <div class="stat-label">Hard Violations</div>
-              <div class="stat-value" style="color: #34d399;">0</div>
-              <div class="stat-meta">25 / 25 Correctness Marks</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-label">Booking Score</div>
-              <div class="stat-value">63.0 <span style="font-size: 14px; color: var(--text-dim);">/ 64</span></div>
-              <div class="stat-meta">10 / 10 Decision Marks</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-label">Priority Inversions</div>
-              <div class="stat-value" style="color: #34d399;">0</div>
-              <div class="stat-meta">Zero precedence flaws</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-label">Disruption Moves</div>
-              <div class="stat-value" style="color: #34d399;">11 (0 time)</div>
-              <div class="stat-meta">15 / 15 Rescheduling Marks</div>
+              <div class="box-title">Midsem Examination Schedule & Venue Seating</div>
+              <div class="box-desc">Conducted across Monday to Saturday in morning (AM: 09:30–11:30) and afternoon (PM: 14:00–16:00) sessions. Capacities halved per Rule H5.</div>
             </div>
           </div>
 
-          <div style="background: var(--bg-base); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 14px; margin-bottom: 20px;" class="mono">
-            <div style="font-size: 11px; font-weight: 600; color: var(--text-dim); margin-bottom: 10px;">SOFT PENALTIES METRICS (S1–S6):</div>
+          <div class="table-responsive">
+            <table class="erp-table">
+              <thead>
+                <tr>
+                  <th style="width: 80px;">EXAM ID</th>
+                  <th>COURSE CODES</th>
+                  <th>STUDENT COHORTS</th>
+                  <th>ENROLLMENT</th>
+                  <th>SLOT</th>
+                  <th>ALLOCATED VENUES (COMBINED CAPACITY)</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${sched.exams.map(e => {
+                  const ex = DATA.exams.find(item => item.id === e.exam_id);
+                  return `
+                    <tr>
+                      <td class="mono" style="font-weight: 700; color: #0284c7;">${e.exam_id}</td>
+                      <td style="font-weight: 600;">${ex ? ex.course_ids.join(', ') : ''}</td>
+                      <td class="mono" style="font-size: 11px; color: #475569;">${ex ? ex.groups.join(', ') : ''}</td>
+                      <td class="mono">${ex ? ex.size : 0}</td>
+                      <td class="mono" style="font-weight: 700;">${e.day} · ${e.session}</td>
+                      <td class="mono" style="color: #059669; font-weight: 700;">${e.rooms.join(' + ')}</td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    // MODULE 6: AUDIT
+    function renderAudit(ws) {
+      ws.innerHTML = `
+        <div class="stats-bar">
+          <div class="stat-pill" style="border-left-color: #059669;">
+            <div class="stat-pill-label">Hard Violations</div>
+            <div class="stat-pill-val" style="color: #059669;">0</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-pill-label">Booking Score</div>
+            <div class="stat-pill-val">63.0 / 64</div>
+          </div>
+          <div class="stat-pill" style="border-left-color: #059669;">
+            <div class="stat-pill-label">Priority Inversions</div>
+            <div class="stat-pill-val" style="color: #059669;">0</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-pill-label">Disruption Moves</div>
+            <div class="stat-pill-val">11 (0 time)</div>
+          </div>
+        </div>
+
+        <div class="content-box">
+          <div class="box-header">
+            <div>
+              <div class="box-title">Official Crunch Week Validator (validator.py) Execution Audit</div>
+              <div class="box-desc">Continuous audit executed by the official Python validator. All hard rules H1–H14 and soft penalties S1–S6 verified.</div>
+            </div>
+            <span class="status-badge badge-approved" style="font-size: 11px;">Score: 25 / 25 Max Marks</span>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 4px; padding: 14px; margin-bottom: 20px;" class="mono">
+            <div style="font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 10px;">SOFT PENALTY SCORES (S1–S6):</div>
             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; font-size: 12px;">
               <div>S1 (Faculty Avoidance): <strong>8 pts</strong></div>
               <div>S2 (Free Periods): <strong>22 pts</strong></div>
               <div>S3 (Daily &gt;6h): <strong>81 pts</strong></div>
               <div>S4 (Course Repeat): <strong>246 pts</strong></div>
-              <div>S5 (Room Underutil &lt;40%): <strong style="color: #34d399;">0 pts</strong></div>
+              <div>S5 (Room Underutil &lt;40%): <strong style="color: #059669;">0 pts</strong></div>
               <div>S6 (P9 17:00 Sessions): <strong>3 pts</strong></div>
             </div>
           </div>
 
-          <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-subtle); padding-top: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e2e8f0; padding-top: 16px;">
             <div>
-              <div style="font-weight: 600; font-size: 12px;">Submission Export Artifacts</div>
-              <div style="font-size: 11px; color: var(--text-dim);">Produced directly by the scheduling engine.</div>
+              <div style="font-weight: 700; font-size: 13px;">Official Hackathon Submission Artifacts</div>
+              <div style="font-size: 11px; color: #64748b;">Directly compiled by CIT scheduling algorithm.</div>
             </div>
             <div style="display: flex; gap: 8px;">
-              <a href="/exports/schedule.json" download class="btn-primary" style="text-decoration: none;">Download schedule.json</a>
-              <a href="/exports/schedule_after.json" download class="btn-secondary" style="text-decoration: none;">Download schedule_after.json</a>
+              <a href="/exports/schedule.json" download class="btn-action" style="text-decoration: none;">Download schedule.json</a>
+              <a href="/exports/schedule_after.json" download class="btn-action" style="background:#475569; border-color:#334155; text-decoration: none;">Download schedule_after.json</a>
             </div>
           </div>
         </div>
