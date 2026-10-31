@@ -406,23 +406,24 @@
   <!-- Top Header -->
   <header>
     <div class="brand-wrap">
-      <div class="brand-icon">CIT</div>
+      <div class="brand-icon mono">CIT</div>
       <div>
         <div class="brand-name">Chilika Institute of Technology</div>
+        <div style="font-size: 11px; color: var(--text-muted);">Student & Faculty Academic Portal</div>
       </div>
     </div>
 
     <div class="user-actions">
-      <div id="user-profile-badge" style="display: none; align-items: center; gap: 8px;">
-        <span id="user-display-email" style="font-weight: 600; font-size: 12px;">student@cit.ac.in</span>
-        <span id="user-role-tag" class="mono" style="font-size: 10px; background: #e0f2fe; color: #0369a1; padding: 2px 6px; border-radius: 3px;">STUDENT</span>
-        <button onclick="logout()" style="background: transparent; border: 1px solid var(--border); padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer;">
-          Log out
+      <div id="user-profile-badge" style="display: flex; align-items: center; gap: 10px;">
+        <span id="user-display-email" style="font-weight: 600; font-size: 12px; color: var(--text-main);">student@cit.ac.in</span>
+        <span id="user-role-tag" class="mono" style="font-size: 10px; background: #e0f2fe; color: #0369a1; padding: 2px 7px; border-radius: 3px; font-weight: 700;">STUDENT</span>
+        <span id="user-admin-link" style="display: none;">
+          <a href="/admin" style="font-size: 11px; color: #2563eb; text-decoration: none; border: 1px solid #bfdbfe; background: #eff6ff; padding: 3px 8px; border-radius: 4px; font-weight: 600;">Admin Terminal &rarr;</a>
+        </span>
+        <button onclick="logout()" style="background: transparent; border: 1px solid var(--border); padding: 4px 10px; border-radius: 4px; font-size: 11px; cursor: pointer; color: var(--text-muted); font-weight: 600;">
+          Sign Out
         </button>
       </div>
-      <button id="btn-login-open" onclick="openAuthModal()" style="background: var(--primary); color: #fff; border: none; padding: 6px 14px; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer;">
-        Sign In
-      </button>
     </div>
   </header>
 
@@ -434,77 +435,12 @@
       <button class="tab-item" onclick="switchUserTab('ai')">AI Booking Assistant</button>
       <button class="tab-item" onclick="switchUserTab('exams')">Midsem Exams</button>
     </div>
-
-    <!-- Direct access to Admin Terminal -->
-    <a href="/admin" class="admin-link-pill">
-      Admin Terminal &rarr;
-    </a>
   </nav>
 
   <!-- Main Content Body -->
   <main id="portal-content">
     <!-- Rendered dynamically -->
   </main>
-
-  <!-- Minimalist Login / Signup Modal -->
-  <div id="auth-modal" class="modal-backdrop" style="display: none;">
-    <div class="auth-card">
-      <div class="auth-tabs">
-        <button class="auth-tab active" id="tab-login" onclick="toggleAuthTab('login')">Sign In</button>
-        <button class="auth-tab" id="tab-signup" onclick="toggleAuthTab('signup')">Register</button>
-      </div>
-
-      <div id="login-form">
-        <div class="form-group">
-          <label class="form-label">CIT Email or Roll Number</label>
-          <input type="text" id="login-email" class="form-input" placeholder="e.g. 2401010@cit.ac.in" value="student@cit.ac.in" />
-        </div>
-        <div class="form-group">
-          <label class="form-label">Password</label>
-          <input type="password" id="login-password" class="form-input" placeholder="••••••••" value="password123" />
-        </div>
-        <button class="btn-submit" onclick="handleLogin()">Sign In to Portal</button>
-
-        <div class="quick-roles">
-          <div class="quick-roles-title">Demo 1-Click Access</div>
-          <button class="quick-btn" onclick="quickLogin('student')">Student (Y1-A)</button>
-          <button class="quick-btn" onclick="quickLogin('faculty')">Faculty (Physics)</button>
-          <button class="quick-btn" onclick="quickLogin('club')">Club Rep (Spectra)</button>
-        </div>
-      </div>
-
-      <div id="signup-form" style="display: none;">
-        <div class="form-group">
-          <label class="form-label">Full Name</label>
-          <input type="text" id="signup-name" class="form-input" placeholder="Enter full name" />
-        </div>
-        <div class="form-group">
-          <label class="form-label">CIT Institute Email</label>
-          <input type="email" id="signup-email" class="form-input" placeholder="user@cit.ac.in" />
-        </div>
-        <div class="form-group">
-          <label class="form-label">Select Cohort / Department</label>
-          <select id="signup-cohort" class="form-input">
-            <option value="Y1-A">Year 1 - Section A</option>
-            <option value="Y1-B">Year 1 - Section B</option>
-            <option value="CSE-2">Computer Science - Year 2</option>
-            <option value="ELEC-2">Electrical - Year 2</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Password</label>
-          <input type="password" id="signup-password" class="form-input" placeholder="Create password" />
-        </div>
-        <button class="btn-submit" onclick="handleSignup()">Create Account</button>
-      </div>
-
-      <div style="text-align: center; margin-top: 14px;">
-        <button onclick="closeAuthModal()" style="background: transparent; border: none; font-size: 11px; color: var(--text-muted); cursor: pointer;">
-          Cancel
-        </button>
-      </div>
-    </div>
-  </div>
 
   <footer>
     <span>Chilika Institute of Technology · Student & Faculty Academic Services</span>
@@ -527,105 +463,29 @@
       setTimeout(() => { t.style.display = "none"; }, 3000);
     }
 
-    function openAuthModal() {
-      document.getElementById("auth-modal").style.display = "flex";
-    }
-
-    function closeAuthModal() {
-      document.getElementById("auth-modal").style.display = "none";
-    }
-
-    function toggleAuthTab(tab) {
-      if (tab === 'login') {
-        document.getElementById("tab-login").classList.add("active");
-        document.getElementById("tab-signup").classList.remove("active");
-        document.getElementById("login-form").style.display = "block";
-        document.getElementById("signup-form").style.display = "none";
-      } else {
-        document.getElementById("tab-signup").classList.add("active");
-        document.getElementById("tab-login").classList.remove("active");
-        document.getElementById("signup-form").style.display = "block";
-        document.getElementById("login-form").style.display = "none";
-      }
-    }
-
-    async function handleLogin() {
-      const email = document.getElementById("login-email").value;
-      try {
-        const res = await fetch("/api/auth/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email })
-        }).then(r => r.json());
-
-        if (res.success) {
-          currentUser = res.user;
-          updateAuthUI();
-          closeAuthModal();
-          showToast(`Welcome back, ${currentUser.email}!`);
-        }
-      } catch (e) {
-        showToast("Login error");
-      }
-    }
-
-    function quickLogin(type) {
-      if (type === 'student') {
-        document.getElementById("login-email").value = "student@cit.ac.in";
-      } else if (type === 'faculty') {
-        document.getElementById("login-email").value = "faculty.f19@cit.ac.in";
-      } else {
-        document.getElementById("login-email").value = "spectra.club@cit.ac.in";
-      }
-      handleLogin();
-    }
-
-    async function handleSignup() {
-      const name = document.getElementById("signup-name").value;
-      const email = document.getElementById("signup-email").value;
-      const cohort = document.getElementById("signup-cohort").value;
-      if (!email) {
-        showToast("Please enter email");
-        return;
-      }
-      try {
-        const res = await fetch("/api/auth/signup", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, email, cohort })
-        }).then(r => r.json());
-
-        if (res.success) {
-          showToast(res.message);
-          toggleAuthTab('login');
-          document.getElementById("login-email").value = email;
-        }
-      } catch (e) {
-        showToast("Registration error");
-      }
-    }
-
     function logout() {
-      currentUser = null;
-      updateAuthUI();
-      showToast("Logged out successfully.");
+      localStorage.removeItem('cit_session');
+      window.location.href = '/login';
     }
 
     function updateAuthUI() {
-      const profile = document.getElementById("user-profile-badge");
-      const loginBtn = document.getElementById("btn-login-open");
+      if (!currentUser) return;
+      const emailEl = document.getElementById("user-display-email");
+      const roleEl = document.getElementById("user-role-tag");
+      const adminLinkEl = document.getElementById("user-admin-link");
 
-      if (currentUser) {
-        profile.style.display = "flex";
-        loginBtn.style.display = "none";
-        document.getElementById("user-display-email").innerText = currentUser.email;
-        document.getElementById("user-role-tag").innerText = currentUser.role.toUpperCase();
-        if (currentUser.cohort && currentUser.cohort !== "All Groups") {
-          selectedCohort = currentUser.cohort;
-        }
+      emailEl.innerText = `${currentUser.name || currentUser.email} (${currentUser.cohort || ''})`;
+      roleEl.innerText = currentUser.role.toUpperCase();
+
+      // Only show Admin Link if user is actually an Administrator
+      if (currentUser.role === 'admin') {
+        adminLinkEl.style.display = "inline-block";
       } else {
-        profile.style.display = "none";
-        loginBtn.style.display = "block";
+        adminLinkEl.style.display = "none";
+      }
+
+      if (currentUser.cohort && (currentUser.cohort.startsWith("Y") || currentUser.cohort.startsWith("CS"))) {
+        selectedCohort = currentUser.cohort;
       }
       renderTab();
     }
@@ -643,6 +503,23 @@
     }
 
     async function init() {
+      // 1. Session Gatekeeper: Must be logged in to view Portal
+      const sessionStr = localStorage.getItem('cit_session');
+      if (!sessionStr) {
+        window.location.href = '/login';
+        return;
+      }
+
+      try {
+        currentUser = JSON.parse(sessionStr);
+      } catch (err) {
+        localStorage.removeItem('cit_session');
+        window.location.href = '/login';
+        return;
+      }
+
+      updateAuthUI();
+
       try {
         const [d, s] = await Promise.all([
           fetch("/api/data").then(r => r.json()),
@@ -650,11 +527,9 @@
         ]);
         DATA = d;
         SCHED = s;
-        // Default guest login
-        currentUser = { email: "student@cit.ac.in", role: "student", cohort: "Y1-A" };
-        updateAuthUI();
+        renderTab();
       } catch (e) {
-        document.getElementById("portal-content").innerHTML = "<div style='color:red;'>API error. Ensure server.py is running.</div>";
+        document.getElementById("portal-content").innerHTML = "<div style='color:red; padding: 24px;'>API error. Ensure server.py is running.</div>";
       }
     }
 

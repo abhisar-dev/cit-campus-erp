@@ -318,13 +318,30 @@
     </div>
 
     <div class="nav-actions">
-      <a href="/" class="btn-link">← User Portal</a>
+      <span class="mono" style="font-size: 11px; color: var(--text-dim);" id="admin-user-email">admin@cit.ac.in</span>
+      <a href="/" class="btn-link">View User Portal</a>
       <button class="btn-danger" onclick="resetState()">↺ Reset Demo State</button>
+      <button class="btn-link" onclick="logoutAdmin()" style="color: #ef4444; border-color: #3f1515;">Sign Out</button>
     </div>
   </header>
 
+  <!-- Access Denied Screen (Rendered if Non-Admin attempts access) -->
+  <div id="access-denied-view" style="display: none; min-height: 80vh; align-items: center; justify-content: center; text-align: center; padding: 40px 20px;">
+    <div style="background: #121215; border: 1px solid #27272a; border-radius: 8px; max-width: 480px; padding: 32px 24px; margin: 0 auto;">
+      <div style="display: inline-block; padding: 4px 10px; background: #3f1515; color: #ef4444; border-radius: 4px; font-size: 11px; font-weight: 700; margin-bottom: 16px;" class="mono">HTTP 403 · FORBIDDEN</div>
+      <h2 style="font-size: 18px; font-weight: 700; color: #f4f4f5; margin-bottom: 8px;">Administrative Clearance Required</h2>
+      <p id="denied-reason-text" style="font-size: 12px; color: #a1a1aa; line-height: 1.5; margin-bottom: 24px;">
+        You are logged in with student or faculty privileges. Access to the Central Operations Command Terminal requires institutional Dean clearance.
+      </p>
+      <div style="display: flex; gap: 10px; justify-content: center;">
+        <a href="/" class="btn-solid" style="text-decoration: none; padding: 8px 16px; font-size: 12px;">← Return to Student Portal</a>
+        <a href="/login?redirect=/admin" class="btn-solid" style="text-decoration: none; padding: 8px 16px; font-size: 12px; background: #2563eb; color: #fff;">Sign In as Admin</a>
+      </div>
+    </div>
+  </div>
+
   <!-- Dual-Pane Admin Console -->
-  <div class="admin-layout">
+  <div class="admin-layout" id="admin-main-container">
     <!-- Sidebar -->
     <aside class="terminal-sidebar">
       <div class="sidebar-label mono">Administration Modules</div>
@@ -404,6 +421,30 @@
     }
 
     async function init() {
+      const sessionStr = localStorage.getItem('cit_session');
+      if (!sessionStr) {
+        window.location.href = '/login?redirect=/admin&denied=admin';
+        return;
+      }
+
+      let session = null;
+      try {
+        session = JSON.parse(sessionStr);
+      } catch (e) {
+        window.location.href = '/login?redirect=/admin&denied=admin';
+        return;
+      }
+
+      // Strict Role Check: Only Admin can access
+      if (session.role !== 'admin') {
+        document.getElementById("admin-main-container").style.display = "none";
+        document.getElementById("access-denied-view").style.display = "flex";
+        document.getElementById("denied-reason-text").innerText = `Your current account "${session.email}" (Role: ${session.role.toUpperCase()}) does not possess clearance for the CIT Central Operations Terminal.`;
+        return;
+      }
+
+      document.getElementById("admin-user-email").innerText = `${session.name || 'Dean'} (${session.email})`;
+
       try {
         const [d, s, sa] = await Promise.all([
           fetch("/api/data").then(r => r.json()),
@@ -417,6 +458,11 @@
       } catch (e) {
         document.getElementById("admin-workspace").innerHTML = "<div style='color:red; padding:20px;'>API error. Ensure server.py is running.</div>";
       }
+    }
+
+    function logoutAdmin() {
+      localStorage.removeItem('cit_session');
+      window.location.href = '/login';
     }
 
     function renderAdmin() {
@@ -698,7 +744,9 @@
     async function renderUsers(ws) {
       ws.innerHTML = `<div style="color: var(--text-dim); padding: 20px;" class="mono">Loading user directory...</div>`;
       try {
-        const users = await fetch("/api/admin/users").then(r => r.json());
+        const users = await fetch("/api/admin/users", {
+          headers: { "X-Admin-Role": "admin" }
+        }).then(r => r.json());
         const total = users.length;
         const students = users.filter(u => u.role === 'student').length;
         const faculty = users.filter(u => u.role === 'faculty').length;
@@ -791,7 +839,10 @@
       try {
         const res = await fetch("/api/admin/users/update", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { 
+            "Content-Type": "application/json",
+            "X-Admin-Role": "admin"
+          },
           body: JSON.stringify({ id, status: newStatus })
         }).then(r => r.json());
         if (res.success) {
@@ -807,7 +858,10 @@
       try {
         const res = await fetch("/api/admin/users/update", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { 
+            "Content-Type": "application/json",
+            "X-Admin-Role": "admin"
+          },
           body: JSON.stringify({ id, role: newRole })
         }).then(r => r.json());
         if (res.success) {

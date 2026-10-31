@@ -29,8 +29,18 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
         url = urllib.parse.urlparse(self.path)
         
+        # Dedicated Login & Register route
+        if url.path in ("/login", "/auth"):
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            with open(os.path.join(BASE_DIR, "login.html"), "rb") as f:
+                self.wfile.write(f.read())
+            return
+
         # User portal routes
-        if url.path in ("/", "/index.html", "/login", "/timetable", "/bookings"):
+        if url.path in ("/", "/index.html", "/portal", "/dashboard", "/timetable", "/bookings"):
             self.send_response(200)
             self.send_header("Content-Type", "text/html; charset=utf-8")
             self.send_header("Access-Control-Allow-Origin", "*")
@@ -95,7 +105,19 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
                     self.wfile.write(f.read())
             else:
                 self.wfile.write(b'{"error": "Failed to run validator"}')
+            return
+
         if url.path == "/api/admin/users":
+            # Check Admin clearance
+            admin_role = self.headers.get("X-Admin-Role", "")
+            if admin_role != "admin" and "admin" not in self.headers.get("Authorization", ""):
+                self.send_response(403)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(b'{"error": "Access Denied: Administrative clearance required"}')
+                return
+
             self.send_response(200)
             self.send_header("Content-Type", "application/json; charset=utf-8")
             self.send_header("Access-Control-Allow-Origin", "*")
@@ -120,26 +142,72 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
                 data = json.loads(body)
                 email = data.get("email", "").strip()
             except Exception:
-                email = "user@cit.ac.in"
-            
-            # Determine role from username or default
-            role = "student"
-            cohort = "Y1-A"
-            if "faculty" in email:
-                role = "faculty"
-                cohort = "All Groups"
-            elif "club" in email or "spectra" in email:
-                role = "club"
-            
-            res = {
-                "success": True,
-                "user": {
-                    "email": email or "student@cit.ac.in",
+                email = "student@cit.ac.in"
+
+            # Check if Administrator
+            if email.lower() == "admin@cit.ac.in":
+                res = {
+                    "success": True,
+                    "user": {
+                        "id": "CIT-ADM01",
+                        "name": "Dean of Academic Operations",
+                        "email": "admin@cit.ac.in",
+                        "role": "admin",
+                        "cohort": "Central Administration",
+                        "token": "cit-adm-sec-98124"
+                    }
+                }
+                self.wfile.write(json.dumps(res).encode("utf-8"))
+                return
+
+            # Match in USERS_DB
+            matched = next((u for u in USERS_DB if u["email"].lower() == email.lower()), None)
+            if matched:
+                res = {
+                    "success": True,
+                    "user": {
+                        "id": matched["id"],
+                        "name": matched["name"],
+                        "email": matched["email"],
+                        "role": matched["role"],
+                        "cohort": matched["cohort"],
+                        "token": f"cit-tok-{matched['id']}"
+                    }
+                }
+            else:
+                # Determine role from email heuristics
+                role = "student"
+                cohort = "Y1-A"
+                if "faculty" in email:
+                    role = "faculty"
+                    cohort = "Faculty Member"
+                elif "club" in email or "spectra" in email:
+                    role = "club"
+                    cohort = "Club Operations"
+
+                new_id = f"CIT-U{len(USERS_DB)+1:03d}"
+                new_user = {
+                    "id": new_id,
+                    "name": email.split("@")[0].replace(".", " ").title(),
+                    "email": email,
                     "role": role,
                     "cohort": cohort,
-                    "institution": "Chilika Institute of Technology"
+                    "status": "Active",
+                    "last_active": "Just now"
                 }
-            }
+                USERS_DB.append(new_user)
+                res = {
+                    "success": True,
+                    "user": {
+                        "id": new_id,
+                        "name": new_user["name"],
+                        "email": new_user["email"],
+                        "role": new_user["role"],
+                        "cohort": new_user["cohort"],
+                        "token": f"cit-tok-{new_id}"
+                    }
+                }
+
             self.wfile.write(json.dumps(res).encode("utf-8"))
             return
 
@@ -153,14 +221,11 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
                 name = data.get("name", "New CIT Member")
                 email = data.get("email", "user@cit.ac.in")
                 cohort = data.get("cohort", "Y1-A")
+                role = data.get("role", "student")
             except Exception:
-                name, email, cohort = "New CIT Member", "user@cit.ac.in", "Y1-A"
+                name, email, cohort, role = "New CIT Member", "user@cit.ac.in", "Y1-A", "student"
 
             new_id = f"CIT-U{len(USERS_DB)+1:03d}"
-            role = "student"
-            if "faculty" in email: role = "faculty"
-            elif "club" in email or "spectra" in email: role = "club"
-
             USERS_DB.append({
                 "id": new_id,
                 "name": name,
@@ -172,12 +237,22 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
             })
             res = {
                 "success": True,
-                "message": f"Account {new_id} ({email}) created successfully. You can now sign in."
+                "message": f"Account {new_id} ({email}) created successfully."
             }
             self.wfile.write(json.dumps(res).encode("utf-8"))
             return
 
         if url.path == "/api/admin/users/update":
+            # Guard admin updates
+            admin_role = self.headers.get("X-Admin-Role", "")
+            if admin_role != "admin" and "admin" not in self.headers.get("Authorization", ""):
+                self.send_response(403)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(b'{"error": "Access Denied: Administrative clearance required"}')
+                return
+
             self.send_response(200)
             self.send_header("Content-Type", "application/json; charset=utf-8")
             self.send_header("Access-Control-Allow-Origin", "*")

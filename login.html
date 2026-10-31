@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign In — Chilika Institute of Technology</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --border: #e2e8f0;
+      --border-focus: #0f172a;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --text-dim: #94a3b8;
+      --primary: #0f172a;
+      --primary-hover: #1e293b;
+      --accent: #2563eb;
+      --danger: #dc2626;
+      --success: #16a34a;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .mono {
+      font-family: var(--font-mono);
+    }
+
+    /* Container */
+    .auth-container {
+      width: 100%;
+      max-width: 440px;
+    }
+
+    /* Institution Branding */
+    .brand-header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .brand-logo-mark {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      background: #0f172a;
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 14px;
+      letter-spacing: 1px;
+      border-radius: 8px;
+      margin-bottom: 14px;
+    }
+
+    .brand-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-main);
+      letter-spacing: -0.3px;
+    }
+
+    .brand-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Card */
+    .auth-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 10px 25px -5px rgba(0, 0, 0, 0.03);
+      padding: 28px 24px;
+    }
+
+    /* Tabs */
+    .tab-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: #f1f5f9;
+      padding: 3px;
+      border-radius: 6px;
+      margin-bottom: 22px;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .tab-btn.active {
+      background: #ffffff;
+      color: var(--text-main);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+    }
+
+    /* Form Fields */
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 6px;
+      letter-spacing: 0.2px;
+    }
+
+    .form-input, .form-select {
+      width: 100%;
+      height: 38px;
+      padding: 0 12px;
+      font-size: 13px;
+      font-family: inherit;
+      color: var(--text-main);
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .form-input:focus, .form-select:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 1px var(--border-focus);
+    }
+
+    .form-input::placeholder {
+      color: var(--text-dim);
+    }
+
+    .form-hint {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Primary Submit Button */
+    .btn-submit {
+      width: 100%;
+      height: 40px;
+      background: var(--primary);
+      color: #ffffff;
+      border: none;
+      border-radius: 5px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.15s ease;
+    }
+
+    .btn-submit:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-submit:active {
+      transform: translateY(1px);
+    }
+
+    /* Feedback Banner */
+    .alert-banner {
+      display: none;
+      padding: 10px 12px;
+      border-radius: 5px;
+      font-size: 12px;
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+
+    .alert-danger {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #991b1b;
+    }
+
+    .alert-success {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      color: #166534;
+    }
+
+    /* Demo Quick Logins */
+    .demo-section {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    .demo-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .demo-badge {
+      font-size: 10px;
+      font-weight: 600;
+      background: #e2e8f0;
+      color: #334155;
+      padding: 2px 6px;
+      border-radius: 3px;
+    }
+
+    .demo-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .demo-btn {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 8px 10px;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .demo-btn:hover {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+    }
+
+    .demo-btn-role {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .demo-btn-desc {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .demo-btn.admin-role {
+      grid-column: 1 / -1;
+      border-left: 3px solid #0f172a;
+      background: #fafafa;
+    }
+
+    /* Footer */
+    .auth-footer {
+      text-align: center;
+      margin-top: 24px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .auth-footer a {
+      color: var(--text-main);
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="auth-container">
+    <!-- Brand Header -->
+    <div class="brand-header">
+      <div class="brand-logo-mark mono">CIT</div>
+      <h1 class="brand-title">Chilika Institute of Technology</h1>
+      <p class="brand-subtitle mono">Campus Operations & Scheduling System</p>
+    </div>
+
+    <!-- Main Auth Card -->
+    <div class="auth-card">
+      <div class="tab-group">
+        <button class="tab-btn active" id="tab-login" onclick="switchTab('login')">Sign In</button>
+        <button class="tab-btn" id="tab-register" onclick="switchTab('register')">Register Account</button>
+      </div>
+
+      <div id="alert-box" class="alert-banner"></div>
+
+      <!-- Sign In Form -->
+      <form id="form-login" onsubmit="handleLoginSubmit(event)">
+        <div class="form-group">
+          <label class="form-label" for="login-email">CIT Email Address / ID</label>
+          <input type="text" id="login-email" class="form-input" placeholder="e.g. student@cit.ac.in" autocomplete="username" required />
+        </div>
+
+        <div class="form-group">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <label class="form-label" for="login-password" style="margin-bottom: 0;">Password</label>
+            <span style="font-size: 11px; color: var(--accent); cursor: pointer;" onclick="alert('For demo evaluation, any password or the quick demo buttons can be used.')">Need help?</span>
+          </div>
+          <input type="password" id="login-password" class="form-input" placeholder="Enter password" autocomplete="current-password" required />
+        </div>
+
+        <button type="submit" class="btn-submit" id="btn-login-text">Sign In to Campus Portal</button>
+      </form>
+
+      <!-- Registration Form -->
+      <form id="form-register" style="display: none;" onsubmit="handleRegisterSubmit(event)">
+        <div class="form-group">
+          <label class="form-label" for="reg-name">Full Name</label>
+          <input type="text" id="reg-name" class="form-input" placeholder="e.g. Aarav Sharma" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-email">Institute Email</label>
+          <input type="email" id="reg-email" class="form-input" placeholder="e.g. rollno@cit.ac.in" required />
+          <div class="form-hint">Must end in @cit.ac.in</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-role">Account Type</label>
+          <select id="reg-role" class="form-select" onchange="handleRoleChange(this.value)">
+            <option value="student">Student (Timetable & Venue Booking)</option>
+            <option value="faculty">Faculty Member (Teaching & Leaves)</option>
+            <option value="club">Student Club Lead (Spectra Requests)</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="cohort-group">
+          <label class="form-label" for="reg-cohort">Cohort / Section</label>
+          <select id="reg-cohort" class="form-select">
+            <option value="Y1-A">Year 1 — Section A</option>
+            <option value="Y1-B">Year 1 — Section B</option>
+            <option value="CSE-2">Computer Science — Year 2</option>
+            <option value="ELEC-2">Electrical — Year 2</option>
+            <option value="MECH-2">Mechanical — Year 2</option>
+            <option value="CIVIL-2">Civil — Year 2</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-password">Create Password</label>
+          <input type="password" id="reg-password" class="form-input" placeholder="Minimum 6 characters" required minlength="6" />
+        </div>
+
+        <button type="submit" class="btn-submit" id="btn-reg-text">Register Account</button>
+      </form>
+
+      <!-- 1-Click Demo Profiles for Evaluators -->
+      <div class="demo-section">
+        <div class="demo-title">
+          <span>Evaluator Quick Login</span>
+          <span class="demo-badge mono">1-Click</span>
+        </div>
+        <div class="demo-grid">
+          <button type="button" class="demo-btn" onclick="demoLogin('student@cit.ac.in', 'student123')">
+            <div class="demo-btn-role">Student</div>
+            <div class="demo-btn-desc">Aarav Sharma · Y1-A</div>
+          </button>
+          <button type="button" class="demo-btn" onclick="demoLogin('faculty.f19@cit.ac.in', 'faculty123')">
+            <div class="demo-btn-role">Faculty</div>
+            <div class="demo-btn-desc">Prof. Mohanty · F19</div>
+          </button>
+          <button type="button" class="demo-btn" onclick="demoLogin('spectra.club@cit.ac.in', 'club123')">
+            <div class="demo-btn-role">Club Representative</div>
+            <div class="demo-btn-desc">Spectra Lead · Robotics</div>
+          </button>
+          <button type="button" class="demo-btn" onclick="demoLogin('priya.nair@cit.ac.in', 'student123')">
+            <div class="demo-btn-role">Student (Year 2)</div>
+            <div class="demo-btn-desc">Priya Nair · CSE-2</div>
+          </button>
+          <button type="button" class="demo-btn admin-role" onclick="demoLogin('admin@cit.ac.in', 'admin123')">
+            <div class="demo-btn-role" style="color: #0f172a;">System Administrator (Terminal Access)</div>
+            <div class="demo-btn-desc">Academic Operations Dean · Full Disruption & Audit Control</div>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Security Note -->
+    <div class="auth-footer">
+      <p>Protected by CIT Role-Based Access Control (RBAC).</p>
+      <p style="margin-top: 4px;" class="mono">Engine: cit-public-v1 · Zero Hard Constraint Violations</p>
+    </div>
+  </div>
+
+  <script>
+    // Get query params if any redirect was requested
+    const urlParams = new URLSearchParams(window.location.search);
+    const redirectUrl = urlParams.get('redirect');
+
+    if (urlParams.get('denied') === 'admin') {
+      showAlert('Access Denied: Administrative clearance required for that module.', 'danger');
+    }
+
+    function showAlert(msg, type = 'danger') {
+      const b = document.getElementById('alert-box');
+      b.className = `alert-banner alert-${type}`;
+      b.innerText = msg;
+      b.style.display = 'block';
+    }
+
+    function hideAlert() {
+      document.getElementById('alert-box').style.display = 'none';
+    }
+
+    function switchTab(tab) {
+      hideAlert();
+      if (tab === 'login') {
+        document.getElementById('tab-login').classList.add('active');
+        document.getElementById('tab-register').classList.remove('active');
+        document.getElementById('form-login').style.display = 'block';
+        document.getElementById('form-register').style.display = 'none';
+      } else {
+        document.getElementById('tab-register').classList.add('active');
+        document.getElementById('tab-login').classList.remove('active');
+        document.getElementById('form-register').style.display = 'block';
+        document.getElementById('form-login').style.display = 'none';
+      }
+    }
+
+    function handleRoleChange(role) {
+      const cohortGroup = document.getElementById('cohort-group');
+      if (role === 'student') {
+        cohortGroup.style.display = 'block';
+      } else {
+        cohortGroup.style.display = 'none';
+      }
+    }
+
+    async function handleLoginSubmit(e) {
+      e.preventDefault();
+      hideAlert();
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value;
+
+      if (!email) {
+        showAlert('Please enter your CIT email or username.');
+        return;
+      }
+
+      await performLogin(email, password);
+    }
+
+    async function demoLogin(email, password) {
+      document.getElementById('login-email').value = email;
+      document.getElementById('login-password').value = password;
+      await performLogin(email, password);
+    }
+
+    async function performLogin(email, password) {
+      const btn = document.getElementById('btn-login-text');
+      const originalText = btn.innerText;
+      btn.innerText = 'Verifying credentials...';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        }).then(r => r.json());
+
+        if (res.success && res.user) {
+          // Store session securely in localStorage
+          localStorage.setItem('cit_session', JSON.stringify(res.user));
+          
+          // Role-Based Redirection
+          if (res.user.role === 'admin') {
+            window.location.href = redirectUrl || '/admin';
+          } else {
+            // Regular user: student, faculty, club
+            window.location.href = '/portal';
+          }
+        } else {
+          showAlert(res.message || 'Invalid email or password.');
+          btn.innerText = originalText;
+          btn.disabled = false;
+        }
+      } catch (err) {
+        showAlert('Unable to reach authentication service. Please check server.');
+        btn.innerText = originalText;
+        btn.disabled = false;
+      }
+    }
+
+    async function handleRegisterSubmit(e) {
+      e.preventDefault();
+      hideAlert();
+
+      const name = document.getElementById('reg-name').value.trim();
+      const email = document.getElementById('reg-email').value.trim();
+      const role = document.getElementById('reg-role').value;
+      const cohort = role === 'student' ? document.getElementById('reg-cohort').value : (role === 'faculty' ? 'Faculty Member' : 'Club Operations');
+      const password = document.getElementById('reg-password').value;
+
+      if (!email.endsWith('@cit.ac.in')) {
+        showAlert('Registration requires an official @cit.ac.in institute email.');
+        return;
+      }
+
+      const btn = document.getElementById('btn-reg-text');
+      btn.innerText = 'Creating account...';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch('/api/auth/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, role, cohort, password })
+        }).then(r => r.json());
+
+        if (res.success) {
+          showAlert(res.message + ' You can now sign in.', 'success');
+          switchTab('login');
+          document.getElementById('login-email').value = email;
+          document.getElementById('login-password').value = '';
+        } else {
+          showAlert(res.message || 'Registration failed.');
+        }
+      } catch (err) {
+        showAlert('Registration error: ' + err.message);
+      } finally {
+        btn.innerText = 'Register Account';
+        btn.disabled = false;
+      }
+    }
+  </script>
+</body>
+</html>
