@@ -5,12 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CIT Campus Portal — Academic Timetable & Venue Services</title>
   <style>
-    /*
-     * CIT User Portal
-     * Clean, minimalist student/faculty portal with Login/Signup flow
-     * Design: Minimalist neutral styling, clear hierarchy, zero clutter
-     */
-
     *, *::before, *::after {
       box-sizing: border-box;
       margin: 0;
@@ -18,16 +12,23 @@
     }
 
     :root {
-      --bg: #f8fafc;
+      --bg: #fbf6ee; /* Light warm cream/yellow canvas */
       --card-bg: #ffffff;
-      --border: #e2e8f0;
-      --border-dark: #cbd5e1;
-      --text-main: #0f172a;
-      --text-muted: #64748b;
-      --primary: #0284c7;
-      --primary-dark: #0369a1;
-      --green: #16a34a;
-      --orange: #ea580c;
+      --border: #e8e0d5;
+      --border-dark: #d5cbbe;
+      --text-main: #1c1917;
+      --text-muted: #645e57;
+      --primary: #600f1c; /* CIT Maroon */
+      --primary-hover: #4a0b15;
+      --primary-light: #fdf2f2;
+      --yellow-light: #fef9ed; /* Light warm yellow */
+      --yellow-badge: #fef3c7; /* Light gold/yellow */
+      --yellow-border: #fde68a;
+      --gold-dark: #92400e;
+      --green: #15803d;
+      --green-bg: #f0fdf4;
+      --red: #b91c1c;
+      --red-bg: #fef2f2;
       --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       --font-mono: ui-monospace, Menlo, Consolas, monospace;
     }
@@ -41,6 +42,7 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      -webkit-font-smoothing: antialiased;
     }
 
     .mono {
@@ -51,11 +53,12 @@
     header {
       background: #ffffff;
       border-bottom: 1px solid var(--border);
-      height: 54px;
+      height: 56px;
       padding: 0 24px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      box-shadow: 0 1px 3px rgba(96, 15, 28, 0.04);
     }
 
     .brand-wrap {
@@ -65,22 +68,24 @@
     }
 
     .brand-icon {
-      width: 32px;
-      height: 32px;
+      width: 34px;
+      height: 34px;
       border-radius: 6px;
       background: var(--primary);
-      color: #fff;
+      color: #ffffff;
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 800;
       font-size: 13px;
+      letter-spacing: 0.5px;
     }
 
     .brand-name {
-      font-weight: 700;
-      font-size: 14px;
-      color: var(--text-main);
+      font-weight: 800;
+      font-size: 15px;
+      color: var(--primary);
+      letter-spacing: -0.2px;
     }
 
     .user-actions {
@@ -107,16 +112,17 @@
     .tab-item {
       background: transparent;
       border: none;
-      padding: 12px 14px;
+      padding: 13px 16px;
       font-size: 12px;
       font-weight: 600;
       color: var(--text-muted);
       cursor: pointer;
       position: relative;
+      transition: color 0.15s ease;
     }
 
     .tab-item:hover {
-      color: var(--text-main);
+      color: var(--primary);
     }
 
     .tab-item.active {
@@ -128,25 +134,11 @@
       content: "";
       position: absolute;
       bottom: 0;
-      left: 14px;
-      right: 14px;
-      height: 2px;
+      left: 16px;
+      right: 16px;
+      height: 3px;
       background: var(--primary);
-    }
-
-    .admin-link-pill {
-      font-size: 11px;
-      color: var(--text-muted);
-      text-decoration: none;
-      padding: 4px 10px;
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      font-weight: 600;
-    }
-
-    .admin-link-pill:hover {
-      background: #f1f5f9;
-      color: var(--text-main);
+      border-radius: 2px 2px 0 0;
     }
 
     /* Main Container */
@@ -154,31 +146,32 @@
       max-width: 1360px;
       width: 100%;
       margin: 0 auto;
-      padding: 20px 24px;
+      padding: 24px;
       flex: 1;
     }
 
     .content-card {
       background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 20px;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+      border-radius: 8px;
+      padding: 22px 24px;
+      box-shadow: 0 4px 12px rgba(96, 15, 28, 0.04);
     }
 
     .card-title-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 14px;
+      margin-bottom: 16px;
       border-bottom: 1px solid var(--border);
-      padding-bottom: 12px;
+      padding-bottom: 14px;
     }
 
     .title-text {
-      font-size: 15px;
+      font-size: 16px;
       font-weight: 700;
-      color: var(--text-main);
+      color: var(--primary);
+      letter-spacing: -0.2px;
     }
 
     .subtitle-text {
@@ -191,7 +184,7 @@
     .grid-wrapper {
       overflow-x: auto;
       border: 1px solid var(--border);
-      border-radius: 4px;
+      border-radius: 6px;
     }
 
     table.calendar-table {
@@ -206,22 +199,24 @@
     }
 
     table.calendar-table th {
-      background: #f8fafc;
-      color: var(--text-muted);
+      background: var(--yellow-light);
+      color: var(--primary);
       font-size: 11px;
       font-weight: 700;
       text-align: center;
-      padding: 8px 4px;
+      padding: 9px 4px;
       width: 13.5%;
+      letter-spacing: 0.3px;
     }
 
     table.calendar-table th.time-header {
-      width: 80px;
+      width: 85px;
+      color: var(--text-muted);
     }
 
     td.time-cell {
-      background: #f8fafc;
-      color: var(--text-muted);
+      background: #fdfaf5;
+      color: var(--primary);
       font-size: 11px;
       font-weight: 700;
       text-align: center;
@@ -229,29 +224,34 @@
     }
 
     td.slot-container {
-      height: 64px;
+      height: 66px;
       vertical-align: top;
       background: #ffffff;
       padding: 4px;
     }
 
     .class-pill {
-      background: #f0f9ff;
-      border: 1px solid #bae6fd;
+      background: #fffdfa;
+      border: 1px solid #ede3d7;
       border-left: 3px solid var(--primary);
       border-radius: 4px;
-      padding: 4px 6px;
+      padding: 5px 6px;
       height: 100%;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       font-size: 11px;
+      transition: transform 0.1s ease;
+    }
+
+    .class-pill:hover {
+      box-shadow: 0 2px 6px rgba(96, 15, 28, 0.08);
     }
 
     .class-pill.lab {
-      background: #faf5ff;
-      border-color: #e9d5ff;
-      border-left-color: #9333ea;
+      background: #fefcf3;
+      border-color: #fde68a;
+      border-left-color: #d97706;
     }
 
     .class-pill.tutorial {
@@ -260,74 +260,22 @@
       border-left-color: #16a34a;
     }
 
-    /* Login Modal Overlay */
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.6);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-    }
-
-    .auth-card {
-      background: #ffffff;
-      border-radius: 8px;
-      width: 100%;
-      max-width: 400px;
-      padding: 24px;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-      border: 1px solid var(--border);
-    }
-
-    .auth-tabs {
-      display: flex;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 18px;
-    }
-
-    .auth-tab {
-      flex: 1;
-      text-align: center;
-      padding: 8px;
-      background: transparent;
-      border: none;
-      font-weight: 600;
-      font-size: 13px;
-      color: var(--text-muted);
-      cursor: pointer;
-    }
-
-    .auth-tab.active {
-      color: var(--primary);
-      border-bottom: 2px solid var(--primary);
-    }
-
-    .form-group {
-      margin-bottom: 14px;
-    }
-
-    .form-label {
-      display: block;
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text-muted);
-      margin-bottom: 4px;
-      text-transform: uppercase;
-    }
-
+    /* Form Fields */
     .form-input {
       width: 100%;
       padding: 8px 12px;
       border: 1px solid var(--border-dark);
-      border-radius: 4px;
+      border-radius: 5px;
       font-size: 12px;
       outline: none;
+      background: #ffffff;
+      color: var(--text-main);
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
     }
 
     .form-input:focus {
       border-color: var(--primary);
+      box-shadow: 0 0 0 1px var(--primary);
     }
 
     .btn-submit {
@@ -335,58 +283,32 @@
       background: var(--primary);
       color: #ffffff;
       border: none;
-      padding: 9px;
-      border-radius: 4px;
+      padding: 9px 14px;
+      border-radius: 5px;
       font-weight: 600;
       font-size: 13px;
       cursor: pointer;
       margin-top: 6px;
+      transition: background 0.15s ease;
     }
 
     .btn-submit:hover {
-      background: var(--primary-dark);
-    }
-
-    .quick-roles {
-      margin-top: 16px;
-      padding-top: 12px;
-      border-top: 1px solid var(--border);
-      text-align: center;
-    }
-
-    .quick-roles-title {
-      font-size: 10px;
-      font-weight: 700;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      margin-bottom: 6px;
-    }
-
-    .quick-btn {
-      background: #f1f5f9;
-      border: 1px solid var(--border);
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 11px;
-      cursor: pointer;
-      margin: 2px;
-    }
-
-    .quick-btn:hover {
-      background: #e2e8f0;
+      background: var(--primary-hover);
     }
 
     #toast {
       position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: #0f172a;
+      bottom: 24px;
+      right: 24px;
+      background: var(--primary);
       color: #ffffff;
-      padding: 10px 16px;
-      border-radius: 4px;
+      padding: 10px 18px;
+      border-radius: 5px;
       font-size: 12px;
+      font-weight: 600;
       display: none;
       z-index: 100;
+      box-shadow: 0 4px 12px rgba(96, 15, 28, 0.25);
     }
 
     footer {
@@ -416,11 +338,11 @@
     <div class="user-actions">
       <div id="user-profile-badge" style="display: flex; align-items: center; gap: 10px;">
         <span id="user-display-email" style="font-weight: 600; font-size: 12px; color: var(--text-main);">student@cit.ac.in</span>
-        <span id="user-role-tag" class="mono" style="font-size: 10px; background: #e0f2fe; color: #0369a1; padding: 2px 7px; border-radius: 3px; font-weight: 700;">STUDENT</span>
+        <span id="user-role-tag" class="mono" style="font-size: 10px; background: var(--yellow-badge); color: var(--gold-dark); border: 1px solid var(--yellow-border); padding: 2px 7px; border-radius: 3px; font-weight: 700;">STUDENT</span>
         <span id="user-admin-link" style="display: none;">
-          <a href="/admin" style="font-size: 11px; color: #2563eb; text-decoration: none; border: 1px solid #bfdbfe; background: #eff6ff; padding: 3px 8px; border-radius: 4px; font-weight: 600;">Admin Terminal &rarr;</a>
+          <a href="/admin" style="font-size: 11px; color: var(--primary); text-decoration: none; border: 1px solid var(--yellow-border); background: var(--yellow-light); padding: 3px 8px; border-radius: 4px; font-weight: 700;">Admin Terminal &rarr;</a>
         </span>
-        <button onclick="logout()" style="background: transparent; border: 1px solid var(--border); padding: 4px 10px; border-radius: 4px; font-size: 11px; cursor: pointer; color: var(--text-muted); font-weight: 600;">
+        <button onclick="logout()" style="background: transparent; border: 1px solid var(--border); padding: 5px 12px; border-radius: 4px; font-size: 11px; cursor: pointer; color: var(--primary); font-weight: 600;">
           Sign Out
         </button>
       </div>
@@ -617,7 +539,7 @@
                     return `
                       <tr>
                         <td class="time-cell">${slot.label}</td>
-                        <td colspan="7" style="background: #f8fafc; text-align: center; color: var(--text-muted); font-weight: 700; font-size: 11px; padding: 6px;">
+                        <td colspan="7" style="background: var(--yellow-badge); border: 1px solid var(--yellow-border); text-align: center; color: var(--gold-dark); font-weight: 700; font-size: 11px; padding: 7px;">
                           LUNCH RECESS (13:00 - 14:00)
                         </td>
                       </tr>
@@ -677,7 +599,7 @@
 
           <table class="calendar-table" style="font-size: 12px;">
             <thead>
-              <tr style="background: #f8fafc;">
+              <tr style="background: var(--yellow-light);">
                 <th style="width: 75px;">REQ ID</th>
                 <th>EVENT TITLE</th>
                 <th>ORGANIZER</th>
@@ -690,16 +612,19 @@
               ${SCHED.fest_week.bookings.map(b => {
                 const req = DATA.booking_requests.find(r => r.id === b.request_id);
                 let color = 'var(--green)';
-                if (b.status === 'alternative_offered') color = 'var(--orange)';
-                if (b.status === 'rejected') color = '#dc2626';
+                let bgBadge = 'var(--green-bg)';
+                if (b.status === 'alternative_offered') { color = 'var(--gold-dark)'; bgBadge = 'var(--yellow-badge)'; }
+                if (b.status === 'rejected') { color = 'var(--red)'; bgBadge = 'var(--red-bg)'; }
 
                 return `
                   <tr>
-                    <td class="mono" style="font-weight: 700; text-align: center;">${b.request_id}</td>
+                    <td class="mono" style="font-weight: 700; text-align: center; color: var(--primary);">${b.request_id}</td>
                     <td style="font-weight: 600;">${req ? req.title : 'Event'}</td>
                     <td>${req ? req.requester : 'Unknown'}</td>
-                    <td style="text-align: center; font-weight: 700; color: ${color}; text-transform: uppercase;">
-                      ${b.status.replace('_', ' ')}
+                    <td style="text-align: center;">
+                      <span class="mono" style="font-size: 10px; font-weight: 700; color: ${color}; background: ${bgBadge}; padding: 3px 8px; border-radius: 4px; text-transform: uppercase;">
+                        ${b.status.replace('_', ' ')}
+                      </span>
                     </td>
                     <td class="mono" style="font-weight: 600;">
                       ${b.status !== 'rejected' ? `${b.room_id} (${b.day} P${b.start_period}-P${b.end_period})` : '—'}
@@ -725,12 +650,12 @@
             </div>
           </div>
 
-          <div style="font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">SAMPLE BENCHMARK REQUESTS:</div>
+          <div style="font-size: 11px; font-weight: 700; color: var(--gold-dark); margin-bottom: 6px;" class="mono">SAMPLE BENCHMARK REQUESTS:</div>
           <div style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px;">
-            <button onclick="fillAI('seminar hall kal shaam 6 baje, 2 ghante, 100 log, mic chahiye')" style="background: #f8fafc; border: 1px solid var(--border); padding: 6px 10px; border-radius: 4px; text-align: left; font-size: 11px; cursor: pointer;">
+            <button onclick="fillAI('seminar hall kal shaam 6 baje, 2 ghante, 100 log, mic chahiye')" style="background: var(--yellow-light); border: 1px solid var(--border); padding: 8px 12px; border-radius: 5px; text-align: left; font-size: 11px; font-weight: 600; color: var(--primary); cursor: pointer;">
               "seminar hall kal shaam 6 baje, 2 ghante, 100 log, mic chahiye"
             </button>
-            <button onclick="fillAI('Need a room for 45 people on Tuesday 6 to 8 pm, projector please.')" style="background: #f8fafc; border: 1px solid var(--border); padding: 6px 10px; border-radius: 4px; text-align: left; font-size: 11px; cursor: pointer;">
+            <button onclick="fillAI('Need a room for 45 people on Tuesday 6 to 8 pm, projector please.')" style="background: var(--yellow-light); border: 1px solid var(--border); padding: 8px 12px; border-radius: 5px; text-align: left; font-size: 11px; font-weight: 600; color: var(--primary); cursor: pointer;">
               "Need a room for 45 people on Tuesday 6 to 8 pm, projector please."
             </button>
           </div>
@@ -767,8 +692,8 @@
         }).then(r => r.json());
 
         resContainer.innerHTML = `
-          <div style="background: #f8fafc; border: 1px solid var(--green); border-radius: 4px; padding: 14px;">
-            <div style="font-weight: 700; color: var(--green); margin-bottom: 8px;">Extracted & Clash-Checked Request</div>
+          <div style="background: var(--yellow-light); border: 1px solid var(--yellow-border); border-radius: 6px; padding: 16px;">
+            <div style="font-weight: 700; color: var(--primary); margin-bottom: 10px;">Extracted & Clash-Checked Request</div>
             <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; font-size: 11px; margin-bottom: 12px;" class="mono">
               <div style="background: #ffffff; padding: 8px; border: 1px solid var(--border); border-radius: 4px;">
                 <div style="color: var(--text-muted); font-size: 10px;">SEATING</div>
@@ -788,7 +713,7 @@
               </div>
             </div>
             <div style="display: flex; justify-content: flex-end;">
-              <button onclick="showToast('Venue request submitted for review!')" style="background: var(--green); color: #fff; border: none; padding: 6px 14px; border-radius: 4px; font-weight: 600; cursor: pointer;">
+              <button onclick="showToast('Venue request submitted for review!')" style="background: var(--primary); color: #fff; border: none; padding: 7px 16px; border-radius: 4px; font-weight: 600; cursor: pointer;">
                 Submit Venue Request
               </button>
             </div>
@@ -812,7 +737,7 @@
 
           <table class="calendar-table" style="font-size: 12px;">
             <thead>
-              <tr style="background: #f8fafc;">
+              <tr style="background: var(--yellow-light);">
                 <th style="width: 80px;">EXAM ID</th>
                 <th>COURSE</th>
                 <th>GROUPS</th>

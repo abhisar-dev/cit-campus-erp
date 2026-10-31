@@ -12,16 +12,43 @@
     }
 
     :root {
-      --bg: #09090b;
-      --card-bg: #121215;
-      --border: #27272a;
-      --text-main: #f4f4f5;
-      --text-muted: #a1a1aa;
-      --text-dim: #71717a;
-      --green: #10b981;
-      --amber: #f59e0b;
-      --red: #ef4444;
-      --blue: #3b82f6;
+      --bg: #fbf6ee;
+      --card-bg: #ffffff;
+      --border: #e8e0d5;
+      --border-subtle: #f0eae1;
+      --text-main: #1c1917;
+      --text-muted: #78716c;
+      --text-dim: #a8a29e;
+      
+      /* Official CIT Maroon */
+      --primary: #600f1c;
+      --primary-hover: #4a0b15;
+      --primary-light: #fdf2f2;
+      --primary-border: #f8b4b4;
+
+      /* Official CIT Light Yellow / Cream */
+      --yellow-light: #fef9ed;
+      --yellow-badge: #fef3c7;
+      --yellow-border: #fde68a;
+      --gold-dark: #92400e;
+
+      /* Status Tints */
+      --green: #15803d;
+      --green-bg: #f0fdf4;
+      --green-border: #bbf7d0;
+
+      --amber: #b45309;
+      --amber-bg: #fffbeb;
+      --amber-border: #fde68a;
+
+      --red: #b91c1c;
+      --red-bg: #fef2f2;
+      --red-border: #fecaca;
+
+      --blue: #1d4ed8;
+      --blue-bg: #eff6ff;
+      --blue-border: #bfdbfe;
+
       --font-mono: ui-monospace, Menlo, Consolas, monospace;
       --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
@@ -43,13 +70,14 @@
 
     /* Terminal Header */
     header {
-      background: #09090b;
+      background: #ffffff;
       border-bottom: 1px solid var(--border);
-      height: 48px;
+      height: 52px;
       padding: 0 24px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
     }
 
     .brand {
@@ -59,10 +87,10 @@
     }
 
     .brand-tag {
-      background: #18181b;
-      border: 1px solid var(--border);
-      color: var(--green);
-      padding: 2px 8px;
+      background: var(--yellow-badge);
+      border: 1px solid var(--yellow-border);
+      color: var(--gold-dark);
+      padding: 3px 9px;
       border-radius: 4px;
       font-size: 10px;
       font-weight: 700;
@@ -70,8 +98,9 @@
     }
 
     .brand-title {
-      font-size: 13px;
-      font-weight: 700;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--primary);
       letter-spacing: -0.2px;
     }
 
@@ -82,28 +111,63 @@
     }
 
     .btn-link {
-      background: transparent;
+      background: #ffffff;
       border: 1px solid var(--border);
-      color: var(--text-muted);
-      padding: 5px 12px;
+      color: var(--primary);
+      padding: 6px 14px;
       border-radius: 4px;
       font-size: 11px;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
       text-decoration: none;
       transition: all 0.15s;
     }
 
     .btn-link:hover {
-      background: #18181b;
-      color: var(--text-main);
+      background: var(--yellow-light);
+      border-color: var(--primary);
+    }
+
+    .btn-danger {
+      background: var(--red-bg);
+      border: 1px solid var(--red-border);
+      color: var(--red);
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-danger:hover {
+      background: #fee2e2;
+    }
+
+    .btn-solid {
+      background: var(--primary);
+      color: #ffffff;
+      border: none;
+      padding: 7px 16px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-solid:hover {
+      background: var(--primary-hover);
     }
 
     /* Layout */
     .admin-layout {
       display: flex;
       flex: 1;
-      max-width: 1400px;
+      max-width: 1440px;
       width: 100%;
       margin: 0 auto;
       padding: 20px 24px;
@@ -112,22 +176,23 @@
 
     /* Terminal Sidebar */
     .terminal-sidebar {
-      width: 240px;
-      min-width: 240px;
+      width: 250px;
+      min-width: 250px;
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: 6px;
       overflow: hidden;
       align-self: flex-start;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
     }
 
     .sidebar-label {
-      padding: 10px 14px;
-      background: #18181b;
-      border-bottom: 1px solid var(--border);
-      font-size: 10px;
-      font-weight: 700;
-      color: var(--text-dim);
+      padding: 12px 16px;
+      background: var(--yellow-light);
+      border-bottom: 1px solid var(--yellow-border);
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--gold-dark);
       letter-spacing: 0.6px;
       text-transform: uppercase;
     }
@@ -141,9 +206,9 @@
       text-align: left;
       background: transparent;
       border: none;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-      border-left: 2px solid transparent;
-      padding: 11px 14px;
+      border-bottom: 1px solid var(--border-subtle);
+      border-left: 3px solid transparent;
+      padding: 12px 16px;
       font-size: 12px;
       font-weight: 600;
       color: var(--text-muted);
@@ -155,14 +220,15 @@
     }
 
     .admin-tab:hover {
-      background: #18181b;
-      color: var(--text-main);
+      background: var(--yellow-light);
+      color: var(--primary);
     }
 
     .admin-tab.active {
-      background: #18181b;
-      border-left-color: var(--text-main);
-      color: var(--text-main);
+      background: var(--yellow-light);
+      border-left-color: var(--primary);
+      color: var(--primary);
+      font-weight: 800;
     }
 
     /* Workspace */
@@ -178,28 +244,29 @@
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: 6px;
-      padding: 18px;
+      padding: 20px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
     }
 
     .panel-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 14px;
+      margin-bottom: 16px;
       border-bottom: 1px solid var(--border);
-      padding-bottom: 12px;
+      padding-bottom: 14px;
     }
 
     .panel-title {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--text-main);
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--primary);
     }
 
     .panel-desc {
-      font-size: 11px;
-      color: var(--text-dim);
-      margin-top: 2px;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 3px;
     }
 
     /* Metric Grid */
@@ -211,23 +278,24 @@
     }
 
     .stat-box {
-      background: var(--card-bg);
+      background: #ffffff;
       border: 1px solid var(--border);
       border-radius: 6px;
-      padding: 12px 14px;
+      padding: 14px 16px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
     }
 
     .stat-box-title {
       font-size: 10px;
       font-weight: 700;
-      color: var(--text-dim);
+      color: var(--gold-dark);
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
 
     .stat-box-val {
-      font-size: 20px;
-      font-weight: 700;
+      font-size: 22px;
+      font-weight: 800;
       color: var(--text-main);
       margin-top: 4px;
     }
@@ -235,8 +303,9 @@
     /* Terminal Data Table */
     .terminal-table-wrapper {
       border: 1px solid var(--border);
-      border-radius: 4px;
+      border-radius: 6px;
       overflow-x: auto;
+      background: #ffffff;
     }
 
     table.terminal-table {
@@ -249,61 +318,36 @@
     table.terminal-table th, table.terminal-table td {
       border-right: 1px solid var(--border);
       border-bottom: 1px solid var(--border);
-      padding: 8px 10px;
+      padding: 10px 12px;
     }
 
     table.terminal-table th {
-      background: #18181b;
-      color: var(--text-dim);
+      background: var(--yellow-light);
+      color: var(--gold-dark);
       font-size: 10px;
-      font-weight: 700;
+      font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
 
-    .btn-solid {
-      background: #f4f4f5;
-      color: #09090b;
-      border: none;
-      padding: 6px 14px;
-      border-radius: 4px;
-      font-size: 11px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.15s;
-    }
-
-    .btn-solid:hover {
-      background: #e4e4e7;
-    }
-
-    .btn-danger {
-      background: rgba(239, 68, 68, 0.15);
-      border: 1px solid rgba(239, 68, 68, 0.3);
-      color: #f87171;
-      padding: 6px 12px;
-      border-radius: 4px;
-      font-size: 11px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .btn-danger:hover {
-      background: rgba(239, 68, 68, 0.25);
+    table.terminal-table tbody tr:hover {
+      background: #fffdfa;
     }
 
     #toast {
       position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: #18181b;
-      border: 1px solid var(--border);
+      bottom: 24px;
+      right: 24px;
+      background: var(--primary);
+      border: 1px solid var(--primary-hover);
       color: #ffffff;
-      padding: 10px 16px;
-      border-radius: 4px;
+      padding: 12px 18px;
+      border-radius: 6px;
       font-size: 12px;
+      font-weight: 700;
       display: none;
       z-index: 100;
+      box-shadow: 0 4px 14px rgba(96, 15, 28, 0.25);
     }
   </style>
 </head>
@@ -314,28 +358,28 @@
     <div class="brand">
       <span class="brand-tag mono">ROOT · DEAN'S OFFICE</span>
       <span class="brand-title">CIT Academic Operations Terminal</span>
-      <span style="font-size: 11px; color: var(--text-dim);" class="mono">· cit-public-v1</span>
+      <span style="font-size: 11px; color: var(--text-muted);" class="mono">· cit-public-v1</span>
     </div>
 
     <div class="nav-actions">
-      <span class="mono" style="font-size: 11px; color: var(--text-dim);" id="admin-user-email">admin@cit.ac.in</span>
+      <span class="mono" style="font-size: 11px; color: var(--gold-dark); font-weight: 700;" id="admin-user-email">admin@cit.ac.in</span>
       <a href="/" class="btn-link">View User Portal</a>
       <button class="btn-danger" onclick="resetState()">↺ Reset Demo State</button>
-      <button class="btn-link" onclick="logoutAdmin()" style="color: #ef4444; border-color: #3f1515;">Sign Out</button>
+      <button class="btn-link" onclick="logoutAdmin()" style="color: var(--red); border-color: var(--red-border);">Sign Out</button>
     </div>
   </header>
 
   <!-- Access Denied Screen (Rendered if Non-Admin attempts access) -->
   <div id="access-denied-view" style="display: none; min-height: 80vh; align-items: center; justify-content: center; text-align: center; padding: 40px 20px;">
-    <div style="background: #121215; border: 1px solid #27272a; border-radius: 8px; max-width: 480px; padding: 32px 24px; margin: 0 auto;">
-      <div style="display: inline-block; padding: 4px 10px; background: #3f1515; color: #ef4444; border-radius: 4px; font-size: 11px; font-weight: 700; margin-bottom: 16px;" class="mono">HTTP 403 · FORBIDDEN</div>
-      <h2 style="font-size: 18px; font-weight: 700; color: #f4f4f5; margin-bottom: 8px;">Administrative Clearance Required</h2>
-      <p id="denied-reason-text" style="font-size: 12px; color: #a1a1aa; line-height: 1.5; margin-bottom: 24px;">
+    <div style="background: #ffffff; border: 1px solid var(--border); border-radius: 8px; max-width: 500px; padding: 36px 28px; margin: 0 auto; box-shadow: 0 4px 16px rgba(0,0,0,0.06);">
+      <div style="display: inline-block; padding: 4px 12px; background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); border-radius: 4px; font-size: 11px; font-weight: 800; margin-bottom: 16px;" class="mono">HTTP 403 · ACCESS FORBIDDEN</div>
+      <h2 style="font-size: 19px; font-weight: 800; color: var(--primary); margin-bottom: 10px;">Administrative Clearance Required</h2>
+      <p id="denied-reason-text" style="font-size: 12px; color: var(--text-muted); line-height: 1.6; margin-bottom: 24px;">
         You are logged in with student or faculty privileges. Access to the Central Operations Command Terminal requires institutional Dean clearance.
       </p>
-      <div style="display: flex; gap: 10px; justify-content: center;">
-        <a href="/" class="btn-solid" style="text-decoration: none; padding: 8px 16px; font-size: 12px;">← Return to Student Portal</a>
-        <a href="/login?redirect=/admin" class="btn-solid" style="text-decoration: none; padding: 8px 16px; font-size: 12px; background: #2563eb; color: #fff;">Sign In as Admin</a>
+      <div style="display: flex; gap: 12px; justify-content: center;">
+        <a href="/" class="btn-link" style="text-decoration: none; padding: 8px 16px; font-size: 12px;">← Return to Student Portal</a>
+        <a href="/login?redirect=/admin" class="btn-solid" style="text-decoration: none; padding: 8px 16px; font-size: 12px;">Sign In as Admin</a>
       </div>
     </div>
   </div>
@@ -347,39 +391,39 @@
       <div class="sidebar-label mono">Administration Modules</div>
       <ul class="admin-menu">
         <li>
-          <button class="admin-tab active" onclick="switchAdminTab('disruption')">
+          <button class="admin-tab active" onclick="switchAdminTab('disruption', this)">
             <span>Disruption Control</span>
-            <span class="mono" style="font-size: 10px; color: var(--text-dim);">CR-102</span>
+            <span class="mono" style="font-size: 10px; color: var(--gold-dark); font-weight: 700;">CR-102</span>
           </button>
         </li>
         <li>
-          <button class="admin-tab" onclick="switchAdminTab('fest')">
+          <button class="admin-tab" onclick="switchAdminTab('fest', this)">
             <span>Spectra Priority Manager</span>
-            <span class="mono" style="font-size: 10px; color: var(--text-dim);">25 Req</span>
+            <span class="mono" style="font-size: 10px; color: var(--gold-dark); font-weight: 700;">25 Req</span>
           </button>
         </li>
         <li>
-          <button class="admin-tab" onclick="switchAdminTab('users')">
+          <button class="admin-tab" onclick="switchAdminTab('users', this)">
             <span>User Control & Directory</span>
-            <span class="mono" style="font-size: 10px; color: var(--blue);" id="user-count-badge">Users</span>
+            <span class="mono" style="font-size: 10px; color: var(--primary); font-weight: 700;" id="user-count-badge">Users</span>
           </button>
         </li>
         <li>
-          <button class="admin-tab" onclick="switchAdminTab('timetable')">
+          <button class="admin-tab" onclick="switchAdminTab('timetable', this)">
             <span>Master Timetable Solver</span>
-            <span class="mono" style="font-size: 10px; color: var(--green);">0 Clash</span>
+            <span class="mono" style="font-size: 10px; color: var(--green); font-weight: 700;">0 Clash</span>
           </button>
         </li>
         <li>
-          <button class="admin-tab" onclick="switchAdminTab('audit')">
+          <button class="admin-tab" onclick="switchAdminTab('audit', this)">
             <span>Validator.py Execution</span>
-            <span class="mono" style="font-size: 10px; color: var(--green);">25/25</span>
+            <span class="mono" style="font-size: 10px; color: var(--green); font-weight: 700;">25/25</span>
           </button>
         </li>
         <li>
-          <button class="admin-tab" onclick="switchAdminTab('exports')">
+          <button class="admin-tab" onclick="switchAdminTab('exports', this)">
             <span>JSON Artifacts Export</span>
-            <span class="mono" style="font-size: 10px; color: var(--text-dim);">.json</span>
+            <span class="mono" style="font-size: 10px; color: var(--text-muted); font-weight: 700;">.json</span>
           </button>
         </li>
       </ul>
@@ -407,10 +451,10 @@
       setTimeout(() => { t.style.display = "none"; }, 3000);
     }
 
-    function switchAdminTab(tab) {
+    function switchAdminTab(tab, btn) {
       activeTab = tab;
       document.querySelectorAll(".admin-tab").forEach(t => t.classList.remove("active"));
-      event.currentTarget.classList.add("active");
+      if (btn) btn.classList.add("active");
       renderAdmin();
     }
 
@@ -456,7 +500,7 @@
         SCHED_AFTER = sa;
         renderAdmin();
       } catch (e) {
-        document.getElementById("admin-workspace").innerHTML = "<div style='color:red; padding:20px;'>API error. Ensure server.py is running.</div>";
+        document.getElementById("admin-workspace").innerHTML = "<div style='color:var(--red); padding:20px; font-weight:700;'>API error. Ensure server.py is running.</div>";
       }
     }
 
@@ -483,7 +527,7 @@
         <div class="stat-row">
           <div class="stat-box">
             <div class="stat-box-title">Sessions Relocated</div>
-            <div class="stat-box-val mono">11</div>
+            <div class="stat-box-val mono" style="color: var(--primary);">11</div>
           </div>
           <div class="stat-box">
             <div class="stat-box-title">Time Slots Moved</div>
@@ -491,7 +535,7 @@
           </div>
           <div class="stat-box">
             <div class="stat-box-title">Room-Only Shifts</div>
-            <div class="stat-box-val mono">11</div>
+            <div class="stat-box-val mono" style="color: var(--gold-dark);">11</div>
           </div>
           <div class="stat-box">
             <div class="stat-box-title">Violations After Repair</div>
@@ -508,10 +552,10 @@
             <div>
               ${!disruptionCommitted ? `
                 <button class="btn-solid" onclick="disruptionCommitted = true; showToast('Admin approval recorded: Repaired schedule committed.'); renderAdmin();">
-                  Approve & Commit Reschedule
+                  ✓ Approve & Commit Reschedule
                 </button>
               ` : `
-                <span class="mono" style="font-size: 11px; color: var(--green); font-weight: 700;">
+                <span class="mono" style="font-size: 11px; color: var(--green); font-weight: 700; background: var(--green-bg); border: 1px solid var(--green-border); padding: 6px 12px; border-radius: 4px;">
                   ● Reschedule Approved & Active
                 </span>
               `}
@@ -522,7 +566,7 @@
             <table class="terminal-table mono">
               <thead>
                 <tr>
-                  <th style="width: 110px;">SESSION ID</th>
+                  <th style="width: 120px;">SESSION ID</th>
                   <th>COURSE</th>
                   <th>INSTRUCTOR</th>
                   <th>PREVIOUS VENUE</th>
@@ -546,12 +590,12 @@
                   { id: "CS202-T2", course: "CS202", fac: "F06", orig: "Unscheduled", newV: "FRI P8 @ CR-101", note: "New Session Allocated" }
                 ].map(r => `
                   <tr>
-                    <td style="font-weight: 700; color: var(--text-main);">${r.id}</td>
-                    <td>${r.course}</td>
+                    <td style="font-weight: 700; color: var(--primary);">${r.id}</td>
+                    <td style="font-weight: 600;">${r.course}</td>
                     <td>${r.fac}</td>
                     <td style="color: var(--red); text-decoration: line-through;">${r.orig}</td>
                     <td style="font-weight: 700; color: var(--green);">${r.newV}</td>
-                    <td style="color: var(--text-dim); font-size: 11px;">${r.note}</td>
+                    <td style="color: var(--gold-dark); font-size: 11px; font-weight: 600;">${r.note}</td>
                   </tr>
                 `).join('')}
               </tbody>
@@ -570,7 +614,7 @@
               <div class="panel-title">Spectra Week 7 Precedence & Venue Allocations</div>
               <div class="panel-desc">Processed by institutional rule: Exams &gt; Regular Classes &gt; Institute Events &gt; Guest Lectures &gt; Dept Events &gt; Club Events.</div>
             </div>
-            <div class="mono" style="font-size: 11px; color: var(--green);">
+            <div class="mono" style="font-size: 11px; color: var(--green); font-weight: 700; background: var(--green-bg); border: 1px solid var(--green-border); padding: 5px 10px; border-radius: 4px;">
               Booking Score: 63.0 / 64 · 0 Inversions
             </div>
           </div>
@@ -579,7 +623,7 @@
             <table class="terminal-table">
               <thead>
                 <tr>
-                  <th style="width: 75px;">REQ ID</th>
+                  <th style="width: 85px;">REQ ID</th>
                   <th>EVENT TITLE</th>
                   <th>ORGANIZER</th>
                   <th>ROLE</th>
@@ -591,18 +635,21 @@
               <tbody>
                 ${SCHED.fest_week.bookings.map(b => {
                   const req = DATA.booking_requests.find(r => r.id === b.request_id);
-                  let statusColor = 'var(--green)';
-                  if (b.status === 'alternative_offered') statusColor = 'var(--amber)';
-                  if (b.status === 'rejected') statusColor = 'var(--red)';
+                  let statusBadge = `<span class="mono" style="font-weight: 700; color: var(--green); background: var(--green-bg); border: 1px solid var(--green-border); padding: 2px 6px; border-radius: 4px; font-size: 10px;">APPROVED</span>`;
+                  if (b.status === 'alternative_offered') {
+                    statusBadge = `<span class="mono" style="font-weight: 700; color: var(--gold-dark); background: var(--yellow-badge); border: 1px solid var(--yellow-border); padding: 2px 6px; border-radius: 4px; font-size: 10px;">ALTERNATIVE</span>`;
+                  } else if (b.status === 'rejected') {
+                    statusBadge = `<span class="mono" style="font-weight: 700; color: var(--red); background: var(--red-bg); border: 1px solid var(--red-border); padding: 2px 6px; border-radius: 4px; font-size: 10px;">REJECTED</span>`;
+                  }
 
                   return `
                     <tr>
-                      <td class="mono" style="font-weight: 700;">${b.request_id}</td>
-                      <td style="font-weight: 600;">${req ? req.title : 'Event'}</td>
+                      <td class="mono" style="font-weight: 700; color: var(--primary);">${b.request_id}</td>
+                      <td style="font-weight: 700;">${req ? req.title : 'Event'}</td>
                       <td>${req ? req.requester : 'Unknown'}</td>
-                      <td class="mono" style="color: var(--text-dim);">${req ? req.role : ''}</td>
-                      <td><span class="mono" style="font-weight: 700; color: ${statusColor}; text-transform: uppercase;">${b.status.replace('_', ' ')}</span></td>
-                      <td class="mono">${b.status !== 'rejected' ? `${b.room_id} (${b.day} P${b.start_period}-P${b.end_period})` : '—'}</td>
+                      <td class="mono" style="color: var(--text-muted); font-size: 11px;">${req ? req.role : ''}</td>
+                      <td>${statusBadge}</td>
+                      <td class="mono" style="font-weight: 600;">${b.status !== 'rejected' ? `${b.room_id} (${b.day} P${b.start_period}-P${b.end_period})` : '—'}</td>
                       <td style="color: var(--text-muted); font-size: 11px;">${b.reason}</td>
                     </tr>
                   `;
@@ -624,14 +671,14 @@
               <div class="panel-desc">All 189 teaching sessions placed with 0 hard clashes. Certified by official validator.py.</div>
             </div>
             <button class="btn-solid" onclick="showToast('Rerunning constraint solver...'); setTimeout(() => showToast('Solved with 0 clashes (Score: 25/25)'), 1000);">
-              Rerun Optimization Solver
+              ↻ Rerun Optimization Solver
             </button>
           </div>
 
           <div class="stat-row">
             <div class="stat-box">
               <div class="stat-box-title">Sessions Scheduled</div>
-              <div class="stat-box-val mono">189 / 189</div>
+              <div class="stat-box-val mono" style="color: var(--primary);">189 / 189</div>
             </div>
             <div class="stat-box">
               <div class="stat-box-title">Hard Clashes</div>
@@ -639,17 +686,17 @@
             </div>
             <div class="stat-box">
               <div class="stat-box-title">Venues Utilized</div>
-              <div class="stat-box-val mono">27</div>
+              <div class="stat-box-val mono" style="color: var(--gold-dark);">27</div>
             </div>
             <div class="stat-box">
               <div class="stat-box-title">Midsem Exams</div>
-              <div class="stat-box-val mono">41</div>
+              <div class="stat-box-val mono" style="color: var(--primary);">41</div>
             </div>
           </div>
 
-          <div style="background: #18181b; padding: 14px; border-radius: 4px; font-size: 11px;" class="mono">
-            <div style="font-weight: 700; color: var(--text-dim); margin-bottom: 6px;">CONSTRAINTS COMPILED (H1–H14):</div>
-            <div style="color: var(--text-muted); line-height: 1.6;">
+          <div style="background: var(--yellow-light); border: 1px solid var(--yellow-border); padding: 16px; border-radius: 6px; font-size: 12px;" class="mono">
+            <div style="font-weight: 800; color: var(--gold-dark); margin-bottom: 8px;">CONSTRAINTS COMPILED (H1–H14):</div>
+            <div style="color: var(--text-main); line-height: 1.8;">
               ✓ Every session scheduled exactly once with room, day, period (H1)<br>
               ✓ Zero faculty double bookings & 4h daily cap enforced (H2, H12)<br>
               ✓ Zero student group double bookings & elective basket sync (H3, H11)<br>
@@ -665,13 +712,13 @@
     // 4. VALIDATOR AUDIT
     function renderAudit(ws) {
       ws.innerHTML = `
-        <div class="panel" style="max-width: 800px; margin: 0 auto;">
+        <div class="panel" style="max-width: 900px; margin: 0 auto; width: 100%;">
           <div class="panel-header">
             <div>
               <div class="panel-title">Official Validator Execution Audit</div>
               <div class="panel-desc">Direct execution output of validator.py against exports/schedule.json.</div>
             </div>
-            <span class="mono" style="color: var(--green); font-weight: 700;">25 / 25 MARKS</span>
+            <span class="mono" style="color: var(--green); font-weight: 800; background: var(--green-bg); border: 1px solid var(--green-border); padding: 4px 10px; border-radius: 4px;">25 / 25 MARKS</span>
           </div>
 
           <div class="stat-row">
@@ -681,7 +728,7 @@
             </div>
             <div class="stat-box">
               <div class="stat-box-title">Booking Score</div>
-              <div class="stat-box-val mono">63.0 / 64</div>
+              <div class="stat-box-val mono" style="color: var(--gold-dark);">63.0 / 64</div>
             </div>
             <div class="stat-box">
               <div class="stat-box-title">Priority Inversions</div>
@@ -693,9 +740,9 @@
             </div>
           </div>
 
-          <div style="background: #18181b; padding: 12px; border-radius: 4px; font-size: 11px;" class="mono">
-            <div style="font-weight: 700; color: var(--text-dim); margin-bottom: 6px;">SOFT PENALTY SCORES:</div>
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; color: var(--text-muted);">
+          <div style="background: var(--yellow-light); border: 1px solid var(--yellow-border); padding: 16px; border-radius: 6px; font-size: 12px;" class="mono">
+            <div style="font-weight: 800; color: var(--gold-dark); margin-bottom: 8px;">SOFT PENALTY SCORES (MINIMIZED OBJECTIVE):</div>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; color: var(--text-main);">
               <div>S1 (Faculty Avoid): <strong>8 pts</strong></div>
               <div>S2 (Free Periods): <strong>22 pts</strong></div>
               <div>S3 (Daily &gt;6h): <strong>81 pts</strong></div>
@@ -711,7 +758,7 @@
     // 5. EXPORT ARTIFACTS
     function renderExports(ws) {
       ws.innerHTML = `
-        <div class="panel" style="max-width: 800px; margin: 0 auto;">
+        <div class="panel" style="max-width: 900px; margin: 0 auto; width: 100%;">
           <div class="panel-header">
             <div>
               <div class="panel-title">Official Hackathon Submission Artifacts</div>
@@ -719,21 +766,21 @@
             </div>
           </div>
 
-          <div style="display: flex; flex-direction: column; gap: 12px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; background: #18181b; padding: 12px 16px; border-radius: 4px;">
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; background: var(--yellow-light); border: 1px solid var(--yellow-border); padding: 16px 20px; border-radius: 6px;">
               <div>
-                <strong style="color: var(--text-main);" class="mono">exports/schedule.json</strong>
-                <div style="font-size: 11px; color: var(--text-dim);">Baseline timetable, midsem exams, and Spectra week bookings (0 hard violations).</div>
+                <strong style="color: var(--primary); font-size: 14px;" class="mono">exports/schedule.json</strong>
+                <div style="font-size: 12px; color: var(--text-muted); margin-top: 3px;">Baseline timetable, midsem exams, and Spectra week bookings (0 hard violations).</div>
               </div>
-              <a href="/exports/schedule.json" download class="btn-solid" style="text-decoration: none;">Download</a>
+              <a href="/exports/schedule.json" download class="btn-solid" style="text-decoration: none;">Download JSON</a>
             </div>
 
-            <div style="display: flex; justify-content: space-between; align-items: center; background: #18181b; padding: 12px 16px; border-radius: 4px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; background: var(--yellow-light); border: 1px solid var(--yellow-border); padding: 16px 20px; border-radius: 6px;">
               <div>
-                <strong style="color: var(--text-main);" class="mono">exports/schedule_after.json</strong>
-                <div style="font-size: 11px; color: var(--text-dim);">Repaired timetable after sample_disruption.json (11 room moves, 0 time shifts).</div>
+                <strong style="color: var(--primary); font-size: 14px;" class="mono">exports/schedule_after.json</strong>
+                <div style="font-size: 12px; color: var(--text-muted); margin-top: 3px;">Repaired timetable after sample_disruption.json (11 room moves, 0 time shifts).</div>
               </div>
-              <a href="/exports/schedule_after.json" download class="btn-solid" style="text-decoration: none;">Download</a>
+              <a href="/exports/schedule_after.json" download class="btn-solid" style="text-decoration: none;">Download JSON</a>
             </div>
           </div>
         </div>
@@ -742,7 +789,7 @@
 
     // 6. USER DIRECTORY & ACCESS CONTROL
     async function renderUsers(ws) {
-      ws.innerHTML = `<div style="color: var(--text-dim); padding: 20px;" class="mono">Loading user directory...</div>`;
+      ws.innerHTML = `<div style="color: var(--gold-dark); padding: 20px; font-weight:700;" class="mono">Loading user directory...</div>`;
       try {
         const users = await fetch("/api/admin/users", {
           headers: { "X-Admin-Role": "admin" }
@@ -756,7 +803,7 @@
           <div class="stat-row">
             <div class="stat-box">
               <div class="stat-box-title">Registered Accounts</div>
-              <div class="stat-box-val mono">${total}</div>
+              <div class="stat-box-val mono" style="color: var(--primary);">${total}</div>
             </div>
             <div class="stat-box">
               <div class="stat-box-title">Students (Y1 & Y2)</div>
@@ -768,7 +815,7 @@
             </div>
             <div class="stat-box">
               <div class="stat-box-title">Fest / Club Reps</div>
-              <div class="stat-box-val mono" style="color: var(--amber);">${club}</div>
+              <div class="stat-box-val mono" style="color: var(--gold-dark);">${club}</div>
             </div>
           </div>
 
@@ -797,15 +844,15 @@
                 </thead>
                 <tbody>
                   ${users.map(u => {
-                    const statusColor = u.status === 'Active' ? 'var(--green)' : (u.status === 'Medical Leave' ? 'var(--amber)' : 'var(--red)');
+                    const statusColor = u.status === 'Active' ? 'var(--green)' : (u.status === 'Medical Leave' ? 'var(--gold-dark)' : 'var(--red)');
                     return `
                       <tr>
-                        <td class="mono" style="font-weight: 700; color: var(--text-main);">${u.id}</td>
-                        <td style="font-weight: 600;">${u.name}</td>
+                        <td class="mono" style="font-weight: 700; color: var(--primary);">${u.id}</td>
+                        <td style="font-weight: 700;">${u.name}</td>
                         <td class="mono" style="color: var(--text-muted);">${u.email}</td>
                         <td>${u.cohort}</td>
                         <td>
-                          <select onchange="changeUserRole('${u.id}', this.value)" style="background: #18181b; border: 1px solid var(--border); color: #fff; font-size: 11px; padding: 2px 6px; border-radius: 4px;">
+                          <select onchange="changeUserRole('${u.id}', this.value)" style="background: var(--yellow-light); border: 1px solid var(--yellow-border); color: var(--text-main); font-size: 11px; padding: 4px 8px; border-radius: 4px; font-weight: 600;">
                             <option value="student" ${u.role === 'student' ? 'selected' : ''}>Student</option>
                             <option value="faculty" ${u.role === 'faculty' ? 'selected' : ''}>Faculty</option>
                             <option value="club" ${u.role === 'club' ? 'selected' : ''}>Club Lead</option>
@@ -813,12 +860,12 @@
                           </select>
                         </td>
                         <td>
-                          <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: ${statusColor}; margin-right: 6px;"></span>
-                          <span class="mono" style="font-size: 11px; color: ${statusColor}; font-weight: 600;">${u.status}</span>
+                          <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: ${statusColor}; margin-right: 6px;"></span>
+                          <span class="mono" style="font-size: 11px; color: ${statusColor}; font-weight: 700;">${u.status}</span>
                         </td>
-                        <td style="font-size: 11px; color: var(--text-dim);">${u.last_active}</td>
+                        <td style="font-size: 11px; color: var(--text-muted);">${u.last_active}</td>
                         <td>
-                          <button onclick="toggleUserStatus('${u.id}', '${u.status === 'Active' ? 'Suspended' : 'Active'}')" style="background: transparent; border: 1px solid var(--border); color: var(--text-muted); font-size: 10px; padding: 3px 8px; border-radius: 4px; cursor: pointer;">
+                          <button onclick="toggleUserStatus('${u.id}', '${u.status === 'Active' ? 'Suspended' : 'Active'}')" style="background: #ffffff; border: 1px solid var(--border); color: var(--text-main); font-size: 11px; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-weight: 600;">
                             ${u.status === 'Active' ? 'Suspend' : 'Activate'}
                           </button>
                         </td>
@@ -831,7 +878,7 @@
           </div>
         `;
       } catch (e) {
-        ws.innerHTML = `<div style="color: var(--red); padding: 20px;">Failed to load users: ${e.message}</div>`;
+        ws.innerHTML = `<div style="color: var(--red); padding: 20px; font-weight: 700;">Failed to load users: ${e.message}</div>`;
       }
     }
 
