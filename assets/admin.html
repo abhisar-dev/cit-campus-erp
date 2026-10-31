@@ -1357,7 +1357,7 @@
           <div class="panel-header">
             <div>
               <div class="panel-title">Official Validator Execution Audit & Artifacts</div>
-              <div class="panel-desc">Certified submission artifacts & live execution of validator.py against exports/schedule.json.</div>
+              <div class="panel-desc">Certified validation audit & live execution of validator.py against timetable schedule.</div>
             </div>
             <button class="btn-solid" onclick="executeValidatorLive()">▶ Run validator.py Live</button>
           </div>
@@ -1381,7 +1381,7 @@
             </div>
           </div>
 
-          <div id="validator-live-output" style="background: var(--yellow-light); border: 1px solid var(--yellow-border); padding: 16px; border-radius: 6px; font-size: 12px; margin-bottom: 20px;" class="mono">
+          <div id="validator-live-output" style="background: var(--yellow-light); border: 1px solid var(--yellow-border); padding: 16px; border-radius: 6px; font-size: 12px; margin-bottom: 0;" class="mono">
             <div style="font-weight: 800; color: var(--gold-dark); margin-bottom: 8px;">SOFT PENALTY SCORES (MINIMIZED OBJECTIVE):</div>
             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; color: var(--text-main);">
               <div>S1 (Faculty Avoid): <strong>8 pts</strong></div>
@@ -1390,24 +1390,6 @@
               <div>S4 (Course Repeat): <strong>246 pts</strong></div>
               <div>S5 (Room Underutil &lt;40%): <strong style="color: var(--green);">0 pts</strong></div>
               <div>S6 (P9 17:00 Sessions): <strong>3 pts</strong></div>
-            </div>
-          </div>
-
-          <div style="display: flex; flex-direction: column; gap: 12px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; background: #ffffff; border: 1px solid var(--border); padding: 14px 18px; border-radius: 6px;">
-              <div>
-                <strong style="color: var(--primary);" class="mono">exports/schedule.json</strong>
-                <div style="font-size: 11px; color: var(--text-muted);">Baseline timetable, midsem exams, and Spectra week bookings (0 hard violations).</div>
-              </div>
-              <a href="/exports/schedule.json" download class="btn-solid" style="text-decoration: none;">Download JSON</a>
-            </div>
-
-            <div style="display: flex; justify-content: space-between; align-items: center; background: #ffffff; border: 1px solid var(--border); padding: 14px 18px; border-radius: 6px;">
-              <div>
-                <strong style="color: var(--primary);" class="mono">exports/schedule_after.json</strong>
-                <div style="font-size: 11px; color: var(--text-muted);">Repaired timetable after sample_disruption.json (11 room moves, 0 time shifts).</div>
-              </div>
-              <a href="/exports/schedule_after.json" download class="btn-solid" style="text-decoration: none;">Download JSON</a>
             </div>
           </div>
         </div>
