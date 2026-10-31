@@ -55,8 +55,8 @@
       --primary: #600f1c; /* CIT Maroon */
       --primary-hover: #480a14;
       --text-main: #1c1917;
-      --text-muted: #57534e;
-      --text-dim: #a8a29e;
+      --text-muted: #44403c;
+      --text-dim: #57534e;
       --border: #e6dfd5;
       --border-focus: #600f1c;
       --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -224,10 +224,43 @@
       box-shadow: 0 0 0 3px rgba(96, 15, 28, 0.12);
     }
 
+    .form-input::placeholder { color: #57534e; opacity: 0.9; }
     .form-hint {
       font-size: 10px;
       color: var(--text-dim);
       margin-top: 3px;
+    }
+
+    /* Form Validation State Styling */
+    .form-input.is-invalid, .form-select.is-invalid {
+      border-color: #b91c1c !important;
+      background-color: #fef2f2 !important;
+      box-shadow: 0 0 0 3px rgba(185, 28, 28, 0.15) !important;
+    }
+
+    .form-input.is-valid, .form-select.is-valid {
+      border-color: #15803d !important;
+      box-shadow: 0 0 0 3px rgba(21, 128, 61, 0.12) !important;
+    }
+
+    .field-error-msg {
+      display: none;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      color: #991b1b;
+      font-weight: 600;
+      margin-top: 4px;
+      animation: fieldErrFadeIn 0.2s ease forwards;
+    }
+
+    .field-error-msg.visible {
+      display: flex;
+    }
+
+    @keyframes fieldErrFadeIn {
+      from { opacity: 0; transform: translateY(-3px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     /* Submit Button */
@@ -391,14 +424,16 @@
 
         <div id="alert-box" class="alert-banner"></div>
 
-        <!-- Sign In Form -->
-        <form id="form-login" onsubmit="handleLoginSubmit(event)">
+        <!-- Sign In Form with Field-Level Validation -->
+        <form id="form-login" onsubmit="handleLoginSubmit(event)" novalidate>
           <div class="form-group">
             <label class="form-label" for="login-email">CIT Email Address / Username</label>
             <input type="text" id="login-email" class="form-input" placeholder="e.g. user@cit.ac.in" autocomplete="username" required />
+            <div class="field-error-msg" id="login-email-err"></div>
           </div>
 
           <div class="form-group">
+
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
               <label class="form-label" for="login-password" style="margin-bottom: 0;">Password</label>
               <a href="javascript:void(0)" onclick="openForgotPasswordModal()" style="font-size: 11.5px; color: var(--primary); text-decoration: underline; font-weight: 700;">Forgot password?</a>
@@ -412,9 +447,15 @@
                 </svg>
               </button>
             </div>
+            <div class="field-error-msg" id="login-password-err"></div>
+          </div>
+          <!-- Anti-Bot Honeypot Trap -->
+          <input type="text" name="hp_field" id="login-hp-field" style="display:none !important; position:absolute; left:-9999px;" tabindex="-1" autocomplete="off" aria-hidden="true" /><!--
+              </button>
+            </div>
           </div>
 
-          <!-- Bot Protection Container (Activates when failed attempts >= 3) -->
+-->          <!-- Bot Protection Container (Activates when failed attempts >= 3) -->
           <div id="bot-protection-box" style="display: none; margin-bottom: 14px; padding: 12px 14px; background: #fffbeb; border: 1.5px solid #f59e0b; border-radius: 8px;">
             <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
               <span style="font-size: 18px;">🛡️</span>
@@ -441,22 +482,30 @@
             <div id="captcha-verified-badge" style="display: none; background: #f0fdf4; border: 1px solid #86efac; color: #166534; padding: 8px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; align-items: center; gap: 6px;">
               <span>✓</span> Human Identity Confirmed. Clearance Granted.
             </div>
+
+
+
+
+
           </div>
 
           <button type="submit" class="btn-submit" id="btn-login-text">Sign In to Campus Portal</button>
         </form>
 
-        <!-- Registration Form -->
-        <form id="form-register" style="display: none;" onsubmit="handleRegisterSubmit(event)">
+        <!-- Registration Form with Field-Level Validation -->
+        <form id="form-register" style="display: none;" onsubmit="handleRegisterSubmit(event)" novalidate>
+          <input type="text" name="hp_field" id="reg-hp-field" style="display:none !important; position:absolute; left:-9999px;" tabindex="-1" autocomplete="off" aria-hidden="true" />
           <div class="form-group">
             <label class="form-label" for="reg-name">Full Name</label>
-            <input type="text" id="reg-name" class="form-input" placeholder="e.g. Full Name" required />
+            <input type="text" id="reg-name" class="form-input" placeholder="e.g. Subhajit Nayak" required />
+            <div class="field-error-msg" id="reg-name-err"></div>
           </div>
 
           <div class="form-group">
             <label class="form-label" for="reg-email">Institute Email</label>
             <input type="email" id="reg-email" class="form-input" placeholder="user@cit.ac.in" required />
             <div class="form-hint">Must end in @cit.ac.in</div>
+            <div class="field-error-msg" id="reg-email-err"></div>
           </div>
 
           <div class="form-group">
@@ -483,6 +532,7 @@
           <div class="form-group">
             <label class="form-label" for="reg-password">Create Password</label>
             <input type="password" id="reg-password" class="form-input" placeholder="Minimum 6 characters" required minlength="6" />
+            <div class="field-error-msg" id="reg-password-err"></div>
           </div>
 
           <button type="submit" class="btn-submit" id="btn-reg-text">Register Account</button>
@@ -541,9 +591,9 @@
           </div>
 
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 6px;">
-            <button type="button" class="btn-submit" onclick="openBugModal(event)" style="background: #ffffff; color: var(--primary); border: 1px solid var(--primary); font-size: 12px; height: 38px; margin-top: 0;">
+            <a href="/support#bug-report" class="btn-submit" style="background: #ffffff; color: var(--primary); border: 1px solid var(--primary); font-size: 12px; height: 38px; margin-top: 0; display: flex; align-items: center; justify-content: center; text-decoration: none;">
               Report an Issue
-            </button>
+            </a>
             <a href="/support" class="btn-submit" style="display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 12px; height: 38px; margin-top: 0;">
               Full Help Center →
             </a>
@@ -720,8 +770,49 @@
       document.getElementById('alert-box').style.display = 'none';
     }
 
+    function setFieldError(inputEl, errorEl, msg) {
+      if (!inputEl) return;
+      inputEl.classList.add('is-invalid');
+      inputEl.classList.remove('is-valid');
+      inputEl.setAttribute('aria-invalid', 'true');
+      if (errorEl) {
+        errorEl.innerHTML = `<span>⚠</span> <span>${msg}</span>`;
+        errorEl.classList.add('visible');
+      }
+    }
+
+    function clearFieldError(inputEl, errorEl) {
+      if (!inputEl) return;
+      inputEl.classList.remove('is-invalid');
+      inputEl.classList.add('is-valid');
+      inputEl.removeAttribute('aria-invalid');
+      if (errorEl) {
+        errorEl.innerHTML = '';
+        errorEl.classList.remove('visible');
+      }
+    }
+
+    function resetFormErrors(formEl) {
+      if (!formEl) return;
+      formEl.querySelectorAll('.is-invalid, .is-valid').forEach(el => {
+        el.classList.remove('is-invalid', 'is-valid');
+        el.removeAttribute('aria-invalid');
+      });
+      formEl.querySelectorAll('.field-error-msg').forEach(el => {
+        el.innerHTML = '';
+        el.classList.remove('visible');
+      });
+    }
+
+    function validateEmailFormat(email) {
+      return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
+    }
+
     function switchTab(tab) {
       hideAlert();
+      resetFormErrors(document.getElementById('form-login'));
+      resetFormErrors(document.getElementById('form-register'));
+
       document.getElementById('tab-login').classList.remove('active');
       document.getElementById('tab-register').classList.remove('active');
       const tabSupport = document.getElementById('tab-support');
@@ -1120,13 +1211,51 @@
     }
 
     async function handleLoginSubmit(e) {
+      const hp = document.getElementById('login-hp-field') ? document.getElementById('login-hp-field').value : '';
+      if (hp) {
+        showAlert('Security error: automated submission blocked.', 'danger');
+        return;
+      }
       e.preventDefault();
       hideAlert();
-      const email = document.getElementById('login-email').value.trim();
-      const password = document.getElementById('login-password').value;
+
+      const emailEl = document.getElementById('login-email');
+      const passEl = document.getElementById('login-password');
+      const emailErr = document.getElementById('login-email-err');
+      const passErr = document.getElementById('login-password-err');
+      const email = emailEl ? emailEl.value.trim() : '';
+      const password = passEl ? passEl.value : '';
+
+      let isValid = true;
+      let firstInvalid = null;
 
       if (!email) {
-        showAlert('Please enter your CIT email or username.');
+        setFieldError(emailEl, emailErr, 'Please enter your CIT email or username.');
+        isValid = false;
+        firstInvalid = firstInvalid || emailEl;
+      } else if (email.includes('@') && !validateEmailFormat(email)) {
+        setFieldError(emailEl, emailErr, 'Please enter a valid email format.');
+        isValid = false;
+        firstInvalid = firstInvalid || emailEl;
+      } else {
+        clearFieldError(emailEl, emailErr);
+      }
+
+      if (!password) {
+        setFieldError(passEl, passErr, 'Please enter your password.');
+        isValid = false;
+        firstInvalid = firstInvalid || passEl;
+      } else if (password.length < 4) {
+        setFieldError(passEl, passErr, 'Password must be at least 4 characters.');
+        isValid = false;
+        firstInvalid = firstInvalid || passEl;
+      } else {
+        clearFieldError(passEl, passErr);
+      }
+
+      if (!isValid) {
+        showAlert('Please resolve the highlighted fields to continue.');
+        if (firstInvalid) firstInvalid.focus();
         return;
       }
 
@@ -1200,17 +1329,73 @@
     }
 
     function handleRegisterSubmit(e) {
+      const hp = document.getElementById('reg-hp-field') ? document.getElementById('reg-hp-field').value : '';
+      if (hp) {
+        showAlert('Security error: automated registration blocked.', 'danger');
+        return;
+      }
       e.preventDefault();
       hideAlert();
 
-      const name = document.getElementById('reg-name').value.trim();
-      const email = document.getElementById('reg-email').value.trim();
+      const nameEl = document.getElementById('reg-name');
+      const emailEl = document.getElementById('reg-email');
+      const passEl = document.getElementById('reg-password');
+      const nameErr = document.getElementById('reg-name-err');
+      const emailErr = document.getElementById('reg-email-err');
+      const passErr = document.getElementById('reg-password-err');
+
+      const name = nameEl ? nameEl.value.trim() : '';
+      const email = emailEl ? emailEl.value.trim() : '';
       const role = document.getElementById('reg-role').value;
       const cohort = role === 'student' ? document.getElementById('reg-cohort').value : (role === 'faculty' ? 'Faculty Member' : 'Club Operations');
-      const password = document.getElementById('reg-password').value;
+      const password = passEl ? passEl.value : '';
 
-      if (!email.endsWith('@cit.ac.in')) {
-        showAlert('Registration requires an official @cit.ac.in institute email.');
+      let isValid = true;
+      let firstInvalid = null;
+
+      if (!name || name.length < 2) {
+        setFieldError(nameEl, nameErr, 'Please enter your full name (minimum 2 characters).');
+        isValid = false;
+        firstInvalid = firstInvalid || nameEl;
+      } else if (!/[a-zA-Z]/.test(name)) {
+        setFieldError(nameEl, nameErr, 'Name must contain letters.');
+        isValid = false;
+        firstInvalid = firstInvalid || nameEl;
+      } else {
+        clearFieldError(nameEl, nameErr);
+      }
+
+      if (!email) {
+        setFieldError(emailEl, emailErr, 'Please enter your institute email address.');
+        isValid = false;
+        firstInvalid = firstInvalid || emailEl;
+      } else if (!validateEmailFormat(email)) {
+        setFieldError(emailEl, emailErr, 'Please enter a valid email format.');
+        isValid = false;
+        firstInvalid = firstInvalid || emailEl;
+      } else if (!email.toLowerCase().endsWith('@cit.ac.in')) {
+        setFieldError(emailEl, emailErr, 'Registration requires an official @cit.ac.in institute email.');
+        isValid = false;
+        firstInvalid = firstInvalid || emailEl;
+      } else {
+        clearFieldError(emailEl, emailErr);
+      }
+
+      if (!password) {
+        setFieldError(passEl, passErr, 'Please create a password.');
+        isValid = false;
+        firstInvalid = firstInvalid || passEl;
+      } else if (password.length < 6) {
+        setFieldError(passEl, passErr, 'Password must be at least 6 characters.');
+        isValid = false;
+        firstInvalid = firstInvalid || passEl;
+      } else {
+        clearFieldError(passEl, passErr);
+      }
+
+      if (!isValid) {
+        showAlert('Please resolve the highlighted form fields.');
+        if (firstInvalid) firstInvalid.focus();
         return;
       }
 
@@ -1240,6 +1425,7 @@
           switchTab('login');
           document.getElementById('login-email').value = email;
           document.getElementById('login-password').value = '';
+          resetFormErrors(document.getElementById('form-login'));
         } else {
           showAlert(res.message || 'Registration failed.');
         }
@@ -1250,6 +1436,38 @@
         btn.disabled = false;
       }
     }
+
+    // Attach real-time validation listeners
+    window.addEventListener('DOMContentLoaded', () => {
+      const liveInputs = [
+        { id: 'login-email', err: 'login-email-err', fn: (v) => !v ? 'Email or username is required' : (v.includes('@') && !validateEmailFormat(v) ? 'Invalid email format' : '') },
+        { id: 'login-password', err: 'login-password-err', fn: (v) => !v ? 'Password is required' : (v.length < 4 ? 'Min 4 characters' : '') },
+        { id: 'reg-name', err: 'reg-name-err', fn: (v) => (!v || v.length < 2) ? 'Full name required (min 2 chars)' : '' },
+        { id: 'reg-email', err: 'reg-email-err', fn: (v) => !v ? 'Institute email is required' : (!validateEmailFormat(v) ? 'Invalid email format' : (!v.toLowerCase().endsWith('@cit.ac.in') ? 'Must end in @cit.ac.in' : '')) },
+        { id: 'reg-password', err: 'reg-password-err', fn: (v) => (!v || v.length < 6) ? 'Password must be at least 6 characters' : '' }
+      ];
+
+      liveInputs.forEach(item => {
+        const el = document.getElementById(item.id);
+        const err = document.getElementById(item.err);
+        if (el) {
+          el.addEventListener('input', () => {
+            if (el.classList.contains('is-invalid')) {
+              const msg = item.fn(el.value.trim());
+              if (!msg) clearFieldError(el, err);
+              else setFieldError(el, err, msg);
+            }
+          });
+          el.addEventListener('blur', () => {
+            if (el.value.trim()) {
+              const msg = item.fn(el.value.trim());
+              if (msg) setFieldError(el, err, msg);
+              else clearFieldError(el, err);
+            }
+          });
+        }
+      });
+    });
   </script>
 </body>
 </html>

@@ -115,7 +115,34 @@ def read_data_file(rel_path):
             return f.read()
     return None
 
+BOT_USER_AGENTS = ("sqlmap", "nikto", "masscan", "wprecon", "wpscan", "acunetix", "havij", "zgrab", "gobuster", "dirbuster", "nmap")
+RATE_LIMIT_STORE = {}
+
+def check_ip_rate_limit(client_ip, endpoint, max_requests=25, window_seconds=60):
+    if not client_ip:
+        return True
+    now = time.time()
+    key = f"{client_ip}:{endpoint}"
+    history = RATE_LIMIT_STORE.get(key, [])
+    history = [t for t in history if now - t < window_seconds]
+    if len(history) >= max_requests:
+        RATE_LIMIT_STORE[key] = history
+        return False
+    history.append(now)
+    RATE_LIMIT_STORE[key] = history
+    return True
+
 class handler(http.server.BaseHTTPRequestHandler):
+    def get_client_ip(self):
+        return (
+            self.headers.get("x-forwarded-for", "").split(",")[0].strip()
+            or self.headers.get("x-real-ip")
+            or (self.client_address[0] if hasattr(self, "client_address") and self.client_address else "127.0.0.1")
+        )
+
+    def is_bot_blocked(self):
+        ua = self.headers.get("User-Agent", "").lower()
+        return any(b in ua for b in BOT_USER_AGENTS)
     def get_requested_path(self):
         p = urllib.parse.urlparse(self.path).path
         if p and p not in ("/api/index.py", "/api/index", "/api"):
@@ -159,12 +186,12 @@ class handler(http.server.BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_cors_headers("text/plain")
 
-    def serve_file(self, rel_path, default_mime="text/html; charset=utf-8"):
+    def serve_file(self, rel_path, default_mime="text/html; charset=utf-8", status_code=200):
         content = read_data_file(rel_path)
         if content is not None:
             _, ext = os.path.splitext(rel_path)
             content_type = MIME_TYPES.get(ext.lower(), default_mime)
-            self.send_response(200)
+            self.send_response(status_code)
             if ext.lower() in ('.jpg', '.jpeg', '.png', '.webp', '.svg', '.ico', '.css', '.js'):
                 self.send_header("Cache-Control", "public, max-age=604800, stale-while-revalidate=86400")
             elif ext.lower() == '.html':
@@ -174,23 +201,34 @@ class handler(http.server.BaseHTTPRequestHandler):
             return True
         return False
 
+    def serve_404(self):
+        if not self.serve_file("404.html", status_code=404):
+            self.send_response(404)
+            self.send_cors_headers("text/html; charset=utf-8")
+            self.wfile.write(b"<!DOCTYPE html><html><head><title>404 Not Found</title></head><body><h1>404 Not Found</h1><p><a href='/'>Return to CIT Campus Portal</a></p></body></html>")
+
     def do_GET(self):
+        if self.is_bot_blocked():
+            self.send_response(403)
+            self.send_cors_headers("application/json; charset=utf-8")
+            self.wfile.write(b'{"error": "Access denied: automated scanning bot detected."}')
+            return
         if self.check_https_redirect():
             return
         req_path = self.get_requested_path()
 
         # Dedicated Admin Login Route
-        if req_path in ("/admin/login", "/admin/auth", "/admin-login", "/admin/signin"):
+        if req_path in ("/admin/login", "/admin/auth", "/admin-login", "/admin/signin", "/admin/clearance"):
             if self.serve_file("admin_login.html"):
                 return
 
         # Dedicated User Login & Register route
-        if req_path in ("/login", "/auth"):
+        if req_path in ("/login", "/auth", "/register", "/signup", "/signin"):
             if self.serve_file("login.html"):
                 return
 
         # Dedicated Admin Terminal route
-        if req_path in ("/admin", "/admin.html"):
+        if req_path in ("/admin", "/admin.html", "/admin/dashboard"):
             if self.serve_file("admin.html"):
                 return
 
@@ -205,12 +243,17 @@ class handler(http.server.BaseHTTPRequestHandler):
                 return
 
         # Dedicated Support & Help Desk Route
-        if req_path in ("/support", "/support.html", "/help", "/help.html", "/helpdesk"):
+        if req_path in ("/support", "/support.html", "/help", "/help.html", "/helpdesk", "/contact", "/faq", "/faqs"):
             if self.serve_file("support.html"):
                 return
 
+        # Dedicated 404 Route
+        if req_path in ("/404", "/404.html"):
+            self.serve_404()
+            return
+
         # User portal routes
-        if req_path in ("/", "/index.html", "/portal", "/dashboard", "/timetable", "/bookings"):
+        if req_path in ("/", "/index.html", "/portal", "/dashboard", "/timetable", "/bookings", "/exams", "/ai"):
             if self.serve_file("index.html"):
                 return
 
@@ -303,15 +346,15 @@ class handler(http.server.BaseHTTPRequestHandler):
         if self.serve_file(req_path):
             return
 
-        # Default fallback: User Dashboard
-        if self.serve_file("index.html"):
-            return
-
-        self.send_response(404)
-        self.send_cors_headers("text/plain")
-        self.wfile.write(b"404 Not Found")
+        # Serve Custom 404 Page for any unmapped route
+        self.serve_404()
 
     def do_POST(self):
+        if self.is_bot_blocked():
+            self.send_response(403)
+            self.send_cors_headers("application/json; charset=utf-8")
+            self.wfile.write(b'{"error": "Access denied: automated exploit tool detected."}')
+            return
         if self.check_https_redirect():
             return
         req_path = self.get_requested_path()
@@ -427,9 +470,22 @@ class handler(http.server.BaseHTTPRequestHandler):
                 data = json.loads(body)
                 email = data.get("email", "").strip().lower()
                 password = data.get("password", "")
+                hp_field = data.get("hp_field", "")
                 human_token = data.get("human_token", "")
+                hp_field = data.get("hp_field", "")
             except Exception:
                 self.wfile.write(json.dumps({"success": False, "message": "Invalid request body."}).encode("utf-8"))
+                return
+
+            if hp_field:
+                self.wfile.write(json.dumps({"success": False, "message": "Automated bot submission blocked."}).encode("utf-8"))
+                return
+
+            client_ip = self.get_client_ip()
+            if not check_ip_rate_limit(client_ip, "auth_login", max_requests=20, window_seconds=60):
+                self.send_response(429)
+                self.send_header("Retry-After", "60")
+                self.wfile.write(json.dumps({"success": False, "message": "Too many login attempts. Rate limit exceeded, cooldown 60 seconds."}).encode("utf-8"))
                 return
 
             if not email or not password:
@@ -578,8 +634,20 @@ class handler(http.server.BaseHTTPRequestHandler):
                 cohort = data.get("cohort", "Y1-A")
                 role = data.get("role", "student")
                 password = data.get("password", "")
+                hp_field = data.get("hp_field", "")
             except Exception:
                 self.wfile.write(json.dumps({"success": False, "message": "Invalid signup data format."}).encode("utf-8"))
+                return
+
+            if hp_field:
+                self.wfile.write(json.dumps({"success": False, "message": "Automated registration bot blocked."}).encode("utf-8"))
+                return
+
+            client_ip = self.get_client_ip()
+            if not check_ip_rate_limit(client_ip, "auth_signup", max_requests=10, window_seconds=60):
+                self.send_response(429)
+                self.send_header("Retry-After", "60")
+                self.wfile.write(json.dumps({"success": False, "message": "Registration rate limit exceeded. Please try again later."}).encode("utf-8"))
                 return
 
             if not email.endswith("@cit.ac.in"):

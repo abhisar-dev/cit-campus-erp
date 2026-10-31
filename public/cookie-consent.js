@@ -187,7 +187,7 @@
       }
 
       .cit-cookie-option-desc {
-        color: #78716c;
+        color: #44403c;
         font-size: 11px;
         line-height: 1.4;
       }
@@ -252,7 +252,7 @@
 
       .cit-btn-customize {
         background: transparent;
-        color: #78716c;
+        color: #44403c;
         border: none;
         font-weight: 600;
         font-size: 12px;
@@ -279,7 +279,7 @@
         backdrop-filter: blur(8px);
         -webkit-backdrop-filter: blur(8px);
         border: 1px solid #e8e0d5;
-        color: #78716c;
+        color: #44403c;
         font-size: 11px;
         font-weight: 600;
         padding: 6px 12px;
@@ -357,7 +357,7 @@
 
         <div class="cit-cookie-body">
           CIT Campus ERP uses necessary session tokens and storage to secure your login clearance, preserve timetable view filters, and handle venue allocations. By accepting, you consent to our data handling in accordance with our 
-          <a href="/privacy#section-cookies">Privacy Policy</a> and <a href="/terms">Terms & Conditions</a>.
+          <a href="/privacy#section-cookies" target="_blank" rel="noopener noreferrer">Privacy Policy</a> and <a href="/terms" target="_blank" rel="noopener noreferrer">Terms & Conditions</a>.
         </div>
 
         <div class="cit-cookie-details" id="cit-cookie-details-panel">

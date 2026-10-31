@@ -52,8 +52,8 @@
       --border: #e8e0d5;
       --border-dark: #d5cbbe;
       --text-main: #1c1917;
-      --text-muted: #645e57;
-      --text-dim: #8c827a;
+      --text-muted: #44403c;
+      --text-dim: #57534e;
       --primary: #600f1c; /* Official CIT Maroon */
       --primary-hover: #4a0b15;
       --primary-light: #fdf2f2;
@@ -61,7 +61,7 @@
       --yellow-light: #fef9ed;
       --yellow-badge: #fef3c7;
       --yellow-border: #fde68a;
-      --gold-dark: #92400e;
+      --gold-dark: #78350f;
 
       --green: #15803d;
       --green-bg: #f0fdf4;
@@ -414,6 +414,32 @@
       box-shadow: 0 0 0 1px var(--primary);
     }
 
+    .form-input.is-invalid, .form-select.is-invalid, .form-textarea.is-invalid {
+      border-color: #b91c1c !important;
+      background-color: #fef2f2 !important;
+      box-shadow: 0 0 0 3px rgba(185, 28, 28, 0.15) !important;
+    }
+    .form-input.is-valid, .form-select.is-valid, .form-textarea.is-valid {
+      border-color: #15803d !important;
+      box-shadow: 0 0 0 3px rgba(21, 128, 61, 0.12) !important;
+    }
+    .field-error-msg {
+      display: none;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      color: #991b1b;
+      font-weight: 600;
+      margin-top: 4px;
+      animation: fieldErrFadeIn 0.2s ease forwards;
+    }
+    .field-error-msg.visible {
+      display: flex;
+    }
+    @keyframes fieldErrFadeIn {
+      from { opacity: 0; transform: translateY(-3px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
     .form-textarea {
       resize: vertical;
       min-height: 90px;
@@ -750,16 +776,19 @@
           </div>
         </div>
 
-        <form id="bug-form" onsubmit="handleBugSubmit(event)">
+        <form id="bug-form" onsubmit="handleBugSubmit(event)" novalidate>
+          <input type="text" name="hp_field" id="ticket-hp-field" style="display:none !important; position:absolute; left:-9999px;" tabindex="-1" autocomplete="off" aria-hidden="true" />
           <div class="form-group">
             <label class="form-label" for="ticket-name">Your Full Name</label>
             <input type="text" id="ticket-name" class="form-input" placeholder="e.g. Subhajit Nayak" required />
+            <div class="field-error-msg" id="ticket-name-err"></div>
           </div>
 
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
             <div class="form-group">
               <label class="form-label" for="ticket-email">CIT Email Address</label>
               <input type="email" id="ticket-email" class="form-input" placeholder="student@cit.ac.in" required />
+              <div class="field-error-msg" id="ticket-email-err"></div>
             </div>
             <div class="form-group">
               <label class="form-label" for="ticket-cat">Category</label>
@@ -775,8 +804,12 @@
           </div>
 
           <div class="form-group">
-            <label class="form-label" for="ticket-msg">Detailed Description of Issue</label>
-            <textarea id="ticket-msg" class="form-textarea" placeholder="Describe what happened, the room or period involved, and steps to reproduce..." required></textarea>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+              <label class="form-label" for="ticket-msg" style="margin-bottom: 0;">Detailed Description of Issue</label>
+              <span id="ticket-msg-count" style="font-size: 11px; color: var(--text-muted); font-weight: 600;">0 / 20 min chars</span>
+            </div>
+            <textarea id="ticket-msg" class="form-textarea" placeholder="Describe what happened, the room or period involved, and steps to reproduce..." required minlength="20"></textarea>
+            <div class="field-error-msg" id="ticket-msg-err"></div>
           </div>
 
           <button type="submit" class="btn-submit" id="btn-ticket">Submit Bug Report to IT Cell</button>
@@ -954,7 +987,7 @@
           </div>
         </a>
 
-        <a href="https://cit.ac.in" target="_blank" rel="noopener noreferrer" class="social-pill-card">
+        <a href="https://www.cit.ac.in" target="_blank" rel="noopener noreferrer" class="social-pill-card">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10"></circle>
             <line x1="2" y1="12" x2="22" y2="12"></line>
@@ -999,7 +1032,212 @@
       parent.classList.toggle('open');
     }
 
+    function setFieldError(inputEl, errorEl, msg) {
+      if (!inputEl) return;
+      inputEl.classList.add('is-invalid');
+      inputEl.classList.remove('is-valid');
+      inputEl.setAttribute('aria-invalid', 'true');
+      if (errorEl) {
+        errorEl.innerHTML = `<span>⚠</span> <span>${msg}</span>`;
+        errorEl.classList.add('visible');
+      }
+    }
+
+    function clearFieldError(inputEl, errorEl) {
+      if (!inputEl) return;
+      inputEl.classList.remove('is-invalid');
+      inputEl.classList.add('is-valid');
+      inputEl.removeAttribute('aria-invalid');
+      if (errorEl) {
+        errorEl.innerHTML = '';
+        errorEl.classList.remove('visible');
+      }
+    }
+
+    function validateEmailFormat(email) {
+      return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
+    }
+
     function handleBugSubmit(e) {
+      const hp = document.getElementById('ticket-hp-field') ? document.getElementById('ticket-hp-field').value : '';
+      if (hp) {
+        console.warn('Bot trap triggered');
+        return;
+      }
+      e.preventDefault();
+
+      const nameEl = document.getElementById('ticket-name');
+      const emailEl = document.getElementById('ticket-email');
+      const catEl = document.getElementById('ticket-cat');
+      const msgEl = document.getElementById('ticket-msg');
+      const nameErr = document.getElementById('ticket-name-err');
+      const emailErr = document.getElementById('ticket-email-err');
+      const msgErr = document.getElementById('ticket-msg-err');
+      const alert = document.getElementById('ticket-alert');
+
+      if (alert) alert.style.display = 'none';
+
+      const name = nameEl ? nameEl.value.trim() : '';
+      const email = emailEl ? emailEl.value.trim() : '';
+      const cat = catEl ? catEl.value : 'timetable';
+      const msg = msgEl ? msgEl.value.trim() : '';
+
+      let isValid = true;
+      let firstInvalid = null;
+
+      if (!name || name.length < 2) {
+        setFieldError(nameEl, nameErr, 'Please enter your full name (at least 2 characters).');
+        isValid = false;
+        firstInvalid = firstInvalid || nameEl;
+      } else {
+        clearFieldError(nameEl, nameErr);
+      }
+
+      if (!email) {
+        setFieldError(emailEl, emailErr, 'Please enter your email address.');
+        isValid = false;
+        firstInvalid = firstInvalid || emailEl;
+      } else if (!validateEmailFormat(email)) {
+        setFieldError(emailEl, emailErr, 'Please enter a valid email format.');
+        isValid = false;
+        firstInvalid = firstInvalid || emailEl;
+      } else {
+        clearFieldError(emailEl, emailErr);
+      }
+
+      // Spam Keyword Filter
+      const spamKeywords = ['casino', 'crypto', 'viagra', 'cialis', 'telegram', 'whatsapp group', 'seo backlinks', 'buy backlink', 'make money fast', 'free cash'];
+      const lowerMsg = msg.toLowerCase();
+      if (spamKeywords.some(kw => lowerMsg.includes(kw))) {
+        setFieldError(msgEl, msgErr, 'Spam content detected. Please submit valid academic grievance details.');
+        isValid = false;
+        firstInvalid = firstInvalid || msgEl;
+      }
+
+      // 30-Second Cooldown Protection
+      const lastTicketTime = parseInt(localStorage.getItem('cit_last_ticket_time') || '0');
+      if (Date.now() - lastTicketTime < 30000) {
+        const waitSecs = Math.ceil((30000 - (Date.now() - lastTicketTime)) / 1000);
+        if (alert) {
+          alert.style.display = 'block';
+          alert.style.background = '#fef2f2';
+          alert.style.border = '1px solid #fecaca';
+          alert.style.color = '#991b1b';
+          alert.innerHTML = `Security Cooldown: Please wait ${waitSecs} seconds before submitting another ticket.`;
+        }
+        return;
+      }
+
+      if (!msg || msg.length < 20) {
+        setFieldError(msgEl, msgErr, 'Please describe the issue in detail (at least 20 characters).');
+        isValid = false;
+        firstInvalid = firstInvalid || msgEl;
+      } else {
+        clearFieldError(msgEl, msgErr);
+      }
+
+      if (!isValid) {
+        if (firstInvalid) firstInvalid.focus();
+        return;
+      }
+
+      const btn = document.getElementById('btn-ticket');
+      btn.disabled = true;
+      btn.innerText = 'Transmitting ticket to IT Cell...';
+
+      setTimeout(() => {
+        const ticketNum = 'CIT-BUG-' + Math.floor(10000 + Math.random() * 90000);
+        
+        // Save to localStorage
+        const tickets = JSON.parse(localStorage.getItem('cit_support_tickets') || '[]');
+        tickets.unshift({
+          id: ticketNum,
+          name,
+          email,
+          category: cat,
+          message: msg,
+          timestamp: new Date().toISOString(),
+          status: 'Under Academic Review'
+        });
+        localStorage.setItem('cit_support_tickets', JSON.stringify(tickets));
+        localStorage.setItem('cit_last_ticket_time', Date.now().toString());
+
+        alert.style.display = 'block';
+        alert.innerHTML = `
+          <strong>✓ Issue Logged Successfully! Ticket Reference: <span class="mono">${ticketNum}</span></strong><br />
+          Thank you ${name}. Your report has been dispatched to the IT Helpdesk and Academic Committee. Our staff will investigate and follow up at <strong>${email}</strong> within 2 hours.
+        `;
+
+        btn.disabled = false;
+        btn.innerText = 'Submit Another Issue';
+        nameEl.value = '';
+        emailEl.value = '';
+        msgEl.value = '';
+        document.querySelectorAll('#bug-form .is-valid').forEach(el => el.classList.remove('is-valid'));
+        const count = document.getElementById('ticket-msg-count');
+        if (count) {
+          count.innerText = '0 / 20 min chars';
+          count.style.color = 'var(--text-muted)';
+        }
+      }, 500);
+      return;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const msgEl = document.getElementById('ticket-msg');
+      const countEl = document.getElementById('ticket-msg-count');
+      const nameEl = document.getElementById('ticket-name');
+      const emailEl = document.getElementById('ticket-email');
+      const nameErr = document.getElementById('ticket-name-err');
+      const emailErr = document.getElementById('ticket-email-err');
+      const msgErr = document.getElementById('ticket-msg-err');
+
+      if (msgEl && countEl) {
+        msgEl.addEventListener('input', () => {
+          const len = msgEl.value.trim().length;
+          countEl.innerText = `${len} / 20 min chars`;
+          if (len >= 20) {
+            countEl.style.color = '#15803d';
+            clearFieldError(msgEl, msgErr);
+          } else {
+            countEl.style.color = 'var(--text-muted)';
+          }
+        });
+        msgEl.addEventListener('blur', () => {
+          if (msgEl.value.trim() && msgEl.value.trim().length < 20) {
+            setFieldError(msgEl, msgErr, 'Please provide at least 20 characters.');
+          }
+        });
+      }
+
+      if (nameEl) {
+        nameEl.addEventListener('input', () => {
+          if (nameEl.classList.contains('is-invalid') && nameEl.value.trim().length >= 2) {
+            clearFieldError(nameEl, nameErr);
+          }
+        });
+        nameEl.addEventListener('blur', () => {
+          if (nameEl.value.trim() && nameEl.value.trim().length < 2) {
+            setFieldError(nameEl, nameErr, 'Min 2 characters required');
+          }
+        });
+      }
+
+      if (emailEl) {
+        emailEl.addEventListener('input', () => {
+          if (emailEl.classList.contains('is-invalid') && validateEmailFormat(emailEl.value.trim())) {
+            clearFieldError(emailEl, emailErr);
+          }
+        });
+        emailEl.addEventListener('blur', () => {
+          if (emailEl.value.trim() && !validateEmailFormat(emailEl.value.trim())) {
+            setFieldError(emailEl, emailErr, 'Invalid email format');
+          }
+        });
+      }
+    });
+
+    function _legacyOld() { return;
       e.preventDefault();
       const name = document.getElementById('ticket-name').value.trim();
       const email = document.getElementById('ticket-email').value.trim();
@@ -1026,6 +1264,7 @@
           status: 'Under Academic Review'
         });
         localStorage.setItem('cit_support_tickets', JSON.stringify(tickets));
+        localStorage.setItem('cit_last_ticket_time', Date.now().toString());
 
         alert.style.display = 'block';
         alert.innerHTML = `

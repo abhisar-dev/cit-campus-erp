@@ -78,7 +78,34 @@ class ThreadingHTTPServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
     daemon_threads = True
     allow_reuse_address = True
 
+BOT_USER_AGENTS = ("sqlmap", "nikto", "masscan", "wprecon", "wpscan", "acunetix", "havij", "zgrab", "gobuster", "dirbuster", "nmap")
+RATE_LIMIT_STORE = {}
+
+def check_ip_rate_limit(client_ip, endpoint, max_requests=25, window_seconds=60):
+    if not client_ip:
+        return True
+    now = time.time()
+    key = f"{client_ip}:{endpoint}"
+    history = RATE_LIMIT_STORE.get(key, [])
+    history = [t for t in history if now - t < window_seconds]
+    if len(history) >= max_requests:
+        RATE_LIMIT_STORE[key] = history
+        return False
+    history.append(now)
+    RATE_LIMIT_STORE[key] = history
+    return True
+
 class ERPHandler(http.server.SimpleHTTPRequestHandler):
+    def get_client_ip(self):
+        return (
+            self.headers.get("x-forwarded-for", "").split(",")[0].strip()
+            or self.headers.get("x-real-ip")
+            or (self.client_address[0] if hasattr(self, "client_address") and self.client_address else "127.0.0.1")
+        )
+
+    def is_bot_blocked(self):
+        ua = self.headers.get("User-Agent", "").lower()
+        return any(b in ua for b in BOT_USER_AGENTS)
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=BASE_DIR, **kwargs)
 
@@ -102,6 +129,19 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
         self.send_header("X-Content-Type-Options", "nosniff")
         super().end_headers()
 
+    def send_error(self, code, message=None, explain=None):
+        if code == 404:
+            self.send_response(404)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            custom_404 = os.path.join(BASE_DIR, "404.html")
+            if os.path.exists(custom_404):
+                with open(custom_404, "rb") as f:
+                    self.wfile.write(f.read())
+                return
+        super().send_error(code, message=message, explain=explain)
+
     def do_OPTIONS(self):
         if self.check_https_redirect():
             return
@@ -112,12 +152,18 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
         self.end_headers()
 
     def do_GET(self):
+        if self.is_bot_blocked():
+            self.send_response(403)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.end_headers()
+            self.wfile.write(b'{"error": "Access denied: automated scanning bot detected."}')
+            return
         if self.check_https_redirect():
             return
         url = urllib.parse.urlparse(self.path)
         
         # Dedicated Admin Login & Clearance Route (Separate from regular user login)
-        if url.path in ("/admin/login", "/admin/auth", "/admin-login", "/admin/signin"):
+        if url.path in ("/admin/login", "/admin/auth", "/admin-login", "/admin/signin", "/admin/clearance"):
             self.send_response(200)
             self.send_header("Content-Type", "text/html; charset=utf-8")
             self.send_header("Access-Control-Allow-Origin", "*")
@@ -127,7 +173,7 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
             return
 
         # Dedicated User Login & Register route
-        if url.path in ("/login", "/auth"):
+        if url.path in ("/login", "/auth", "/register", "/signup", "/signin"):
             self.send_response(200)
             self.send_header("Content-Type", "text/html; charset=utf-8")
             self.send_header("Access-Control-Allow-Origin", "*")
@@ -137,7 +183,7 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
             return
 
         # User portal routes
-        if url.path in ("/", "/index.html", "/portal", "/dashboard", "/timetable", "/bookings"):
+        if url.path in ("/", "/index.html", "/portal", "/dashboard", "/timetable", "/bookings", "/exams", "/ai"):
             self.send_response(200)
             self.send_header("Content-Type", "text/html; charset=utf-8")
             self.send_header("Access-Control-Allow-Origin", "*")
@@ -147,7 +193,7 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
             return
 
         # Separate Admin Terminal route
-        if url.path in ("/admin", "/admin.html"):
+        if url.path in ("/admin", "/admin.html", "/admin/dashboard"):
             self.send_response(200)
             self.send_header("Content-Type", "text/html; charset=utf-8")
             self.send_header("Access-Control-Allow-Origin", "*")
@@ -176,8 +222,18 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
                 self.wfile.write(f.read())
             return
 
+        # Dedicated 404 Route
+        if url.path in ("/404", "/404.html"):
+            self.send_response(404)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            with open(os.path.join(BASE_DIR, "404.html"), "rb") as f:
+                self.wfile.write(f.read())
+            return
+
         # Dedicated Support & Help Desk route
-        if url.path in ("/support", "/support.html", "/help", "/help.html", "/helpdesk"):
+        if url.path in ("/support", "/support.html", "/help", "/help.html", "/helpdesk", "/contact", "/faq", "/faqs"):
             self.send_response(200)
             self.send_header("Content-Type", "text/html; charset=utf-8")
             self.send_header("Access-Control-Allow-Origin", "*")
@@ -287,6 +343,12 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
         return super().do_GET()
 
     def do_POST(self):
+        if self.is_bot_blocked():
+            self.send_response(403)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.end_headers()
+            self.wfile.write(b'{"error": "Access denied: automated exploit tool detected."}')
+            return
         if self.check_https_redirect():
             return
         url = urllib.parse.urlparse(self.path)
@@ -408,9 +470,22 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
                 data = json.loads(body)
                 email = data.get("email", "").strip().lower()
                 password = data.get("password", "")
+                hp_field = data.get("hp_field", "")
                 human_token = data.get("human_token", "")
+                hp_field = data.get("hp_field", "")
             except Exception:
                 self.wfile.write(json.dumps({"success": False, "message": "Invalid request body."}).encode("utf-8"))
+                return
+
+            if hp_field:
+                self.wfile.write(json.dumps({"success": False, "message": "Automated bot submission blocked."}).encode("utf-8"))
+                return
+
+            client_ip = self.get_client_ip()
+            if not check_ip_rate_limit(client_ip, "auth_login", max_requests=20, window_seconds=60):
+                self.send_response(429)
+                self.send_header("Retry-After", "60")
+                self.wfile.write(json.dumps({"success": False, "message": "Too many login attempts. Cooldown 60 seconds."}).encode("utf-8"))
                 return
 
             if not email or not password:
@@ -561,8 +636,20 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
                 cohort = data.get("cohort", "Y1-A")
                 role = data.get("role", "student")
                 password = data.get("password", "")
+                hp_field = data.get("hp_field", "")
             except Exception:
                 self.wfile.write(json.dumps({"success": False, "message": "Invalid signup data format."}).encode("utf-8"))
+                return
+
+            if hp_field:
+                self.wfile.write(json.dumps({"success": False, "message": "Automated registration bot blocked."}).encode("utf-8"))
+                return
+
+            client_ip = self.get_client_ip()
+            if not check_ip_rate_limit(client_ip, "auth_signup", max_requests=10, window_seconds=60):
+                self.send_response(429)
+                self.send_header("Retry-After", "60")
+                self.wfile.write(json.dumps({"success": False, "message": "Registration rate limit exceeded. Please try again later."}).encode("utf-8"))
                 return
 
             if not email.endswith("@cit.ac.in"):

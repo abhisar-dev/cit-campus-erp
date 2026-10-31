@@ -52,14 +52,14 @@
       --border: #e8e0d5;
       --border-dark: #d5cbbe;
       --text-main: #1c1917;
-      --text-muted: #645e57;
+      --text-muted: #44403c;
       --primary: #600f1c; /* Official CIT Maroon */
       --primary-hover: #4a0b15;
       --primary-light: #fdf2f2;
       --yellow-light: #fef9ed;
       --yellow-badge: #fef3c7;
       --yellow-border: #fde68a;
-      --gold-dark: #92400e;
+      --gold-dark: #78350f;
 
       /* User Requested Status Colors */
       --green: #15803d;
@@ -408,19 +408,19 @@
 
     .status-tag.green {
       background: #dcfce7;
-      color: #15803d;
+      color: #14532d;
       border: 1px solid #bbf7d0;
     }
 
     .status-tag.grey {
       background: #f3f4f6;
-      color: #4b5563;
+      color: #1f2937;
       border: 1px solid #e5e7eb;
     }
 
     .status-tag.red {
       background: #fee2e2;
-      color: #b91c1c;
+      color: #991b1b;
       border: 1px solid #fca5a5;
     }
 
@@ -434,7 +434,7 @@
       justify-content: center;
       gap: 5px;
       background: #faf7f2;
-      color: #15803d;
+      color: #14532d;
       font-size: 11px;
       font-weight: 600;
     }
@@ -805,7 +805,7 @@
       align-items: center;
       gap: 6px;
       background: #dcfce7;
-      color: #15803d;
+      color: #14532d;
       border: 1px solid #bbf7d0;
       padding: 4px 10px;
       border-radius: 20px;
@@ -1070,9 +1070,35 @@
       box-shadow: 0 0 0 3px rgba(96, 15, 28, 0.1);
     }
 
+    .form-input.is-invalid, .prof-input.is-invalid {
+      border-color: #b91c1c !important;
+      background-color: #fef2f2 !important;
+      box-shadow: 0 0 0 3px rgba(185, 28, 28, 0.15) !important;
+    }
+    .form-input.is-valid, .prof-input.is-valid {
+      border-color: #15803d !important;
+      box-shadow: 0 0 0 3px rgba(21, 128, 61, 0.12) !important;
+    }
+    .field-error-msg {
+      display: none;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      color: #991b1b;
+      font-weight: 600;
+      margin-top: 4px;
+      animation: fieldErrFadeIn 0.2s ease forwards;
+    }
+    .field-error-msg.visible {
+      display: flex;
+    }
+    @keyframes fieldErrFadeIn {
+      from { opacity: 0; transform: translateY(-3px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
     .prof-input:disabled {
       background: #fafaf9;
-      color: #78716c;
+      color: #57534e;
       cursor: not-allowed;
     }
 
@@ -2093,7 +2119,134 @@
       openModal('modalSocials');
     }
 
+    function setFieldError(inputEl, errorEl, msg) {
+      if (!inputEl) return;
+      inputEl.classList.add('is-invalid');
+      inputEl.classList.remove('is-valid');
+      inputEl.setAttribute('aria-invalid', 'true');
+      if (errorEl) {
+        errorEl.innerHTML = `<span>⚠</span> <span>${msg}</span>`;
+        errorEl.classList.add('visible');
+      }
+    }
+
+    function clearFieldError(inputEl, errorEl) {
+      if (!inputEl) return;
+      inputEl.classList.remove('is-invalid');
+      inputEl.classList.add('is-valid');
+      inputEl.removeAttribute('aria-invalid');
+      if (errorEl) {
+        errorEl.innerHTML = '';
+        errorEl.classList.remove('visible');
+      }
+    }
+
+    function validateEmailFormat(email) {
+      return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
+    }
+
+    function validatePhoneFormat(phone) {
+      if (!phone) return true;
+      const clean = phone.replace(/[\s\-\(\)\+]/g, '');
+      return clean.length >= 10 && clean.length <= 13 && /^\d+$/.test(clean);
+    }
+
+    function validateUrlFormat(url, domain) {
+      if (!url) return true;
+      try {
+        const u = new URL(url);
+        return !domain || u.hostname.includes(domain);
+      } catch (e) {
+        return false;
+      }
+    }
+
     function handleBugModalSubmit(e) {
+      e.preventDefault();
+      const nameEl = document.getElementById('modal-bug-name');
+      const emailEl = document.getElementById('modal-bug-email');
+      const descEl = document.getElementById('modal-bug-desc');
+      const nameErr = document.getElementById('modal-bug-name-err');
+      const emailErr = document.getElementById('modal-bug-email-err');
+      const descErr = document.getElementById('modal-bug-desc-err');
+
+      const name = nameEl ? nameEl.value.trim() : '';
+      const email = emailEl ? emailEl.value.trim() : '';
+      const cat = document.getElementById('modal-bug-cat').value;
+      const desc = descEl ? descEl.value.trim() : '';
+      const btn = document.getElementById('btn-modal-bug-submit');
+      const alert = document.getElementById('modal-bug-alert');
+
+      let isValid = true;
+      let firstInvalid = null;
+
+      if (!name || name.length < 2) {
+        setFieldError(nameEl, nameErr, 'Please enter your full name (min 2 chars).');
+        isValid = false;
+        firstInvalid = firstInvalid || nameEl;
+      } else {
+        clearFieldError(nameEl, nameErr);
+      }
+
+      if (!email || !validateEmailFormat(email)) {
+        setFieldError(emailEl, emailErr, 'Please enter a valid email address.');
+        isValid = false;
+        firstInvalid = firstInvalid || emailEl;
+      } else {
+        clearFieldError(emailEl, emailErr);
+      }
+
+      if (!desc || desc.length < 20) {
+        setFieldError(descEl, descErr, 'Please provide at least 20 characters describing the issue.');
+        isValid = false;
+        firstInvalid = firstInvalid || descEl;
+      } else {
+        clearFieldError(descEl, descErr);
+      }
+
+      if (!isValid) {
+        if (firstInvalid) firstInvalid.focus();
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerText = 'Submitting report...';
+
+      setTimeout(() => {
+        const ticketId = 'CIT-BUG-' + Math.floor(10000 + Math.random() * 90000);
+        const tickets = JSON.parse(localStorage.getItem('cit_support_tickets') || '[]');
+        tickets.unshift({
+          id: ticketId,
+          name,
+          email,
+          category: cat,
+          message: desc,
+          timestamp: new Date().toISOString(),
+          status: 'Under Investigation'
+        });
+        localStorage.setItem('cit_support_tickets', JSON.stringify(tickets));
+
+        alert.style.display = 'block';
+        alert.style.padding = '10px 12px';
+        alert.style.background = '#f0fdf4';
+        alert.style.border = '1px solid #bbf7d0';
+        alert.style.borderRadius = '6px';
+        alert.style.color = '#166534';
+        alert.style.fontSize = '12px';
+        alert.style.marginBottom = '12px';
+        alert.innerHTML = `✓ <strong>Ticket Logged: ${ticketId}</strong><br/>Thank you. Our academic IT cell has received your report.`;
+
+        btn.disabled = false;
+        btn.innerText = 'Submit Another Issue';
+        nameEl.value = '';
+        emailEl.value = '';
+        descEl.value = '';
+        document.querySelectorAll('#modalBug .is-valid').forEach(el => el.classList.remove('is-valid'));
+      }, 500);
+      return;
+    }
+
+    function _legacyOldBug() { return;
       e.preventDefault();
       const name = document.getElementById('modal-bug-name').value.trim();
       const email = document.getElementById('modal-bug-email').value.trim();
@@ -2297,6 +2450,126 @@
 
     async function handleProfileSave(e) {
       e.preventDefault();
+      const nameEl = document.getElementById('prof-input-name');
+      const emailEl = document.getElementById('prof-input-email');
+      const phoneEl = document.getElementById('prof-input-phone');
+      const githubEl = document.getElementById('prof-input-github');
+      const linkedinEl = document.getElementById('prof-input-linkedin');
+
+      const nameErr = document.getElementById('prof-input-name-err');
+      const emailErr = document.getElementById('prof-input-email-err');
+      const phoneErr = document.getElementById('prof-input-phone-err');
+      const githubErr = document.getElementById('prof-input-github-err');
+      const linkedinErr = document.getElementById('prof-input-linkedin-err');
+
+      const name = nameEl ? nameEl.value.trim() : '';
+      const email = emailEl ? emailEl.value.trim() : '';
+      const phone = phoneEl ? phoneEl.value.trim() : '';
+      const github = githubEl ? githubEl.value.trim() : '';
+      const linkedin = linkedinEl ? linkedinEl.value.trim() : '';
+
+      let isValid = true;
+      let firstInvalid = null;
+
+      if (!name || name.length < 2) {
+        setFieldError(nameEl, nameErr, 'Please enter your full name (minimum 2 characters).');
+        isValid = false;
+        firstInvalid = firstInvalid || nameEl;
+      } else {
+        clearFieldError(nameEl, nameErr);
+      }
+
+      if (!email || !validateEmailFormat(email)) {
+        setFieldError(emailEl, emailErr, 'Please enter a valid email address.');
+        isValid = false;
+        firstInvalid = firstInvalid || emailEl;
+      } else {
+        clearFieldError(emailEl, emailErr);
+      }
+
+      if (phone && !validatePhoneFormat(phone)) {
+        setFieldError(phoneEl, phoneErr, 'Please enter a valid 10-digit phone number.');
+        isValid = false;
+        firstInvalid = firstInvalid || phoneEl;
+      } else {
+        clearFieldError(phoneEl, phoneErr);
+      }
+
+      if (github && !validateUrlFormat(github, 'github.com')) {
+        setFieldError(githubEl, githubErr, 'URL must be a valid GitHub profile (e.g. https://github.com/user).');
+        isValid = false;
+        firstInvalid = firstInvalid || githubEl;
+      } else {
+        clearFieldError(githubEl, githubErr);
+      }
+
+      if (linkedin && !validateUrlFormat(linkedin, 'linkedin.com')) {
+        setFieldError(linkedinEl, linkedinErr, 'URL must be a valid LinkedIn profile (e.g. https://linkedin.com/in/user).');
+        isValid = false;
+        firstInvalid = firstInvalid || linkedinEl;
+      } else {
+        clearFieldError(linkedinEl, linkedinErr);
+      }
+
+      if (!isValid) {
+        if (firstInvalid) firstInvalid.focus();
+        showToast('Please fix the highlighted profile errors.');
+        return;
+      }
+
+      const btn = document.getElementById('prof-save-btn');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span>Saving...</span>';
+      }
+
+      userProfile.name = name;
+      userProfile.email = email;
+      userProfile.rollNumber = document.getElementById('prof-input-roll').value.trim();
+      userProfile.course = document.getElementById('prof-input-course').value.trim();
+      userProfile.phone = phone;
+      userProfile.cohort = document.getElementById('prof-input-cohort').value.trim();
+      userProfile.campus = document.getElementById('prof-input-campus').value.trim();
+      userProfile.bio = document.getElementById('prof-input-bio').value.trim();
+      userProfile.github = github;
+      userProfile.linkedin = linkedin;
+
+      if (currentUser) {
+        if (userProfile.name) currentUser.name = userProfile.name;
+        if (userProfile.email) currentUser.email = userProfile.email;
+        if (userProfile.cohort) currentUser.cohort = userProfile.cohort;
+        localStorage.setItem('cit_session', JSON.stringify(currentUser));
+      }
+
+      localStorage.setItem('cit_user_profile', JSON.stringify(userProfile));
+
+      try {
+        await fetch('/api/user/profile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(userProfile)
+        });
+      } catch (err) {}
+
+      syncProfileUI();
+
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<span>Save Changes</span>';
+      }
+
+      const banner = document.getElementById('prof-alert-banner');
+      if (banner) {
+        banner.style.display = 'block';
+        banner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      showToast("Profile updated successfully!");
+      return;
+    }
+
+    function _legacyProfileSave() { return;
+      e.preventDefault();
       const btn = document.getElementById('prof-save-btn');
       if (btn) {
         btn.disabled = true;
@@ -2402,7 +2675,49 @@
       showToast('✓ Privacy Policy acknowledged');
     }
 
-    window.addEventListener("DOMContentLoaded", init);
+    window.addEventListener("DOMContentLoaded", () => {
+      init();
+
+      // Real-time validation for profile inputs
+      const profInputs = [
+        { id: 'prof-input-name', err: 'prof-input-name-err', fn: v => (!v || v.length < 2) ? 'Full name required (min 2 chars)' : '' },
+        { id: 'prof-input-email', err: 'prof-input-email-err', fn: v => (!v || !validateEmailFormat(v)) ? 'Valid email address required' : '' },
+        { id: 'prof-input-phone', err: 'prof-input-phone-err', fn: v => (v && !validatePhoneFormat(v)) ? '10-digit phone number required' : '' },
+        { id: 'prof-input-github', err: 'prof-input-github-err', fn: v => (v && !validateUrlFormat(v, 'github.com')) ? 'Must be valid github.com URL' : '' },
+        { id: 'prof-input-linkedin', err: 'prof-input-linkedin-err', fn: v => (v && !validateUrlFormat(v, 'linkedin.com')) ? 'Must be valid linkedin.com URL' : '' }
+      ];
+
+      profInputs.forEach(item => {
+        const el = document.getElementById(item.id);
+        const err = document.getElementById(item.err);
+        if (el) {
+          el.addEventListener('input', () => {
+            if (el.classList.contains('is-invalid')) {
+              const msg = item.fn(el.value.trim());
+              if (!msg) clearFieldError(el, err);
+            }
+          });
+          el.addEventListener('blur', () => {
+            if (el.value.trim()) {
+              const msg = item.fn(el.value.trim());
+              if (msg) setFieldError(el, err, msg);
+              else clearFieldError(el, err);
+            }
+          });
+        }
+      });
+
+      // Real-time validation for modal bug inputs
+      const bugDesc = document.getElementById('modal-bug-desc');
+      const bugDescErr = document.getElementById('modal-bug-desc-err');
+      if (bugDesc) {
+        bugDesc.addEventListener('input', () => {
+          if (bugDesc.classList.contains('is-invalid') && bugDesc.value.trim().length >= 20) {
+            clearFieldError(bugDesc, bugDescErr);
+          }
+        });
+      }
+    });
   </script>
 
   <!-- Contact Modal -->
@@ -2447,15 +2762,17 @@
           <p class="modal-subtitle">Found something broken? Tell the CIT ERP team.</p>
         </div>
       </div>
-      <form onsubmit="handleBugModalSubmit(event)">
+      <form onsubmit="handleBugModalSubmit(event)" novalidate>
         <div id="modal-bug-alert" style="display: none;"></div>
         <div class="form-group" style="margin-bottom: 12px;">
           <label class="form-label" for="modal-bug-name">Full Name</label>
           <input type="text" id="modal-bug-name" class="form-input" placeholder="e.g. Student Name" required />
+          <div class="field-error-msg" id="modal-bug-name-err"></div>
         </div>
         <div class="form-group" style="margin-bottom: 12px;">
           <label class="form-label" for="modal-bug-email">CIT Email</label>
           <input type="email" id="modal-bug-email" class="form-input" placeholder="student@cit.ac.in" required />
+          <div class="field-error-msg" id="modal-bug-email-err"></div>
         </div>
         <div class="form-group" style="margin-bottom: 12px;">
           <label class="form-label" for="modal-bug-cat">Issue Category</label>
@@ -2469,7 +2786,8 @@
         </div>
         <div class="form-group" style="margin-bottom: 14px;">
           <label class="form-label" for="modal-bug-desc">What happened?</label>
-          <textarea id="modal-bug-desc" class="form-input" style="height: 70px; resize: vertical; padding-top: 8px;" placeholder="Please describe the glitch or error..." required></textarea>
+          <textarea id="modal-bug-desc" class="form-input" style="height: 70px; resize: vertical; padding-top: 8px;" placeholder="Please describe the glitch or error..." required minlength="20"></textarea>
+          <div class="field-error-msg" id="modal-bug-desc-err"></div>
         </div>
         <button type="submit" class="btn-submit" id="btn-modal-bug-submit">Submit Bug Report</button>
       </form>
@@ -2524,7 +2842,7 @@
         <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; text-decoration: none; color: var(--text-main); font-weight: 600; font-size: 13px;">
           <span style="font-size: 16px;">📸</span> Instagram · @cit_campus_life
         </a>
-        <a href="https://cit.ac.in" target="_blank" rel="noopener noreferrer" style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; text-decoration: none; color: var(--text-main); font-weight: 600; font-size: 13px;">
+        <a href="https://www.cit.ac.in" target="_blank" rel="noopener noreferrer" style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; text-decoration: none; color: var(--text-main); font-weight: 600; font-size: 13px;">
           <span style="font-size: 16px;">🌐</span> Official Website · cit.ac.in
         </a>
       </div>
@@ -2614,18 +2932,20 @@
             ✓ Profile saved successfully and synced with CIT Academic Records.
           </div>
 
-          <form id="prof-details-form" onsubmit="handleProfileSave(event)">
+          <form id="prof-details-form" onsubmit="handleProfileSave(event)" novalidate>
             <div class="prof-form-grid">
               <!-- Full Name -->
               <div class="prof-field">
                 <label class="prof-label" for="prof-input-name">Full Name</label>
                 <input type="text" id="prof-input-name" class="prof-input" placeholder="Enter your full name" required />
+                <div class="field-error-msg" id="prof-input-name-err"></div>
               </div>
 
               <!-- Email -->
               <div class="prof-field">
                 <label class="prof-label" for="prof-input-email">Email Address</label>
                 <input type="email" id="prof-input-email" class="prof-input" placeholder="student@cit.ac.in" required />
+                <div class="field-error-msg" id="prof-input-email-err"></div>
               </div>
 
               <!-- Student ID / Roll No -->
@@ -2644,6 +2964,7 @@
               <div class="prof-field">
                 <label class="prof-label" for="prof-input-phone">Phone Number</label>
                 <input type="text" id="prof-input-phone" class="prof-input" placeholder="e.g. +91 98765 43210" />
+                <div class="field-error-msg" id="prof-input-phone-err"></div>
               </div>
 
               <!-- Academic Year / Semester -->
@@ -2668,12 +2989,14 @@
               <div class="prof-field">
                 <label class="prof-label" for="prof-input-github">GitHub Profile URL</label>
                 <input type="url" id="prof-input-github" class="prof-input" placeholder="https://github.com/username" />
+                <div class="field-error-msg" id="prof-input-github-err"></div>
               </div>
 
               <!-- LinkedIn -->
               <div class="prof-field">
                 <label class="prof-label" for="prof-input-linkedin">LinkedIn Profile URL</label>
                 <input type="url" id="prof-input-linkedin" class="prof-input" placeholder="https://linkedin.com/in/username" />
+                <div class="field-error-msg" id="prof-input-linkedin-err"></div>
               </div>
             </div>
 
