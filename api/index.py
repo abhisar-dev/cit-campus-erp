@@ -67,14 +67,34 @@ class handler(http.server.BaseHTTPRequestHandler):
                     return vp
         return p
 
+    def check_https_redirect(self):
+        proto = self.headers.get("x-forwarded-proto", "").lower()
+        if proto == "http":
+            host = self.headers.get("x-forwarded-host") or self.headers.get("host") or ""
+            if host and not (host.startswith("localhost") or host.startswith("127.0.0.1")):
+                target = f"https://{host}{self.path}"
+                code = 301 if self.command in ("GET", "HEAD") else 308
+                self.send_response(code)
+                self.send_header("Location", target)
+                self.send_header("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload")
+                self.send_header("Connection", "close")
+                self.end_headers()
+                return True
+        return False
+
     def send_cors_headers(self, content_type="application/json; charset=utf-8"):
         self.send_header("Content-Type", content_type)
         self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
         self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+        self.send_header("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload")
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("X-Frame-Options", "SAMEORIGIN")
         self.end_headers()
 
     def do_OPTIONS(self):
+        if self.check_https_redirect():
+            return
         self.send_response(200)
         self.send_cors_headers("text/plain")
 
@@ -94,6 +114,8 @@ class handler(http.server.BaseHTTPRequestHandler):
         return False
 
     def do_GET(self):
+        if self.check_https_redirect():
+            return
         req_path = self.get_requested_path()
 
         # Dedicated Admin Login Route
@@ -198,6 +220,8 @@ class handler(http.server.BaseHTTPRequestHandler):
         self.wfile.write(b"404 Not Found")
 
     def do_POST(self):
+        if self.check_https_redirect():
+            return
         req_path = self.get_requested_path()
         content_length = int(self.headers.get("Content-Length", 0))
         body = self.rfile.read(content_length).decode("utf-8") if content_length > 0 else "{}"

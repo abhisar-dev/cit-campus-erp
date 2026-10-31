@@ -3,6 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+  <script>
+    if (location.protocol === 'http:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+      location.replace('https://' + location.host + location.pathname + location.search + location.hash);
+    }
+  </script>
   <title>Terms & Conditions — Chilika Institute of Technology (CIT) Student Portal</title>
   <meta name="description" content="Official Terms & Conditions, Student Academic Code of Conduct, and Venue Booking Regulations for Chilika Institute of Technology (CIT) Campus ERP." />
   <link rel="icon" type="image/svg+xml" href="/public/favicon.svg" />

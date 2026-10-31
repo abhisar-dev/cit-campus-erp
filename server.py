@@ -24,7 +24,38 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=BASE_DIR, **kwargs)
 
+    def check_https_redirect(self):
+        proto = self.headers.get("x-forwarded-proto", "").lower()
+        if proto == "http":
+            host = self.headers.get("x-forwarded-host") or self.headers.get("host") or ""
+            if host and not (host.startswith("localhost") or host.startswith("127.0.0.1")):
+                target = f"https://{host}{self.path}"
+                code = 301 if self.command in ("GET", "HEAD") else 308
+                self.send_response(code)
+                self.send_header("Location", target)
+                self.send_header("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload")
+                self.send_header("Connection", "close")
+                self.end_headers()
+                return True
+        return False
+
+    def end_headers(self):
+        self.send_header("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload")
+        self.send_header("X-Content-Type-Options", "nosniff")
+        super().end_headers()
+
+    def do_OPTIONS(self):
+        if self.check_https_redirect():
+            return
+        self.send_response(200)
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+        self.end_headers()
+
     def do_GET(self):
+        if self.check_https_redirect():
+            return
         url = urllib.parse.urlparse(self.path)
         
         # Dedicated Admin Login & Clearance Route (Separate from regular user login)
@@ -156,6 +187,8 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
         return super().do_GET()
 
     def do_POST(self):
+        if self.check_https_redirect():
+            return
         url = urllib.parse.urlparse(self.path)
         content_length = int(self.headers.get("Content-Length", 0))
         body = self.rfile.read(content_length).decode("utf-8") if content_length > 0 else "{}"
