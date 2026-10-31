@@ -1,0 +1,28 @@
+{
+  "dataset_id": "cit-public-v1",
+  "schedule_dataset_id": "cit-public-v1",
+  "team": "CIT Elite Developers",
+  "soft_penalties": {
+    "S1": 8,
+    "S2": 22,
+    "S3": 81,
+    "S4": 246,
+    "S5": 0,
+    "S6": 3
+  },
+  "soft_total": 360,
+  "bookings": {
+    "booking_score": 63.0,
+    "booking_score_max_if_all_approved": 70,
+    "approved": 20,
+    "alternatives": 3,
+    "rejected": 2,
+    "session_overrides": 0,
+    "priority_inversions": []
+  },
+  "exam_soft_penalty": 135,
+  "hard_violations": [],
+  "hard_violation_count": 0,
+  "hard_by_rule": {},
+  "warnings": []
+}
