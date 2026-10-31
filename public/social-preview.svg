@@ -1,0 +1,119 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b070f"/>
+      <stop offset="45%" stop-color="#600f1c"/>
+      <stop offset="100%" stop-color="#1f0307"/>
+    </linearGradient>
+
+    <!-- Gold Accent Gradient -->
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="50%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+
+    <!-- Card Background Gradient -->
+    <linearGradient id="cardGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.02"/>
+    </linearGradient>
+
+    <!-- Subtle Grid Pattern -->
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#ffffff" stroke-width="1" stroke-opacity="0.04"/>
+    </pattern>
+
+    <!-- Glow Filter -->
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGrad)"/>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+
+  <!-- Decorative Ambient Glow Circles -->
+  <circle cx="150" cy="120" r="280" fill="#f59e0b" fill-opacity="0.07" filter="url(#glow)"/>
+  <circle cx="1080" cy="500" r="320" fill="#991b1b" fill-opacity="0.25" filter="url(#glow)"/>
+
+  <!-- Inner Border Frame -->
+  <rect x="28" y="28" width="1144" height="574" rx="20" fill="none" stroke="url(#goldGrad)" stroke-width="2" stroke-opacity="0.35"/>
+  <rect x="36" y="36" width="1128" height="558" rx="14" fill="none" stroke="#ffffff" stroke-width="1" stroke-opacity="0.06"/>
+
+  <!-- Top Banner / Institution Name -->
+  <g transform="translate(80, 85)">
+    <!-- University Crest Monogram Emblem -->
+    <g transform="translate(0, 0)">
+      <rect width="76" height="76" rx="18" fill="#ffffff" fill-opacity="0.08" stroke="#f59e0b" stroke-width="2" stroke-opacity="0.6"/>
+      <!-- Cap & Crest Motif -->
+      <path d="M38 18 L60 29 L38 40 L16 29 Z" fill="#ffffff"/>
+      <path d="M26 35.5 L26 49 C26 53.5 31.5 56.5 38 56.5 C44.5 56.5 50 53.5 50 49 L50 35.5 L38 42 Z" fill="#fef3c7"/>
+      <path d="M57 30 L57 44 C57 45.5 58 46.5 59.5 46.5 C61 46.5 62 45.5 62 44 L62 31 Z" fill="#f59e0b"/>
+    </g>
+
+    <text x="96" y="32" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="20" font-weight="800" fill="#f59e0b" letter-spacing="3.5">CHILIKA INSTITUTE OF TECHNOLOGY</text>
+    <text x="96" y="58" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#e5e7eb" fill-opacity="0.75" letter-spacing="1.5">AUTONOMOUS TECHNICAL INSTITUTION · DEPARTMENT OF ACADEMIC OPERATIONS</text>
+  </g>
+
+  <!-- Main Hero Titles -->
+  <g transform="translate(80, 240)">
+    <text x="0" y="0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="54" font-weight="900" fill="#ffffff" letter-spacing="-0.5">
+      Campus ERP &amp; Timetable Portal
+    </text>
+    
+    <text x="0" y="52" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="24" font-weight="400" fill="#fed7aa">
+      Autonomous Constraint Optimization · Conflict-Free Scheduling · Venue Logistics
+    </text>
+  </g>
+
+  <!-- Feature Cards & Badges Grid -->
+  <g transform="translate(80, 360)">
+    <!-- Badge 1: 0 Hard Clashes -->
+    <g transform="translate(0, 0)">
+      <rect width="240" height="92" rx="14" fill="url(#cardGrad)" stroke="#ffffff" stroke-width="1.2" stroke-opacity="0.15"/>
+      <text x="24" y="38" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="26" font-weight="800" fill="#4ade80">0 Hard Clashes</text>
+      <text x="24" y="66" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="500" fill="#d1d5db">100% Conflict-Free Engine</text>
+    </g>
+
+    <!-- Badge 2: CP-SAT Engine -->
+    <g transform="translate(265, 0)">
+      <rect width="240" height="92" rx="14" fill="url(#cardGrad)" stroke="#ffffff" stroke-width="1.2" stroke-opacity="0.15"/>
+      <text x="24" y="38" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="26" font-weight="800" fill="#facc15">OR-Tools Solver</text>
+      <text x="24" y="66" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="500" fill="#d1d5db">Constraint Satisfaction Model</text>
+    </g>
+
+    <!-- Badge 3: Real-Time Venues -->
+    <g transform="translate(530, 0)">
+      <rect width="240" height="92" rx="14" fill="url(#cardGrad)" stroke="#ffffff" stroke-width="1.2" stroke-opacity="0.15"/>
+      <text x="24" y="38" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="26" font-weight="800" fill="#60a5fa">Live Bookings</text>
+      <text x="24" y="66" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="500" fill="#d1d5db">Auditorium &amp; Lab Allocations</text>
+    </g>
+
+    <!-- Badge 4: Crunch Week Resilience -->
+    <g transform="translate(795, 0)">
+      <rect width="245" height="92" rx="14" fill="url(#cardGrad)" stroke="#ffffff" stroke-width="1.2" stroke-opacity="0.15"/>
+      <text x="24" y="38" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="26" font-weight="800" fill="#f43f5e">Crunch Week</text>
+      <text x="24" y="66" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="500" fill="#d1d5db">Rapid Disruption Recovery</text>
+    </g>
+  </g>
+
+  <!-- Bottom Institutional Bar -->
+  <g transform="translate(80, 525)">
+    <line x1="0" y1="0" x2="1040" y2="0" stroke="#ffffff" stroke-opacity="0.1" stroke-width="1"/>
+    
+    <text x="0" y="30" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="600" fill="#9ca3af">
+      Official Academic Operations Platform · Chilika, Odisha, India
+    </text>
+
+    <!-- System Status Pill -->
+    <g transform="translate(860, 12)">
+      <rect width="180" height="30" rx="15" fill="#15803d" fill-opacity="0.25" stroke="#22c55e" stroke-width="1" stroke-opacity="0.5"/>
+      <circle cx="18" cy="15" r="4.5" fill="#22c55e"/>
+      <text x="32" y="20" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="700" fill="#4ade80">ALL SYSTEMS ONLINE</text>
+    </g>
+  </g>
+</svg>
