@@ -10,6 +10,7 @@
     }
   </script>
   <script src="/cookie-consent.js" defer></script>
+  <script src="/analytics.js" defer></script>
   <title>Terms & Conditions — Academic Code of Conduct & Portal Regulations | Chilika Institute of Technology</title>
   <meta name="description" content="Official Terms & Conditions and Student Academic Code of Conduct for Chilika Institute of Technology (CIT) Campus ERP. Covers portal usage standards, venue reservation protocols, and academic honor code obligations." />
   <meta name="keywords" content="CIT terms and conditions, student code of conduct, portal regulations, venue booking policy, academic integrity, CIT rules" />
@@ -52,8 +53,8 @@
       --border: #e8e0d5;
       --border-dark: #d5cbbe;
       --text-main: #1c1917;
-      --text-muted: #645e57;
-      --text-dim: #8c827a;
+      --text-muted: #44403c;
+      --text-dim: #57534e;
       --primary: #600f1c; /* Official CIT Maroon */
       --primary-hover: #4a0b15;
       --primary-light: #fdf2f2;
@@ -61,7 +62,7 @@
       --yellow-light: #fef9ed;
       --yellow-badge: #fef3c7;
       --yellow-border: #fde68a;
-      --gold-dark: #92400e;
+      --gold-dark: #78350f;
 
       --green: #15803d;
       --green-bg: #f0fdf4;
@@ -523,6 +524,60 @@
         page-break-inside: avoid;
       }
     }
+    @media (max-width: 768px) {
+      header {
+        height: auto !important;
+        min-height: 56px;
+        padding: 10px 14px !important;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .brand-wrap {
+        gap: 8px;
+      }
+      .brand-sub {
+        display: none;
+      }
+      .nav-actions {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        white-space: nowrap;
+        gap: 8px;
+        scrollbar-width: none;
+      }
+      .nav-actions::-webkit-scrollbar {
+        display: none;
+      }
+      main {
+        margin: 16px auto !important;
+        padding: 0 12px !important;
+      }
+      .hero-banner {
+        padding: 20px 16px !important;
+      }
+      .hero-title {
+        font-size: 22px !important;
+      }
+      .section-card {
+        padding: 20px 16px !important;
+      }
+      .terms-table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        min-width: 100%;
+      }
+      .footer-wrap {
+        flex-direction: column !important;
+        text-align: center !important;
+      }
+    }
+    @media (max-width: 600px) {
+      input, select, textarea {
+        font-size: 16px !important; /* Prevents iOS Safari auto-zoom */
+      }
+    }
   </style>
 </head>
 <body>
@@ -548,6 +603,7 @@
       </a>
       <a href="/login" class="nav-btn nav-btn-outline">Portal Sign In</a>
       <a href="/privacy" class="nav-btn nav-btn-outline">Privacy Policy</a>
+      <a href="/support" class="nav-btn nav-btn-outline">Support Desk</a>
       <a href="/admin/login" class="nav-btn nav-btn-primary">Admin Clearance</a>
     </div>
   </header>
@@ -569,14 +625,6 @@
       </p>
 
       <div style="margin-top: 18px; display: flex; gap: 12px; flex-wrap: wrap;">
-        <button onclick="window.print()" class="nav-btn nav-btn-outline" style="cursor: pointer;">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="6 9 6 2 18 2 18 9"></polyline>
-            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
-            <rect x="6" y="14" width="12" height="8"></rect>
-          </svg>
-          Print Terms / Save PDF
-        </button>
         <a href="/" class="nav-btn nav-btn-primary">Return to Student Portal</a>
       </div>
     </div>
@@ -597,7 +645,7 @@
           <li><a href="#section-exams" class="toc-link">4. Midsem Exam Code (H5)</a></li>
           <li><a href="#section-venues" class="toc-link">5. Spectra Venue Reservations</a></li>
           <li><a href="#section-ai-usage" class="toc-link">6. AI Assistant Fair Use</a></li>
-          <li><a href="#section-disruptions" class="toc-link">7. Campus Disruption Routing</a></li>
+          <li><a href="#section-disruptions" class="toc-link">7. Campus Disruptions & Minimal Move</a></li>
           <li><a href="#section-ip-rights" class="toc-link">8. Academic IP & Solver Assets</a></li>
           <li><a href="#section-violations" class="toc-link">9. Disciplinary Actions</a></li>
           <li><a href="#section-contact" class="toc-link">10. Student Grievance Redressal</a></li>
@@ -836,6 +884,7 @@
         <a href="/login">Portal Login</a>
         <a href="/privacy">Privacy Policy</a>
         <a href="/terms" style="color: var(--primary); font-weight: 800;">Terms & Conditions</a>
+        <a href="/support" style="color: var(--text-muted); font-weight: 600;">Support Desk</a>
         <a href="javascript:void(0)" onclick="if(window.CITCookies)window.CITCookies.openPreferences()" style="color: var(--text-muted); font-weight: 600;">Cookie Settings</a>
         <a href="/admin/login">Admin Terminal</a>
       </div>

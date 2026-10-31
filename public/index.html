@@ -10,6 +10,7 @@
     }
   </script>
   <script src="/cookie-consent.js" defer></script>
+  <script src="/analytics.js" defer></script>
   <title>CIT Campus Portal — Academic Timetable, Venue Reservations & Student Services | Chilika Institute of Technology</title>
   <meta name="description" content="Official Chilika Institute of Technology (CIT) Campus ERP portal. Access real-time conflict-free academic timetables, faculty schedules, venue reservations, and examination dates powered by AI-driven constraint optimization." />
   <meta name="keywords" content="CIT ERP, Chilika Institute of Technology, academic timetable, student portal, class schedule, venue booking, campus erp, college timetable" />
@@ -52,14 +53,14 @@
       --border: #e8e0d5;
       --border-dark: #d5cbbe;
       --text-main: #1c1917;
-      --text-muted: #645e57;
+      --text-muted: #44403c;
       --primary: #600f1c; /* Official CIT Maroon */
       --primary-hover: #4a0b15;
       --primary-light: #fdf2f2;
       --yellow-light: #fef9ed;
       --yellow-badge: #fef3c7;
       --yellow-border: #fde68a;
-      --gold-dark: #92400e;
+      --gold-dark: #78350f;
 
       /* User Requested Status Colors */
       --green: #15803d;
@@ -195,6 +196,142 @@
       flex: 1;
     }
 
+    /* Hero Call to Action Banner */
+    .portal-cta-banner {
+      background: linear-gradient(135deg, #ffffff 0%, var(--yellow-light) 65%, #fff7eb 100%);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px 28px;
+      margin-bottom: 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 24px;
+      box-shadow: 0 4px 18px rgba(96, 15, 28, 0.04);
+      position: relative;
+      overflow: hidden;
+    }
+    .portal-cta-banner::before {
+      content: "";
+      position: absolute;
+      top: -40px;
+      right: -40px;
+      width: 180px;
+      height: 180px;
+      background: radial-gradient(circle, rgba(96, 15, 28, 0.06) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .cta-left { flex: 1; max-width: 800px; }
+    .cta-pill-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--primary);
+      background: var(--primary-light);
+      border: 1px solid var(--primary-border);
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+      letter-spacing: 0.4px;
+    }
+    .cta-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: -0.4px;
+      line-height: 1.3;
+      margin-bottom: 8px;
+    }
+    .cta-desc {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 18px;
+    }
+    .cta-btn-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .btn-main-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--primary);
+      color: #ffffff !important;
+      font-size: 13.5px;
+      font-weight: 800;
+      padding: 12px 24px;
+      border-radius: 8px;
+      border: 1px solid var(--primary);
+      text-decoration: none;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(96, 15, 28, 0.28);
+      transition: all 0.15s ease;
+      letter-spacing: 0.1px;
+    }
+    .btn-main-cta:hover {
+      background: var(--primary-hover);
+      box-shadow: 0 6px 18px rgba(96, 15, 28, 0.38);
+      transform: translateY(-1px);
+    }
+    .btn-sub-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #ffffff;
+      color: var(--text-main);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 11px 18px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .btn-sub-cta:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: rgba(96, 15, 28, 0.04);
+    }
+    .cta-capsule {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      padding: 14px 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+      flex-shrink: 0;
+    }
+    .cta-stat-col { text-align: center; }
+    .cta-stat-val { font-size: 19px; font-weight: 800; line-height: 1.1; }
+    .cta-stat-sub {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 3px;
+    }
+    .cta-stat-sep { width: 1px; height: 32px; background: var(--border); }
+    @media (max-width: 900px) {
+      .portal-cta-banner {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 20px 18px;
+        gap: 16px;
+      }
+      .cta-title { font-size: 19px; }
+      .cta-capsule { width: 100%; justify-content: space-around; }
+    }
     .content-card {
       background: var(--card-bg);
       border: 1px solid var(--border);
@@ -408,19 +545,19 @@
 
     .status-tag.green {
       background: #dcfce7;
-      color: #15803d;
+      color: #14532d;
       border: 1px solid #bbf7d0;
     }
 
     .status-tag.grey {
       background: #f3f4f6;
-      color: #4b5563;
+      color: #1f2937;
       border: 1px solid #e5e7eb;
     }
 
     .status-tag.red {
       background: #fee2e2;
-      color: #b91c1c;
+      color: #991b1b;
       border: 1px solid #fca5a5;
     }
 
@@ -434,7 +571,7 @@
       justify-content: center;
       gap: 5px;
       background: #faf7f2;
-      color: #15803d;
+      color: #14532d;
       font-size: 11px;
       font-weight: 600;
     }
@@ -805,7 +942,7 @@
       align-items: center;
       gap: 6px;
       background: #dcfce7;
-      color: #15803d;
+      color: #14532d;
       border: 1px solid #bbf7d0;
       padding: 4px 10px;
       border-radius: 20px;
@@ -1070,9 +1207,35 @@
       box-shadow: 0 0 0 3px rgba(96, 15, 28, 0.1);
     }
 
+    .form-input.is-invalid, .prof-input.is-invalid {
+      border-color: #b91c1c !important;
+      background-color: #fef2f2 !important;
+      box-shadow: 0 0 0 3px rgba(185, 28, 28, 0.15) !important;
+    }
+    .form-input.is-valid, .prof-input.is-valid {
+      border-color: #15803d !important;
+      box-shadow: 0 0 0 3px rgba(21, 128, 61, 0.12) !important;
+    }
+    .field-error-msg {
+      display: none;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      color: #991b1b;
+      font-weight: 600;
+      margin-top: 4px;
+      animation: fieldErrFadeIn 0.2s ease forwards;
+    }
+    .field-error-msg.visible {
+      display: flex;
+    }
+    @keyframes fieldErrFadeIn {
+      from { opacity: 0; transform: translateY(-3px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
     .prof-input:disabled {
       background: #fafaf9;
-      color: #78716c;
+      color: #57534e;
       cursor: not-allowed;
     }
 
@@ -1119,6 +1282,130 @@
 
     .prof-btn-cancel:hover {
       background: #f5f5f4;
+    }
+    /* Mobile-First Navigation & Timetable Overrides */
+    .user-nav {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .user-nav::-webkit-scrollbar {
+      display: none;
+    }
+    .nav-list {
+      white-space: nowrap;
+      min-width: max-content;
+    }
+    .tab-item {
+      white-space: nowrap;
+    }
+    .grid-wrapper {
+      -webkit-overflow-scrolling: touch;
+    }
+    table.calendar-table {
+      min-width: 660px;
+    }
+    .mobile-swipe-hint {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 7px 12px;
+      margin-bottom: 10px;
+      background: var(--yellow-light);
+      border: 1px dashed var(--yellow-border);
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--gold-dark);
+      letter-spacing: 0.2px;
+    }
+    @media (max-width: 768px) {
+      .mobile-swipe-hint {
+        display: flex;
+      }
+      header {
+        height: auto !important;
+        min-height: 56px;
+        padding: 10px 14px !important;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .brand-wrap {
+        gap: 8px;
+      }
+      .brand-wrap > div > div:last-child {
+        display: none;
+      }
+      .user-actions {
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .header-profile-text #user-display-email {
+        max-width: 100px;
+      }
+      main {
+        padding: 14px 10px !important;
+      }
+      .content-card {
+        padding: 16px 12px !important;
+      }
+      .card-title-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+      .status-legend-bar {
+        gap: 8px;
+        padding: 8px 10px;
+        font-size: 10.5px;
+      }
+      .btn-main-cta, .btn-sub-cta {
+        width: 100%;
+        justify-content: center;
+      }
+      footer {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+        padding: 16px 14px;
+        align-items: center;
+      }
+    }
+    @media (max-width: 600px) {
+      input, select, textarea {
+        font-size: 16px !important; /* Enforce iOS Safari 16px minimum to prevent auto-zoom */
+      }
+      .header-profile-text #user-display-email {
+        display: none;
+      }
+      .cta-title {
+        font-size: 18px !important;
+      }
+      .cta-desc {
+        font-size: 12.5px !important;
+      }
+      .modal-box {
+        padding: 18px 14px;
+        max-width: 100%;
+      }
+      .prof-modal-header {
+        padding: 14px 16px;
+      }
+      .prof-modal-body {
+        padding: 16px 12px;
+        gap: 14px;
+      }
+      .filter-dropdown {
+        width: 100%;
+        max-width: 100%;
+      }
+    }
+    /* Explicit suppression of any print or export triggers */
+    .btn-export, .btn-print, [data-action="export"], [data-action="print"],
+    button[title*="Print" i], button[title*="Export" i],
+    a[title*="Print" i], a[title*="Export" i] {
+      display: none !important;
     }
   </style>
 </head>
@@ -1305,20 +1592,27 @@
       renderTab();
     }
 
+    function triggerCtaAction() {
+      if (window.CITAnalytics) {
+        window.CITAnalytics.trackEvent('Call To Action', 'Click', 'Hero: Book Venue with AI');
+      }
+      switchUserTab('ai', document.querySelectorAll('.tab-item')[2]);
+      setTimeout(() => {
+        const inp = document.getElementById('ai-query-input');
+        if (inp) inp.focus();
+      }, 100);
+    }
+
     function switchUserTab(t, btn) {
+      if (window.CITAnalytics) window.CITAnalytics.trackEvent('Navigation', 'Tab Switch', t);
       currentTab = t;
-      document.querySelectorAll(".tab-item").forEach(item => {
-        item.classList.remove("active");
-        const onclickStr = item.getAttribute('onclick') || '';
-        if (onclickStr.includes(`'${t}'`)) {
-          item.classList.add("active");
-        }
-      });
+      document.querySelectorAll(".tab-item").forEach(item => item.classList.remove("active"));
       if (btn) btn.classList.add("active");
       renderTab();
     }
 
     function setTimetableFilter(type) {
+      if (window.CITAnalytics) window.CITAnalytics.trackEvent('Timetable Perspective', 'Filter Switch', type);
       timetableFilterType = type;
       renderTab();
     }
@@ -1454,11 +1748,63 @@
         { code: 'FRI', label: 'FRIDAY' }
       ];
 
+      const ctaBannerHtml = `
+        <!-- Institutional Primary Call to Action Banner -->
+        <div class="portal-cta-banner">
+          <div class="cta-left">
+            <div class="cta-pill-tag mono">
+              <span>●</span>
+              <span>CRUNCH WEEK LIVE · CONFLICT-FREE TIMETABLE</span>
+            </div>
+            <h1 class="cta-title">Need a classroom, laboratory, or seminar hall for your session?</h1>
+            <p class="cta-desc">
+              CIT's autonomous Google OR-Tools CP-SAT engine guarantees zero timetable clashes. Check room availability or submit an instant booking request with conversational AI assistance.
+            </p>
+            <div class="cta-btn-group">
+              <a href="javascript:void(0)" onclick="triggerCtaAction()" class="btn-main-cta" id="portal-hero-cta">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                <span>Book a Venue with AI Assistant →</span>
+              </a>
+              <button type="button" class="btn-sub-cta" onclick="document.getElementById('timetable-grid-card').scrollIntoView({behavior:'smooth'})">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <polyline points="19 12 12 19 5 12"></polyline>
+                </svg>
+                <span>Explore Class Grid</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="cta-capsule mono">
+            <div class="cta-stat-col">
+              <div class="cta-stat-val" style="color: var(--primary);">0</div>
+              <div class="cta-stat-sub">Hard Clashes</div>
+            </div>
+            <div class="cta-stat-sep"></div>
+            <div class="cta-stat-col">
+              <div class="cta-stat-val" style="color: var(--green);">100%</div>
+              <div class="cta-stat-sub">H5 Seating</div>
+            </div>
+            <div class="cta-stat-sep"></div>
+            <div class="cta-stat-col">
+              <div class="cta-stat-val" style="color: var(--gold-dark);">25/25</div>
+              <div class="cta-stat-sub">Certified</div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      content.innerHTML = ctaBannerHtml + `
+      <!-- old-assign-ignored
+      ];
+
       content.innerHTML = `
         <div class="content-card">
           <div class="card-title-row">
             <div>
-              <div class="title-text">Official Academic Class Timetable</div>
+-->        <div class="content-card" id="timetable-grid-card"><div class="card-title-row"><div><div class="title-text">Official Academic Class Timetable</div>
               <div class="subtitle-text">Clear real-time schedule · Monday to Friday (5 academic days)</div>
             </div>
 
@@ -1484,14 +1830,6 @@
                   ${DATA.rooms.map(r => `<option value="${r.id}" ${selectedRoom === r.id ? 'selected' : ''}>${r.id} — ${r.name} (Cap: ${r.capacity})</option>`).join('')}
                 </select>
               `}
-
-              <!-- Export & Print Actions -->
-              <button onclick="exportTimetable()" class="filter-pill" style="display: flex; align-items: center; gap: 4px; font-weight: 700; background: var(--bg); border: 1px solid var(--border);" title="Export timetable data as JSON">
-                <span>📥 Export</span>
-              </button>
-              <button onclick="window.print()" class="filter-pill" style="display: flex; align-items: center; gap: 4px; font-weight: 700; background: var(--bg); border: 1px solid var(--border);" title="Print timetable view">
-                <span>🖨️ Print</span>
-              </button>
             </div>
           </div>
 
@@ -1511,6 +1849,7 @@
             </div>
           </div>
 
+          <div class="mobile-swipe-hint"><span>⇄ Swipe horizontally to view full schedule</span></div>
           <div class="grid-wrapper">
             <table class="calendar-table">
               <thead>
@@ -1542,14 +1881,13 @@
                       ${days.map(d => {
                         const item = grid[slot.id][d.code];
                         
-                        // Empty Slot -> Shows Green "Available Slot" (Interactive to reserve)
+                        // Empty Slot -> Shows Green "Available Slot"
                         if (!item) {
                           return `
-                            <td class="slot-container" onclick="quickCheckSlot('${d.code}', ${slot.id})" title="Click to check or reserve venue on ${d.label} ${slot.label}" style="cursor: pointer;">
-                              <div class="slot-empty" style="transition: all 0.2s ease;">
+                            <td class="slot-container">
+                              <div class="slot-empty">
                                 <span class="legend-indicator green" style="width: 7px; height: 7px;"></span>
                                 <span>Available Slot</span>
-                                <span style="font-size: 9.5px; opacity: 0.7; margin-left: 2px; font-weight: 700;">+ Book</span>
                               </div>
                             </td>
                           `;
@@ -1605,135 +1943,28 @@
       `;
     }
 
-    // 2. VENUE BOOKINGS (USER VIEW) & REAL-TIME STATE
-    let bookingsFilter = 'all';
-    let bookingsSearch = '';
-
-    function getUserCustomBookings() {
-      try {
-        const b = JSON.parse(localStorage.getItem('cit_custom_bookings') || '[]');
-        return Array.isArray(b) ? b : [];
-      } catch(e) {
-        return [];
-      }
-    }
-
-    function setBookingsFilter(filterVal) {
-      bookingsFilter = filterVal;
-      renderTab();
-    }
-
-    function setBookingsSearch(searchVal) {
-      bookingsSearch = (searchVal || '').toLowerCase().trim();
-      renderTab();
-    }
-
+    // 2. VENUE BOOKINGS (USER VIEW)
     function renderBookings(content) {
-      const festBookings = (SCHED && SCHED.fest_week && SCHED.fest_week.bookings) ? SCHED.fest_week.bookings : [];
-      const customBookings = getUserCustomBookings();
-
-      // Normalize all bookings
-      const allList = [];
-      let bookingOverrides = {};
-      try {
-        bookingOverrides = JSON.parse(localStorage.getItem('cit_booking_overrides') || '{}');
-      } catch(e) {}
-
-      // Add user custom bookings first (they appear at the top)
-      customBookings.forEach(cb => {
-        const id = cb.request_id || cb.id;
-        const ovr = bookingOverrides[id] || {};
-        allList.push({
-          request_id: id,
-          title: cb.title,
-          requester: cb.requester,
-          role: cb.role,
-          room_id: ovr.room_id || cb.room_id,
-          day: cb.day,
-          start_period: cb.start_period,
-          end_period: cb.end_period,
-          status: ovr.status || cb.status || 'approved',
-          reason: ovr.reason || cb.reason || 'Verified zero-clash institutional allocation',
-          is_custom: true
-        });
-      });
-
-      // Add fest week baseline bookings
-      festBookings.forEach(b => {
-        const req = (DATA.booking_requests || []).find(r => r.id === b.request_id);
-        const ovr = bookingOverrides[b.request_id] || {};
-        allList.push({
-          request_id: b.request_id,
-          title: req ? req.title : 'Official Campus Event',
-          requester: req ? req.requester : 'Campus Desk',
-          role: req ? req.role : 'Operations',
-          room_id: ovr.room_id || b.room_id,
-          day: b.day,
-          start_period: b.start_period,
-          end_period: b.end_period,
-          status: ovr.status || b.status,
-          reason: ovr.reason || b.reason,
-          is_custom: false
-        });
-      });
-
-      // Stats
-      const totalCount = allList.length;
-      const approvedCount = allList.filter(b => b.status === 'approved').length;
-      const altCount = allList.filter(b => b.status === 'alternative_offered').length;
-      const rejCount = allList.filter(b => b.status === 'rejected').length;
-
-      // Filter
-      const filtered = allList.filter(b => {
-        if (bookingsFilter !== 'all' && b.status !== bookingsFilter) return false;
-        if (bookingsSearch) {
-          const t = (b.title || '').toLowerCase();
-          const r = (b.requester || '').toLowerCase();
-          const v = (b.room_id || '').toLowerCase();
-          const id = (b.request_id || '').toLowerCase();
-          if (!t.includes(bookingsSearch) && !r.includes(bookingsSearch) && !v.includes(bookingsSearch) && !id.includes(bookingsSearch)) {
-            return false;
-          }
-        }
-        return true;
-      });
+      const bookings = SCHED.fest_week.bookings || [];
 
       content.innerHTML = `
         <div class="content-card">
           <div class="card-title-row">
             <div>
               <div class="title-text">Spectra Fest Week 7 — Venue Allocation Status</div>
-              <div class="subtitle-text">Official allocations following CIT institutional precedence rules & real-time requests</div>
+              <div class="subtitle-text">Official decisions following CIT institutional precedence rules</div>
             </div>
-            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-              <button onclick="openBookingModal()" style="background: var(--primary); color: #fff; border: none; padding: 8px 16px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(96, 15, 28, 0.25);">
-                <span>+ Book a Campus Venue</span>
-              </button>
-              <button onclick="switchUserTab('ai')" style="background: transparent; color: var(--primary); border: 1.5px solid var(--primary); padding: 7px 14px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px;">
-                <span>🔍 Check Venue Availability</span>
-              </button>
-            </div>
+            <button onclick="switchUserTab('ai', document.querySelectorAll('.tab-item')[2])" style="background: var(--primary); color: #fff; border: none; padding: 7px 14px; border-radius: 4px; font-size: 12px; font-weight: 700; cursor: pointer;">
+              + Request New Venue Booking
+            </button>
           </div>
 
-          <!-- Filter & Search Bar -->
-          <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 14px; flex-wrap: wrap;">
-            <div style="display: flex; background: var(--border); padding: 2px; border-radius: 6px; gap: 2px;">
-              <button onclick="setBookingsFilter('all')" class="filter-pill ${bookingsFilter === 'all' ? 'active' : ''}">All (${totalCount})</button>
-              <button onclick="setBookingsFilter('approved')" class="filter-pill ${bookingsFilter === 'approved' ? 'active' : ''}">Approved (${approvedCount})</button>
-              <button onclick="setBookingsFilter('alternative_offered')" class="filter-pill ${bookingsFilter === 'alternative_offered' ? 'active' : ''}">Alternatives (${altCount})</button>
-              <button onclick="setBookingsFilter('rejected')" class="filter-pill ${bookingsFilter === 'rejected' ? 'active' : ''}">Rejected (${rejCount})</button>
-            </div>
-
-            <div style="position: relative; flex: 1; max-width: 320px;">
-              <input type="text" class="form-input" placeholder="Search event, requester, or venue..." value="${bookingsSearch}" oninput="setBookingsSearch(this.value)" style="height: 34px; font-size: 12px; padding-left: 10px;" />
-            </div>
-          </div>
-
+          <div class="mobile-swipe-hint"><span>⇄ Swipe horizontally to view full schedule</span></div>
           <div class="grid-wrapper">
             <table class="calendar-table" style="font-size: 12px;">
               <thead>
                 <tr style="background: var(--yellow-light);">
-                  <th style="width: 95px;">REQUEST ID</th>
+                  <th style="width: 85px;">REQUEST ID</th>
                   <th>EVENT TITLE</th>
                   <th>REQUESTED BY</th>
                   <th>ORGANIZER ROLE</th>
@@ -1743,13 +1974,8 @@
                 </tr>
               </thead>
               <tbody>
-                ${filtered.length === 0 ? `
-                  <tr>
-                    <td colspan="7" style="text-align: center; padding: 24px; color: var(--text-muted);">
-                      No allocations match your filter criteria.
-                    </td>
-                  </tr>
-                ` : filtered.map(b => {
+                ${bookings.map(b => {
+                  const req = DATA.booking_requests.find(r => r.id === b.request_id);
                   let statusTag = `<span class="status-tag green">● Approved</span>`;
                   if (b.status === 'alternative_offered') {
                     statusTag = `<span class="status-tag" style="background:#fef3c7; color:#92400e; border:1px solid #fde68a;">Alternative Offered</span>`;
@@ -1757,19 +1983,12 @@
                     statusTag = `<span class="status-tag red">✕ Rejected</span>`;
                   }
 
-                  const liveBadge = b.is_custom 
-                    ? `<span style="font-size: 9px; background: #e0f2fe; color: #0284c7; padding: 2px 6px; border-radius: 4px; font-weight: 700; margin-left: 4px;">Live Request</span>` 
-                    : '';
-
                   return `
-                    <tr style="${b.is_custom ? 'background: #f8fafc;' : ''}">
-                      <td class="mono" style="font-weight: 700; color: var(--primary);">
-                        ${b.request_id}
-                        ${liveBadge}
-                      </td>
-                      <td style="font-weight: 700;">${b.title}</td>
-                      <td>${b.requester}</td>
-                      <td class="mono" style="color: var(--text-muted); font-size: 11px;">${b.role}</td>
+                    <tr>
+                      <td class="mono" style="font-weight: 700; color: var(--primary);">${b.request_id}</td>
+                      <td style="font-weight: 700;">${req ? req.title : 'Event'}</td>
+                      <td>${req ? req.requester : 'Unknown'}</td>
+                      <td class="mono" style="color: var(--text-muted); font-size: 11px;">${req ? req.role : ''}</td>
                       <td class="mono" style="font-weight: 600;">${b.status !== 'rejected' ? `${b.room_id} (${b.day} P${b.start_period}-P${b.end_period})` : '—'}</td>
                       <td>${statusTag}</td>
                       <td style="color: var(--text-muted); font-size: 11px;">${b.reason}</td>
@@ -1783,174 +2002,75 @@
       `;
     }
 
-    // 3. AI BOOKING ASSISTANT & REAL-TIME VENUE CHECKER
+    // 3. AI BOOKING ASSISTANT
     function renderAI(content) {
-      const roomOptions = (DATA.rooms || []).map(r => {
-        return `<option value="${r.id}">${r.id} — ${r.name} (${r.building}, Cap: ${r.capacity})</option>`;
-      }).join('');
-
       content.innerHTML = `
-        <div class="content-card" style="max-width: 920px; margin: 0 auto;">
+        <div class="content-card" style="max-width: 850px; margin: 0 auto;">
           <div class="card-title-row">
             <div>
-              <div class="title-text">Venue Availability Checker & Booking Assistant</div>
-              <div class="subtitle-text">Real-time room clash detection & natural language booking engine</div>
+              <div class="title-text">AI Venue Booking Assistant</div>
+              <div class="subtitle-text">Natural language booking query · Supports English and Hinglish</div>
             </div>
-            <div style="display: flex; gap: 8px; align-items: center;">
-              <span class="mono" style="font-size: 11px; background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); padding: 4px 10px; border-radius: 4px; font-weight: 700;">
-                ● Precedence Engine Active
-              </span>
-              <button onclick="openBookingModal()" style="background: var(--primary); color: #fff; border: none; padding: 6px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer;">
-                + Direct Booking
-              </button>
-            </div>
+            <span class="mono" style="font-size: 11px; background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); padding: 3px 8px; border-radius: 4px; font-weight: 700;">
+              AI Online
+            </span>
           </div>
 
-          <!-- Section 1: Quick Interactive Selector -->
-          <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px; margin-bottom: 16px;">
-            <div style="font-size: 11px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">
-              Method A: Interactive Venue & Period Selector
-            </div>
-            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: 10px; align-items: flex-end;">
-              <div>
-                <label style="font-size: 11px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 4px;">Target Venue</label>
-                <select id="quick-room-select" class="form-input" style="height: 38px; font-size: 12.5px;">
-                  ${roomOptions}
-                </select>
-              </div>
-              <div>
-                <label style="font-size: 11px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 4px;">Day</label>
-                <select id="quick-day-select" class="form-input" style="height: 38px; font-size: 12.5px;">
-                  <option value="MON">Monday</option>
-                  <option value="TUE">Tuesday</option>
-                  <option value="WED">Wednesday</option>
-                  <option value="THU">Thursday</option>
-                  <option value="FRI" selected>Friday</option>
-                </select>
-              </div>
-              <div>
-                <label style="font-size: 11px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 4px;">From Period</label>
-                <select id="quick-start-p" class="form-input" style="height: 38px; font-size: 12.5px;">
-                  <option value="1">P1 (09:00)</option>
-                  <option value="2">P2 (10:00)</option>
-                  <option value="3">P3 (11:00)</option>
-                  <option value="4">P4 (12:00)</option>
-                  <option value="6" selected>P6 (14:00)</option>
-                  <option value="7">P7 (15:00)</option>
-                  <option value="8">P8 (16:00)</option>
-                  <option value="9">P9 (17:00)</option>
-                </select>
-              </div>
-              <div>
-                <label style="font-size: 11px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 4px;">To Period</label>
-                <select id="quick-end-p" class="form-input" style="height: 38px; font-size: 12.5px;">
-                  <option value="1">P1 (09:50)</option>
-                  <option value="2">P2 (10:50)</option>
-                  <option value="3">P3 (11:50)</option>
-                  <option value="4">P4 (12:50)</option>
-                  <option value="6">P6 (14:50)</option>
-                  <option value="7">P7 (15:50)</option>
-                  <option value="8" selected>P8 (16:50)</option>
-                  <option value="9">P9 (17:50)</option>
-                </select>
-              </div>
-              <div>
-                <button type="button" onclick="handleQuickVenueCheck()" class="btn-submit" style="height: 38px; margin: 0; padding: 0 20px; white-space: nowrap; font-size: 12.5px; font-weight: 700; display: flex; align-items: center; justify-content: center;">
-                  Check Venue
-                </button>
-              </div>
-            </div>
+          <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+            <input type="text" id="ai-query-input" class="form-input" placeholder="e.g. Can we book Seminar Hall SH-1 on Friday from P6 to P8 for guest lecture?" />
+            <button onclick="handleAIQuery()" class="btn-submit" style="width: auto; padding: 0 20px; white-space: nowrap; margin-top: 0;">Check Venue</button>
           </div>
 
-          <!-- Section 2: Natural Language Prompt Input -->
-          <div style="margin-bottom: 12px;">
-            <div style="font-size: 11px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">
-              Method B: Or Ask in Natural Language (English / Hinglish)
-            </div>
-            <div style="display: flex; gap: 8px;">
-              <input type="text" id="ai-query-input" class="form-input" placeholder="e.g. Can we book Seminar Hall SH-1 on Friday from P6 to P8 for guest lecture?" onkeydown="if(event.key==='Enter') handleAIQuery()" style="height: 40px; font-size: 13px;" />
-              <button onclick="handleAIQuery()" class="btn-submit" style="width: auto; padding: 0 22px; white-space: nowrap; margin-top: 0; height: 40px; font-weight: 700;">Check Venue</button>
-            </div>
+          <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 16px;">
+            <strong>Quick Queries:</strong>
+            <a href="javascript:void(0)" onclick="setQuery('Auditorium AUD chahiye Friday P6 se P8 tak for drama club rehearsal')" style="color: var(--primary); margin-left: 6px;">Auditorium Friday P6-P8</a> · 
+            <a href="javascript:void(0)" onclick="setQuery('Is CR-101 available on Monday P3 for robotics club?')" style="color: var(--primary); margin-left: 6px;">CR-101 Monday P3</a> ·
+            <a href="javascript:void(0)" onclick="setQuery('Need SH-1 on Wednesday P2 for AI workshop')" style="color: var(--primary); margin-left: 6px;">SH-1 Wednesday P2</a>
           </div>
 
-          <div style="font-size: 11.5px; color: var(--text-muted); margin-bottom: 16px;">
-            <strong>Sample Queries:</strong>
-            <a href="javascript:void(0)" onclick="setQuery('Auditorium AUD chahiye Friday P6 se P8 tak for drama club rehearsal')" style="color: var(--primary); margin-left: 6px; font-weight: 600;">Auditorium Friday P6-P8</a> · 
-            <a href="javascript:void(0)" onclick="setQuery('Is CR-101 available on Monday P3 for robotics club?')" style="color: var(--primary); margin-left: 6px; font-weight: 600;">CR-101 Monday P3</a> ·
-            <a href="javascript:void(0)" onclick="setQuery('Need SH-1 on Wednesday P2 for AI workshop')" style="color: var(--primary); margin-left: 6px; font-weight: 600;">SH-1 Wednesday P2</a> ·
-            <a href="javascript:void(0)" onclick="setQuery('Check OAT on Friday P8 to P9 for cultural fest')" style="color: var(--primary); margin-left: 6px; font-weight: 600;">OAT Friday P8-P9</a>
-          </div>
-
-          <div id="ai-response-area" style="background: var(--yellow-light); border: 1px solid var(--yellow-border); border-radius: 8px; padding: 18px; min-height: 120px; font-size: 12.5px; line-height: 1.6;">
-            <div style="color: var(--text-muted); display: flex; align-items: center; gap: 8px;">
-              <span style="font-size: 18px;">💡</span>
-              <span>Select a venue above or ask a booking query to check real-time availability and institutional precedence.</span>
-            </div>
+          <div id="ai-response-area" style="background: var(--yellow-light); border: 1px solid var(--yellow-border); border-radius: 6px; padding: 16px; min-height: 120px; font-size: 12px; line-height: 1.6;">
+            <div style="color: var(--text-muted);">Ask any venue booking question above to check real-time availability and institutional precedence.</div>
           </div>
         </div>
       `;
     }
 
     function setQuery(text) {
-      const input = document.getElementById('ai-query-input');
-      if (input) input.value = text;
+      document.getElementById('ai-query-input').value = text;
       handleAIQuery();
     }
 
-    function handleQuickVenueCheck() {
-      const room = document.getElementById('quick-room-select').value;
-      const day = document.getElementById('quick-day-select').value;
-      const startP = parseInt(document.getElementById('quick-start-p').value, 10);
-      const endP = parseInt(document.getElementById('quick-end-p').value, 10);
-
-      if (startP > endP) {
-        showToast('Start Period cannot be after End Period.');
-        return;
-      }
-
-      checkVenueAvailability(room, day, startP, endP, `Manual selection: ${room} on ${day} (P${startP} to P${endP})`);
-    }
-
     async function handleAIQuery() {
-      const input = document.getElementById('ai-query-input');
-      if (!input) return;
-      const q = input.value.trim();
-      if (!q) {
-        showToast('Please type a venue booking query.');
-        return;
-      }
+      const q = document.getElementById('ai-query-input').value.trim();
+      if (window.CITAnalytics) window.CITAnalytics.trackEvent('AI Venue Assistant', 'Query Submitted', q);
+      if (!q) return;
 
+      const area = document.getElementById('ai-response-area');
+      area.innerHTML = "<div style='color: var(--gold-dark); font-weight: 700;'>Checking timetable and precedence constraints...</div>";
+
+      // Detect room
       const lower = q.toLowerCase();
-
-      // Detect room accurately across all 27 campus rooms
       let matchedRoom = 'AUD';
-      if (lower.includes('oat') || lower.includes('open air')) matchedRoom = 'OAT';
+      if (lower.includes('oat')) matchedRoom = 'OAT';
       else if (lower.includes('phy-lab') || lower.includes('physics lab')) matchedRoom = 'PHY-LAB';
-      else if (lower.includes('mech-ws') || lower.includes('mechanical') || lower.includes('workshop')) matchedRoom = 'MECH-WS';
+      else if (lower.includes('mech-ws') || lower.includes('mechanical')) matchedRoom = 'MECH-WS';
       else if (lower.includes('civil-lab') || lower.includes('civil lab')) matchedRoom = 'CIVIL-LAB';
-      else if (lower.includes('cs-lab-2') || lower.includes('computer lab 2')) matchedRoom = 'CS-LAB-2';
-      else if (lower.includes('cs-lab') || lower.includes('computer lab') || lower.includes('cs lab')) matchedRoom = 'CS-LAB-1';
-      else if (lower.includes('elec-lab-2') || lower.includes('electrical lab 2')) matchedRoom = 'ELEC-LAB-2';
-      else if (lower.includes('elec-lab') || lower.includes('electrical lab')) matchedRoom = 'ELEC-LAB-1';
-      else if (lower.includes('sh-2') || lower.includes('seminar hall 2')) matchedRoom = 'SH-2';
-      else if (lower.includes('sh-1') || lower.includes('seminar hall 1') || lower.includes('seminar hall')) matchedRoom = 'SH-1';
-      else if (lower.includes('audi') || lower.includes('aud')) matchedRoom = 'AUD';
       else {
         const rMatch = q.match(/\b(LH-[1-6]|CR-[12]0[1-5]|SH-[12]|CS-LAB-[12]|ELEC-LAB-[12])\b/i);
         if (rMatch) {
           matchedRoom = rMatch[1].toUpperCase();
-        } else if (lower.includes('lh1') || lower.includes('lh-1') || lower.includes('lecture hall 1')) matchedRoom = 'LH-1';
-        else if (lower.includes('lh2') || lower.includes('lh-2') || lower.includes('lecture hall 2')) matchedRoom = 'LH-2';
-        else if (lower.includes('lh3') || lower.includes('lh-3') || lower.includes('lecture hall 3')) matchedRoom = 'LH-3';
-        else if (lower.includes('lh4') || lower.includes('lh-4') || lower.includes('lecture hall 4')) matchedRoom = 'LH-4';
-        else if (lower.includes('lh5') || lower.includes('lh-5') || lower.includes('lecture hall 5')) matchedRoom = 'LH-5';
-        else if (lower.includes('lh6') || lower.includes('lh-6') || lower.includes('lecture hall 6')) matchedRoom = 'LH-6';
+        } else if (lower.includes('seminar') || lower.includes('sh-1') || lower.includes('sh1') || lower.includes('sem-01')) {
+          matchedRoom = 'SH-1';
+        } else if (lower.includes('audi') || lower.includes('aud')) {
+          matchedRoom = 'AUD';
+        } else if (lower.includes('lecture hall') || lower.includes('lh1')) {
+          matchedRoom = 'LH-1';
+        }
       }
 
       // Detect day
-      let day = 'FRI';
-      if (lower.includes('mon') || lower.includes('somwar') || lower.includes('som')) day = 'MON';
-      else if (lower.includes('tue') || lower.includes('mangal')) day = 'TUE';
+      let day = 'MON';
+      if (lower.includes('tue') || lower.includes('mangal')) day = 'TUE';
       else if (lower.includes('wed') || lower.includes('budh')) day = 'WED';
       else if (lower.includes('thu') || lower.includes('guru') || lower.includes('brihaspati')) day = 'THU';
       else if (lower.includes('fri') || lower.includes('shukra')) day = 'FRI';
@@ -1968,16 +2088,7 @@
         startP = 7; endP = 8;
       }
 
-      checkVenueAvailability(matchedRoom, day, startP, endP, q);
-    }
-
-    function checkVenueAvailability(matchedRoom, day, startP, endP, queryText) {
-      const area = document.getElementById('ai-response-area');
-      if (!area) return;
-
-      area.innerHTML = "<div style='color: var(--gold-dark); font-weight: 700; display: flex; align-items: center; gap: 8px;'><span>⏳</span> Checking timetable and institutional precedence constraints...</div>";
-
-      // 1. Check against Academic Timetable Sessions
+      // Verify against real dataset sessions
       let clash = null;
       if (SCHED && SCHED.sessions) {
         for (const item of SCHED.sessions) {
@@ -1997,14 +2108,14 @@
         }
       }
 
-      // 2. Check against Fest Week baseline bookings
+      // Verify against fest week confirmed bookings
       if (!clash && SCHED && SCHED.fest_week && SCHED.fest_week.bookings) {
         for (const b of SCHED.fest_week.bookings) {
           if (b.room_id === matchedRoom && b.day === day && b.status !== 'rejected') {
             if (!(endP < b.start_period || startP > b.end_period)) {
               const req = (DATA.booking_requests || []).find(r => r.id === b.request_id);
               clash = {
-                type: 'Spectra Fest Booking',
+                type: 'Fest Week Booking',
                 details: req ? req.title : 'Approved Booking',
                 period: `P${b.start_period}–P${b.end_period}`
               };
@@ -2014,307 +2125,45 @@
         }
       }
 
-      // 3. Check against live user custom bookings
-      if (!clash) {
-        const customBookings = getUserCustomBookings();
-        for (const cb of customBookings) {
-          if (cb.room_id === matchedRoom && cb.day === day && cb.status !== 'rejected') {
-            if (!(endP < cb.start_period || startP > cb.end_period)) {
-              clash = {
-                type: 'Registered Booking',
-                details: cb.title,
-                period: `P${cb.start_period}–P${cb.end_period}`
-              };
-              break;
-            }
-          }
-        }
-      }
-
-      const roomObj = (DATA.rooms || []).find(r => r.id === matchedRoom) || { id: matchedRoom, name: matchedRoom, capacity: 80, building: 'Academic Block', type: 'Hall' };
-      const dayNames = { MON: 'Monday', TUE: 'Tuesday', WED: 'Wednesday', THU: 'Thursday', FRI: 'Friday' };
-      const dayName = dayNames[day] || day;
-      const periodTimes = { 1: '09:00', 2: '10:00', 3: '11:00', 4: '12:00', 6: '14:00', 7: '15:00', 8: '16:00', 9: '17:00' };
-      const periodEnds = { 1: '09:50', 2: '10:50', 3: '11:50', 4: '12:50', 6: '14:50', 7: '15:50', 8: '16:50', 9: '17:50' };
-      const timeRange = `${periodTimes[startP] || '14:00'} – ${periodEnds[endP] || '16:50'}`;
+      const roomObj = (DATA.rooms || []).find(r => r.id === matchedRoom);
+      const capText = roomObj ? ` (Capacity: ${roomObj.capacity} seats)` : '';
 
       if (clash) {
-        // Smart Alternatives search: other rooms free at the same time
-        const alternatives = [];
-        (DATA.rooms || []).forEach(candRoom => {
-          if (candRoom.id === matchedRoom || alternatives.length >= 3) return;
-          // check if candRoom is free at this day & slot
-          let candClash = false;
-          if (SCHED && SCHED.sessions) {
-            for (const item of SCHED.sessions) {
-              if (item.room_id === candRoom.id && item.day === day) {
-                const s = (DATA.sessions || []).find(sess => sess.id === item.session_id);
-                const dur = s ? s.duration : 1;
-                const end = item.start_period + dur - 1;
-                if (!(endP < item.start_period || startP > end)) {
-                  candClash = true;
-                  break;
-                }
-              }
-            }
-          }
-          if (!candClash) {
-            alternatives.push({
-              room: candRoom.id,
-              name: candRoom.name,
-              capacity: candRoom.capacity,
-              day,
-              startP,
-              endP
-            });
-          }
-        });
-
-        const altsHtml = alternatives.map(alt => `
-          <div style="background: #ffffff; border: 1px solid #fecaca; border-radius: 6px; padding: 10px; display: flex; justify-content: space-between; align-items: center; gap: 8px;">
-            <div>
-              <strong style="color: var(--primary); font-size: 12px;">${alt.room} — ${alt.name}</strong>
-              <div style="font-size: 11px; color: var(--text-muted);">Cap: ${alt.capacity} Seats · Free on ${dayName} P${startP}–P${endP}</div>
-            </div>
-            <button onclick="checkVenueAvailability('${alt.room}', '${alt.day}', ${alt.startP}, ${alt.endP}, 'Switched to alternative ${alt.room}')" class="btn-submit" style="margin: 0; width: auto; padding: 5px 12px; font-size: 11px; background: var(--primary); color: #fff;">
-              Check Slot →
-            </button>
-          </div>
-        `).join('');
-
         area.innerHTML = `
-          <div style="background: #fff; border: 1.5px solid #fca5a5; border-radius: 8px; padding: 16px;">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 10px;">
-              <div>
-                <span style="display: inline-block; background: #991b1b; color: #fff; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; margin-bottom: 6px;">
-                  ✕ Slot Occupied / Clash Detected
-                </span>
-                <h3 style="margin: 0; font-size: 16px; color: #7f1d1d; font-weight: 700;">
-                  ${roomObj.name} (${matchedRoom}) is Not Available
-                </h3>
-                <div style="font-size: 12px; color: #991b1b; margin-top: 2px;">
-                  ${dayName} · Requested: Period P${startP} to P${endP} (${timeRange})
-                </div>
-              </div>
-            </div>
-
-            <div style="background: #fef2f2; padding: 10px 12px; border-radius: 6px; border: 1px solid #fecaca; margin-bottom: 12px; font-size: 12px; color: #991b1b;">
-              <strong>Occupied By:</strong> ${clash.type} "${clash.details}" during <strong>${clash.period}</strong>.<br/>
-              <span style="font-size: 11px; color: var(--text-muted);">Institutional Precedence Rule: Official classes, lab practicals, and prior bookings cannot be overridden.</span>
-            </div>
-
-            ${alternatives.length > 0 ? `
-              <div style="margin-top: 12px;">
-                <div style="font-size: 12px; font-weight: 700; color: var(--text-main); margin-bottom: 8px;">
-                  💡 Recommended Available Alternatives on ${dayName} (${timeRange}):
-                </div>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 8px;">
-                  ${altsHtml}
-                </div>
-              </div>
-            ` : ''}
+          <div style="margin-bottom: 8px;"><strong>Query Parsed:</strong> ${q}</div>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; background: #ffffff; padding: 10px; border-radius: 4px; border: 1px solid var(--border); margin-bottom: 10px;" class="mono">
+            <div>Venue: <strong>${matchedRoom}</strong>${capText}</div>
+            <div>Day: <strong>${day}</strong></div>
+            <div>Requested Slot: <strong>P${startP} – P${endP}</strong></div>
+          </div>
+          <div style="color: var(--red); font-weight: 700;">
+            ✕ Slot Unavailable: ${matchedRoom} on ${day} is occupied by ${clash.type} "${clash.details}" during ${clash.period}.
+          </div>
+          <div style="font-size: 11px; color: var(--text-muted); margin-top: 8px;">
+            Institutional Rule: Academic classes and confirmed bookings have strict precedence. Please select another slot or venue.
           </div>
         `;
       } else {
         area.innerHTML = `
-          <div style="background: #ffffff; border: 1.5px solid #86efac; border-radius: 8px; padding: 16px;">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 12px;">
-              <div>
-                <span style="display: inline-block; background: #166534; color: #fff; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; margin-bottom: 6px;">
-                  ✓ Slot 100% Free & Available
-                </span>
-                <h3 style="margin: 0; font-size: 17px; color: #14532d; font-weight: 700;">
-                  ${roomObj.name} (${matchedRoom})
-                </h3>
-                <div style="font-size: 12.5px; color: #166534; margin-top: 2px;">
-                  ${dayName} · Period P${startP} to P${endP} (${timeRange})
-                </div>
-              </div>
-              <div style="text-align: right;" class="mono">
-                <div style="font-size: 13px; font-weight: 700; color: #14532d;">Capacity: ${roomObj.capacity} Seats</div>
-                <div style="font-size: 11px; color: #166534;">Building: ${roomObj.building}</div>
-              </div>
-            </div>
-
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 8px; background: #f0fdf4; padding: 10px 12px; border-radius: 6px; border: 1px solid #bbf7d0; margin-bottom: 14px; font-size: 11.5px;">
-              <div>🏛️ <strong>Type:</strong> <span style="text-transform: capitalize;">${(roomObj.type || 'Hall').replace('_', ' ')}</span></div>
-              <div>⚡ <strong>Features:</strong> ${roomObj.features ? roomObj.features.join(', ').toUpperCase() : 'PROJECTOR, AC, AUDIO'}</div>
-              <div>♿ <strong>Accessible:</strong> ${roomObj.accessible ? 'Yes (Barrier Free)' : 'Standard'}</div>
-              <div>🛡️ <strong>Precedence:</strong> Zero Academic Clashes</div>
-            </div>
-
-            <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
-              <button type="button" onclick="openBookingModalWithDetails('${matchedRoom}', '${day}', ${startP}, ${endP})" class="btn-submit" style="margin: 0; width: auto; padding: 10px 22px; font-size: 13px; font-weight: 700; background: #15803d; color: #ffffff; border-radius: 6px; box-shadow: 0 2px 6px rgba(21, 128, 61, 0.25);">
-                📅 Book / Reserve This Venue Now →
-              </button>
-              <span style="font-size: 11.5px; color: #166534; font-weight: 600;">
-                ✓ Clearance Granted · Instant entry into official Spectra bookings
-              </span>
-            </div>
+          <div style="margin-bottom: 8px;"><strong>Query Parsed:</strong> ${q}</div>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; background: #ffffff; padding: 10px; border-radius: 4px; border: 1px solid var(--border); margin-bottom: 10px;" class="mono">
+            <div>Venue: <strong>${matchedRoom}</strong>${capText}</div>
+            <div>Day: <strong>${day}</strong></div>
+            <div>Requested Slot: <strong>P${startP} – P${endP}</strong></div>
+          </div>
+          <div style="color: var(--green); font-weight: 700;">
+            ✓ Slot Available: ${matchedRoom} is completely free on ${day} Period ${startP} to ${endP}.
+          </div>
+          <div style="font-size: 11px; color: var(--text-muted); margin-top: 8px;">
+            Institutional Rule: Venue complies with capacity and zero-clash constraints.
           </div>
         `;
       }
-    }
-
-    function quickCheckSlot(day, period) {
-      openBookingModalWithDetails('', day, period, period);
-    }
-
-    function openBookingModal() {
-      openBookingModalWithDetails('', 'FRI', 6, 8);
-    }
-
-    function openBookingModalWithDetails(room, day, startP, endP) {
-      const modal = document.getElementById('modalBooking');
-      if (!modal) return;
-
-      const roomSelect = document.getElementById('book-room');
-      if (roomSelect && room) roomSelect.value = room;
-      const daySelect = document.getElementById('book-day');
-      if (daySelect && day) daySelect.value = day;
-      const startPSelect = document.getElementById('book-start-p');
-      if (startPSelect && startP) startPSelect.value = startP.toString();
-      const endPSelect = document.getElementById('book-end-p');
-      if (endPSelect && endP) endPSelect.value = endP.toString();
-
-      const reqInput = document.getElementById('book-requester');
-      if (reqInput && currentUser && !reqInput.value) {
-        reqInput.value = currentUser.name || (currentUser.email ? currentUser.email.split('@')[0] : 'Subhajit Nayak');
-      }
-
-      const roleSelect = document.getElementById('book-role');
-      if (roleSelect && currentUser && currentUser.role) {
-        roleSelect.value = currentUser.role;
-      }
-
-      const alert = document.getElementById('modal-booking-alert');
-      if (alert) alert.style.display = 'none';
-
-      openModal('modalBooking');
-    }
-
-    function handleBookingModalSubmit(e) {
-      e.preventDefault();
-      const alert = document.getElementById('modal-booking-alert');
-      const title = document.getElementById('book-title').value.trim();
-      const requester = document.getElementById('book-requester').value.trim() || (currentUser ? currentUser.name : 'Subhajit Nayak');
-      const role = document.getElementById('book-role').value;
-      const room = document.getElementById('book-room').value;
-      const day = document.getElementById('book-day').value;
-      const startP = parseInt(document.getElementById('book-start-p').value, 10);
-      const endP = parseInt(document.getElementById('book-end-p').value, 10);
-      const attendance = parseInt(document.getElementById('book-attendance').value, 10) || 60;
-      const purpose = document.getElementById('book-purpose').value.trim();
-
-      if (startP > endP) {
-        if (alert) {
-          alert.style.display = 'block';
-          alert.style.background = '#fef2f2';
-          alert.style.border = '1px solid #fecaca';
-          alert.style.color = '#991b1b';
-          alert.innerText = 'Start period cannot be greater than end period.';
-        }
-        return;
-      }
-
-      // Check collision
-      let clashDesc = null;
-      if (SCHED && SCHED.sessions) {
-        for (const item of SCHED.sessions) {
-          if (item.room_id === room && item.day === day) {
-            const s = (DATA.sessions || []).find(sess => sess.id === item.session_id);
-            const dur = s ? s.duration : 1;
-            const end = item.start_period + dur - 1;
-            if (!(endP < item.start_period || startP > end)) {
-              clashDesc = `Academic class (${s ? s.course_id : 'Lecture'}) during P${item.start_period}–P${end}`;
-              break;
-            }
-          }
-        }
-      }
-
-      if (clashDesc) {
-        if (alert) {
-          alert.style.display = 'block';
-          alert.style.background = '#fef2f2';
-          alert.style.border = '1px solid #fecaca';
-          alert.style.color = '#991b1b';
-          alert.innerHTML = `✕ <strong>Collision Detected:</strong> ${room} on ${day} is occupied by ${clashDesc}. Please select another time slot or venue.`;
-        }
-        return;
-      }
-
-      // Add to user custom bookings
-      const customBookings = getUserCustomBookings();
-      const newId = 'BR-' + (26 + customBookings.length);
-      const newBooking = {
-        id: newId,
-        request_id: newId,
-        title,
-        requester,
-        role,
-        room_id: room,
-        day,
-        start_period: startP,
-        end_period: endP,
-        status: 'approved',
-        reason: 'Automated Real-Time Clearance · Zero-Clash H6 Compliant',
-        attendance,
-        purpose,
-        timestamp: 'Just now',
-        is_custom: true
-      };
-
-      customBookings.unshift(newBooking);
-      localStorage.setItem('cit_custom_bookings', JSON.stringify(customBookings));
-
-      closeModal('modalBooking');
-      showToast(`✓ Booking ${newId} confirmed for ${room} on ${day}!`);
-      switchUserTab('bookings');
-    }
-
-    function exportTimetable() {
-      if (!SCHED || !SCHED.sessions) return;
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(SCHED.sessions, null, 2));
-      const downloadAnchor = document.createElement('a');
-      downloadAnchor.setAttribute("href", dataStr);
-      downloadAnchor.setAttribute("download", `cit_timetable_${selectedCohort || 'all'}.json`);
-      document.body.appendChild(downloadAnchor);
-      downloadAnchor.click();
-      downloadAnchor.remove();
-      showToast('✓ Timetable JSON exported successfully');
-    }
-
-    function exportExamSchedule() {
-      if (!SCHED || !SCHED.exams) return;
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(SCHED.exams, null, 2));
-      const downloadAnchor = document.createElement('a');
-      downloadAnchor.setAttribute("href", dataStr);
-      downloadAnchor.setAttribute("download", `cit_midsem_exams.json`);
-      document.body.appendChild(downloadAnchor);
-      downloadAnchor.click();
-      downloadAnchor.remove();
-      showToast('✓ Midsem Exam Schedule exported successfully');
-    }
-
-    let examSearchQuery = '';
-    function setExamSearch(val) {
-      examSearchQuery = (val || '').toLowerCase().trim();
-      renderTab();
     }
 
     // 4. MIDSEM EXAMS (USER VIEW)
     function renderExams(content) {
       const exams = SCHED.exams || [];
-      const filteredExams = exams.filter(ex => {
-        if (!examSearchQuery) return true;
-        const meta = (DATA.exams || []).find(e => e.id === ex.exam_id) || {};
-        const courseStr = ((meta.course_ids && meta.course_ids.length > 0) ? meta.course_ids.join(' ') : (ex.course_code || ex.exam_id || '')).toLowerCase();
-        const cohortStr = ((meta.groups && meta.groups.length > 0) ? meta.groups.join(' ') : (ex.student_groups ? ex.student_groups.join(' ') : '')).toLowerCase();
-        const roomStr = (ex.rooms ? (Array.isArray(ex.rooms) ? ex.rooms.join(' ') : ex.rooms) : (ex.room_id || '')).toLowerCase();
-        return courseStr.includes(examSearchQuery) || cohortStr.includes(examSearchQuery) || roomStr.includes(examSearchQuery) || (ex.day || '').toLowerCase().includes(examSearchQuery);
-      });
-
       content.innerHTML = `
         <div class="content-card">
           <div class="card-title-row">
@@ -2322,20 +2171,12 @@
               <div class="title-text">Midsem Examination Schedule</div>
               <div class="subtitle-text">Official 3-hour exam windows with 50% capacity distancing (H5 compliant)</div>
             </div>
-            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-              <input type="text" class="form-input" placeholder="Search course, cohort, room..." value="${examSearchQuery}" oninput="setExamSearch(this.value)" style="height: 32px; font-size: 11.5px; width: 220px;" />
-              <button onclick="exportExamSchedule()" class="btn-submit" style="margin: 0; width: auto; padding: 5px 12px; font-size: 11px; background: transparent; color: var(--primary); border: 1px solid var(--border);" title="Export exam schedule as JSON">
-                📥 Export JSON
-              </button>
-              <button onclick="window.print()" class="btn-submit" style="margin: 0; width: auto; padding: 5px 12px; font-size: 11px; background: transparent; color: var(--primary); border: 1px solid var(--border);" title="Print exam schedule">
-                🖨️ Print
-              </button>
-              <span class="mono" style="font-size: 11px; background: var(--yellow-badge); color: var(--gold-dark); border: 1px solid var(--yellow-border); padding: 4px 10px; border-radius: 4px; font-weight: 700;">
-                ${filteredExams.length} / ${exams.length} Slots
-              </span>
-            </div>
+            <span class="mono" style="font-size: 11px; background: var(--yellow-badge); color: var(--gold-dark); border: 1px solid var(--yellow-border); padding: 4px 10px; border-radius: 4px; font-weight: 700;">
+              ${exams.length} Exam Slots Verified
+            </span>
           </div>
 
+          <div class="mobile-swipe-hint"><span>⇄ Swipe horizontally to view full schedule</span></div>
           <div class="grid-wrapper">
             <table class="calendar-table" style="font-size: 12px;">
               <thead>
@@ -2351,13 +2192,7 @@
                 </tr>
               </thead>
               <tbody>
-                ${filteredExams.length === 0 ? `
-                  <tr>
-                    <td colspan="8" style="text-align: center; padding: 24px; color: var(--text-muted);">
-                      No exam sessions match your search query "${examSearchQuery}".
-                    </td>
-                  </tr>
-                ` : filteredExams.map(ex => {
+                ${exams.map(ex => {
                   const meta = (DATA.exams || []).find(e => e.id === ex.exam_id) || {};
                   const courseCode = (meta.course_ids && meta.course_ids.length > 0) ? meta.course_ids.join(', ') : (ex.course_code || ex.exam_id || 'EXAM');
                   const cohorts = (meta.groups && meta.groups.length > 0) ? meta.groups.join(', ') : (ex.student_groups ? ex.student_groups.join(', ') : 'All Enrolled');
@@ -2601,12 +2436,6 @@
 
     function openBugModal(e) {
       if (e) e.preventDefault();
-      if (currentUser) {
-        const nameInput = document.getElementById('modal-bug-name');
-        const emailInput = document.getElementById('modal-bug-email');
-        if (nameInput && !nameInput.value) nameInput.value = currentUser.name || (currentUser.email ? currentUser.email.split('@')[0] : '');
-        if (emailInput && !emailInput.value) emailInput.value = currentUser.email || '';
-      }
       openModal('modalBug');
     }
 
@@ -2620,7 +2449,134 @@
       openModal('modalSocials');
     }
 
+    function setFieldError(inputEl, errorEl, msg) {
+      if (!inputEl) return;
+      inputEl.classList.add('is-invalid');
+      inputEl.classList.remove('is-valid');
+      inputEl.setAttribute('aria-invalid', 'true');
+      if (errorEl) {
+        errorEl.innerHTML = `<span>⚠</span> <span>${msg}</span>`;
+        errorEl.classList.add('visible');
+      }
+    }
+
+    function clearFieldError(inputEl, errorEl) {
+      if (!inputEl) return;
+      inputEl.classList.remove('is-invalid');
+      inputEl.classList.add('is-valid');
+      inputEl.removeAttribute('aria-invalid');
+      if (errorEl) {
+        errorEl.innerHTML = '';
+        errorEl.classList.remove('visible');
+      }
+    }
+
+    function validateEmailFormat(email) {
+      return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
+    }
+
+    function validatePhoneFormat(phone) {
+      if (!phone) return true;
+      const clean = phone.replace(/[\s\-\(\)\+]/g, '');
+      return clean.length >= 10 && clean.length <= 13 && /^\d+$/.test(clean);
+    }
+
+    function validateUrlFormat(url, domain) {
+      if (!url) return true;
+      try {
+        const u = new URL(url);
+        return !domain || u.hostname.includes(domain);
+      } catch (e) {
+        return false;
+      }
+    }
+
     function handleBugModalSubmit(e) {
+      e.preventDefault();
+      const nameEl = document.getElementById('modal-bug-name');
+      const emailEl = document.getElementById('modal-bug-email');
+      const descEl = document.getElementById('modal-bug-desc');
+      const nameErr = document.getElementById('modal-bug-name-err');
+      const emailErr = document.getElementById('modal-bug-email-err');
+      const descErr = document.getElementById('modal-bug-desc-err');
+
+      const name = nameEl ? nameEl.value.trim() : '';
+      const email = emailEl ? emailEl.value.trim() : '';
+      const cat = document.getElementById('modal-bug-cat').value;
+      const desc = descEl ? descEl.value.trim() : '';
+      const btn = document.getElementById('btn-modal-bug-submit');
+      const alert = document.getElementById('modal-bug-alert');
+
+      let isValid = true;
+      let firstInvalid = null;
+
+      if (!name || name.length < 2) {
+        setFieldError(nameEl, nameErr, 'Please enter your full name (min 2 chars).');
+        isValid = false;
+        firstInvalid = firstInvalid || nameEl;
+      } else {
+        clearFieldError(nameEl, nameErr);
+      }
+
+      if (!email || !validateEmailFormat(email)) {
+        setFieldError(emailEl, emailErr, 'Please enter a valid email address.');
+        isValid = false;
+        firstInvalid = firstInvalid || emailEl;
+      } else {
+        clearFieldError(emailEl, emailErr);
+      }
+
+      if (!desc || desc.length < 20) {
+        setFieldError(descEl, descErr, 'Please provide at least 20 characters describing the issue.');
+        isValid = false;
+        firstInvalid = firstInvalid || descEl;
+      } else {
+        clearFieldError(descEl, descErr);
+      }
+
+      if (!isValid) {
+        if (firstInvalid) firstInvalid.focus();
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerText = 'Submitting report...';
+
+      setTimeout(() => {
+        const ticketId = 'CIT-BUG-' + Math.floor(10000 + Math.random() * 90000);
+        const tickets = JSON.parse(localStorage.getItem('cit_support_tickets') || '[]');
+        tickets.unshift({
+          id: ticketId,
+          name,
+          email,
+          category: cat,
+          message: desc,
+          timestamp: new Date().toISOString(),
+          status: 'Under Investigation'
+        });
+        localStorage.setItem('cit_support_tickets', JSON.stringify(tickets));
+
+        alert.style.display = 'block';
+        alert.style.padding = '10px 12px';
+        alert.style.background = '#f0fdf4';
+        alert.style.border = '1px solid #bbf7d0';
+        alert.style.borderRadius = '6px';
+        alert.style.color = '#166534';
+        alert.style.fontSize = '12px';
+        alert.style.marginBottom = '12px';
+        alert.innerHTML = `✓ <strong>Ticket Logged: ${ticketId}</strong><br/>Thank you. Our academic IT cell has received your report.`;
+
+        btn.disabled = false;
+        btn.innerText = 'Submit Another Issue';
+        nameEl.value = '';
+        emailEl.value = '';
+        descEl.value = '';
+        document.querySelectorAll('#modalBug .is-valid').forEach(el => el.classList.remove('is-valid'));
+      }, 500);
+      return;
+    }
+
+    function _legacyOldBug() { return;
       e.preventDefault();
       const name = document.getElementById('modal-bug-name').value.trim();
       const email = document.getElementById('modal-bug-email').value.trim();
@@ -2824,6 +2780,126 @@
 
     async function handleProfileSave(e) {
       e.preventDefault();
+      const nameEl = document.getElementById('prof-input-name');
+      const emailEl = document.getElementById('prof-input-email');
+      const phoneEl = document.getElementById('prof-input-phone');
+      const githubEl = document.getElementById('prof-input-github');
+      const linkedinEl = document.getElementById('prof-input-linkedin');
+
+      const nameErr = document.getElementById('prof-input-name-err');
+      const emailErr = document.getElementById('prof-input-email-err');
+      const phoneErr = document.getElementById('prof-input-phone-err');
+      const githubErr = document.getElementById('prof-input-github-err');
+      const linkedinErr = document.getElementById('prof-input-linkedin-err');
+
+      const name = nameEl ? nameEl.value.trim() : '';
+      const email = emailEl ? emailEl.value.trim() : '';
+      const phone = phoneEl ? phoneEl.value.trim() : '';
+      const github = githubEl ? githubEl.value.trim() : '';
+      const linkedin = linkedinEl ? linkedinEl.value.trim() : '';
+
+      let isValid = true;
+      let firstInvalid = null;
+
+      if (!name || name.length < 2) {
+        setFieldError(nameEl, nameErr, 'Please enter your full name (minimum 2 characters).');
+        isValid = false;
+        firstInvalid = firstInvalid || nameEl;
+      } else {
+        clearFieldError(nameEl, nameErr);
+      }
+
+      if (!email || !validateEmailFormat(email)) {
+        setFieldError(emailEl, emailErr, 'Please enter a valid email address.');
+        isValid = false;
+        firstInvalid = firstInvalid || emailEl;
+      } else {
+        clearFieldError(emailEl, emailErr);
+      }
+
+      if (phone && !validatePhoneFormat(phone)) {
+        setFieldError(phoneEl, phoneErr, 'Please enter a valid 10-digit phone number.');
+        isValid = false;
+        firstInvalid = firstInvalid || phoneEl;
+      } else {
+        clearFieldError(phoneEl, phoneErr);
+      }
+
+      if (github && !validateUrlFormat(github, 'github.com')) {
+        setFieldError(githubEl, githubErr, 'URL must be a valid GitHub profile (e.g. https://github.com/user).');
+        isValid = false;
+        firstInvalid = firstInvalid || githubEl;
+      } else {
+        clearFieldError(githubEl, githubErr);
+      }
+
+      if (linkedin && !validateUrlFormat(linkedin, 'linkedin.com')) {
+        setFieldError(linkedinEl, linkedinErr, 'URL must be a valid LinkedIn profile (e.g. https://linkedin.com/in/user).');
+        isValid = false;
+        firstInvalid = firstInvalid || linkedinEl;
+      } else {
+        clearFieldError(linkedinEl, linkedinErr);
+      }
+
+      if (!isValid) {
+        if (firstInvalid) firstInvalid.focus();
+        showToast('Please fix the highlighted profile errors.');
+        return;
+      }
+
+      const btn = document.getElementById('prof-save-btn');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span>Saving...</span>';
+      }
+
+      userProfile.name = name;
+      userProfile.email = email;
+      userProfile.rollNumber = document.getElementById('prof-input-roll').value.trim();
+      userProfile.course = document.getElementById('prof-input-course').value.trim();
+      userProfile.phone = phone;
+      userProfile.cohort = document.getElementById('prof-input-cohort').value.trim();
+      userProfile.campus = document.getElementById('prof-input-campus').value.trim();
+      userProfile.bio = document.getElementById('prof-input-bio').value.trim();
+      userProfile.github = github;
+      userProfile.linkedin = linkedin;
+
+      if (currentUser) {
+        if (userProfile.name) currentUser.name = userProfile.name;
+        if (userProfile.email) currentUser.email = userProfile.email;
+        if (userProfile.cohort) currentUser.cohort = userProfile.cohort;
+        localStorage.setItem('cit_session', JSON.stringify(currentUser));
+      }
+
+      localStorage.setItem('cit_user_profile', JSON.stringify(userProfile));
+
+      try {
+        await fetch('/api/user/profile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(userProfile)
+        });
+      } catch (err) {}
+
+      syncProfileUI();
+
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<span>Save Changes</span>';
+      }
+
+      const banner = document.getElementById('prof-alert-banner');
+      if (banner) {
+        banner.style.display = 'block';
+        banner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      showToast("Profile updated successfully!");
+      return;
+    }
+
+    function _legacyProfileSave() { return;
+      e.preventDefault();
       const btn = document.getElementById('prof-save-btn');
       if (btn) {
         btn.disabled = true;
@@ -2929,161 +3005,50 @@
       showToast('✓ Privacy Policy acknowledged');
     }
 
-    window.addEventListener("DOMContentLoaded", init);
+    window.addEventListener("DOMContentLoaded", () => {
+      init();
+
+      // Real-time validation for profile inputs
+      const profInputs = [
+        { id: 'prof-input-name', err: 'prof-input-name-err', fn: v => (!v || v.length < 2) ? 'Full name required (min 2 chars)' : '' },
+        { id: 'prof-input-email', err: 'prof-input-email-err', fn: v => (!v || !validateEmailFormat(v)) ? 'Valid email address required' : '' },
+        { id: 'prof-input-phone', err: 'prof-input-phone-err', fn: v => (v && !validatePhoneFormat(v)) ? '10-digit phone number required' : '' },
+        { id: 'prof-input-github', err: 'prof-input-github-err', fn: v => (v && !validateUrlFormat(v, 'github.com')) ? 'Must be valid github.com URL' : '' },
+        { id: 'prof-input-linkedin', err: 'prof-input-linkedin-err', fn: v => (v && !validateUrlFormat(v, 'linkedin.com')) ? 'Must be valid linkedin.com URL' : '' }
+      ];
+
+      profInputs.forEach(item => {
+        const el = document.getElementById(item.id);
+        const err = document.getElementById(item.err);
+        if (el) {
+          el.addEventListener('input', () => {
+            if (el.classList.contains('is-invalid')) {
+              const msg = item.fn(el.value.trim());
+              if (!msg) clearFieldError(el, err);
+            }
+          });
+          el.addEventListener('blur', () => {
+            if (el.value.trim()) {
+              const msg = item.fn(el.value.trim());
+              if (msg) setFieldError(el, err, msg);
+              else clearFieldError(el, err);
+            }
+          });
+        }
+      });
+
+      // Real-time validation for modal bug inputs
+      const bugDesc = document.getElementById('modal-bug-desc');
+      const bugDescErr = document.getElementById('modal-bug-desc-err');
+      if (bugDesc) {
+        bugDesc.addEventListener('input', () => {
+          if (bugDesc.classList.contains('is-invalid') && bugDesc.value.trim().length >= 20) {
+            clearFieldError(bugDesc, bugDescErr);
+          }
+        });
+      }
+    });
   </script>
-
-  <!-- Official Venue Booking Modal -->
-  <div class="modal-backdrop" id="modalBooking" onclick="if(event.target === this) closeModal('modalBooking')">
-    <div class="modal-box" style="max-width: 580px;">
-      <button class="modal-close-btn" onclick="closeModal('modalBooking')" aria-label="Close dialog">✕</button>
-      <div class="modal-head">
-        <div style="font-size: 24px;">🏛️</div>
-        <div>
-          <h3 class="modal-title">Campus Venue Reservation</h3>
-          <p class="modal-subtitle">Chilika Institute of Technology · Central Academic & Spectra Logistics Desk</p>
-        </div>
-      </div>
-
-      <div id="modal-booking-alert" style="display: none; padding: 10px 12px; border-radius: 6px; font-size: 12px; margin-bottom: 12px;"></div>
-
-      <form onsubmit="handleBookingModalSubmit(event)">
-        <div class="form-group" style="margin-bottom: 12px;">
-          <label class="form-label" for="book-title">Event / Session Title</label>
-          <input type="text" id="book-title" class="form-input" placeholder="e.g. AI & Robotics Annual Tech Workshop" required />
-        </div>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
-          <div class="form-group" style="margin-bottom: 0;">
-            <label class="form-label" for="book-requester">Organizer / Requester Name</label>
-            <input type="text" id="book-requester" class="form-input" placeholder="e.g. Subhajit Nayak" required />
-          </div>
-          <div class="form-group" style="margin-bottom: 0;">
-            <label class="form-label" for="book-role">Requester Role</label>
-            <select id="book-role" class="form-select">
-              <option value="club">Student Club Lead</option>
-              <option value="faculty">Faculty Member</option>
-              <option value="department_coordinator">Department Coordinator</option>
-              <option value="student">Student Representative</option>
-            </select>
-          </div>
-        </div>
-
-        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px; margin-bottom: 12px;">
-          <div class="form-group" style="margin-bottom: 0;">
-            <label class="form-label" for="book-room">Venue / Facility</label>
-            <select id="book-room" class="form-select">
-              <optgroup label="Auditoriums & Large Halls">
-                <option value="AUD">AUD — Main Auditorium (Cap: 500)</option>
-                <option value="OAT">OAT — Open Air Theatre (Cap: 600)</option>
-                <option value="SH-1">SH-1 — Main Seminar Hall 1 (Cap: 120)</option>
-                <option value="SH-2">SH-2 — Seminar Hall 2 (Cap: 100)</option>
-              </optgroup>
-              <optgroup label="Tiered Lecture Halls">
-                <option value="LH-1">LH-1 — Lecture Hall 1 (Cap: 180)</option>
-                <option value="LH-2">LH-2 — Lecture Hall 2 (Cap: 180)</option>
-                <option value="LH-3">LH-3 — Lecture Hall 3 (Cap: 180)</option>
-                <option value="LH-4">LH-4 — Lecture Hall 4 (Cap: 180)</option>
-                <option value="LH-5">LH-5 — Lecture Hall 5 (Cap: 180)</option>
-                <option value="LH-6">LH-6 — Lecture Hall 6 (Cap: 180)</option>
-              </optgroup>
-              <optgroup label="Academic Classrooms">
-                <option value="CR-101">CR-101 — Classroom 101 (Cap: 90)</option>
-                <option value="CR-102">CR-102 — Classroom 102 (Cap: 90)</option>
-                <option value="CR-103">CR-103 — Classroom 103 (Cap: 90)</option>
-                <option value="CR-104">CR-104 — Classroom 104 (Cap: 90)</option>
-                <option value="CR-105">CR-105 — Classroom 105 (Cap: 90)</option>
-                <option value="CR-201">CR-201 — Classroom 201 (Cap: 90)</option>
-                <option value="CR-202">CR-202 — Classroom 202 (Cap: 90)</option>
-                <option value="CR-203">CR-203 — Classroom 203 (Cap: 90)</option>
-                <option value="CR-204">CR-204 — Classroom 204 (Cap: 90)</option>
-                <option value="CR-205">CR-205 — Classroom 205 (Cap: 90)</option>
-              </optgroup>
-              <optgroup label="Laboratories & Specialized Facilities">
-                <option value="CS-LAB-1">CS-LAB-1 — Computer Systems Lab 1 (Cap: 60)</option>
-                <option value="CS-LAB-2">CS-LAB-2 — Advanced Computing Lab 2 (Cap: 60)</option>
-                <option value="ELEC-LAB-1">ELEC-LAB-1 — Circuits & Electronics Lab 1 (Cap: 60)</option>
-                <option value="ELEC-LAB-2">ELEC-LAB-2 — Power Systems Lab 2 (Cap: 60)</option>
-                <option value="PHY-LAB">PHY-LAB — Applied Physics Laboratory (Cap: 60)</option>
-                <option value="MECH-WS">MECH-WS — Central Mechanical Workshop (Cap: 80)</option>
-                <option value="CIVIL-LAB">CIVIL-LAB — Structural Engineering Lab (Cap: 60)</option>
-              </optgroup>
-            </select>
-          </div>
-          <div class="form-group" style="margin-bottom: 0;">
-            <label class="form-label" for="book-day">Academic Day</label>
-            <select id="book-day" class="form-select">
-              <option value="MON">Monday</option>
-              <option value="TUE">Tuesday</option>
-              <option value="WED">Wednesday</option>
-              <option value="THU">Thursday</option>
-              <option value="FRI" selected>Friday</option>
-            </select>
-          </div>
-        </div>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 12px;">
-          <div class="form-group" style="margin-bottom: 0;">
-            <label class="form-label" for="book-start-p">Start Period</label>
-            <select id="book-start-p" class="form-select">
-              <option value="1">P1 (09:00 - 09:50)</option>
-              <option value="2">P2 (10:00 - 10:50)</option>
-              <option value="3">P3 (11:00 - 11:50)</option>
-              <option value="4">P4 (12:00 - 12:50)</option>
-              <option value="6" selected>P6 (14:00 - 14:50)</option>
-              <option value="7">P7 (15:00 - 15:50)</option>
-              <option value="8">P8 (16:00 - 16:50)</option>
-              <option value="9">P9 (17:00 - 17:50)</option>
-            </select>
-          </div>
-          <div class="form-group" style="margin-bottom: 0;">
-            <label class="form-label" for="book-end-p">End Period</label>
-            <select id="book-end-p" class="form-select">
-              <option value="1">P1 (09:50)</option>
-              <option value="2">P2 (10:50)</option>
-              <option value="3">P3 (11:50)</option>
-              <option value="4">P4 (12:50)</option>
-              <option value="6">P6 (14:50)</option>
-              <option value="7">P7 (15:50)</option>
-              <option value="8" selected>P8 (16:50)</option>
-              <option value="9">P9 (17:50)</option>
-            </select>
-          </div>
-          <div class="form-group" style="margin-bottom: 0;">
-            <label class="form-label" for="book-attendance">Expected Attendance</label>
-            <input type="number" id="book-attendance" class="form-input" placeholder="e.g. 75" min="5" max="600" value="75" required />
-          </div>
-        </div>
-
-        <div class="form-group" style="margin-bottom: 12px;">
-          <label class="form-label">Required AV / Campus Equipment</label>
-          <div style="display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; margin-top: 4px;">
-            <label style="display: flex; align-items: center; gap: 4px; cursor: pointer;">
-              <input type="checkbox" id="book-feat-proj" checked /> Projector & Screen
-            </label>
-            <label style="display: flex; align-items: center; gap: 4px; cursor: pointer;">
-              <input type="checkbox" id="book-feat-pa" checked /> PA System / Mic
-            </label>
-            <label style="display: flex; align-items: center; gap: 4px; cursor: pointer;">
-              <input type="checkbox" id="book-feat-ac" checked /> Air Conditioning
-            </label>
-            <label style="display: flex; align-items: center; gap: 4px; cursor: pointer;">
-              <input type="checkbox" id="book-feat-stage" /> Stage Lighting
-            </label>
-          </div>
-        </div>
-
-        <div class="form-group" style="margin-bottom: 16px;">
-          <label class="form-label" for="book-purpose">Activity Purpose / Brief Description</label>
-          <textarea id="book-purpose" class="form-input" style="height: 55px; resize: vertical; padding-top: 6px;" placeholder="Brief summary of event schedule and objectives..." required></textarea>
-        </div>
-
-        <div style="display: flex; gap: 10px; justify-content: flex-end; align-items: center;">
-          <button type="button" onclick="closeModal('modalBooking')" style="background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 8px 16px; border-radius: 6px; font-size: 12px; cursor: pointer;">Cancel</button>
-          <button type="submit" class="btn-submit" id="btn-submit-booking" style="width: auto; padding: 8px 22px; margin: 0; font-size: 12.5px; background: var(--primary); color: #fff;">Confirm & Register Booking</button>
-        </div>
-      </form>
-    </div>
-  </div>
 
   <!-- Contact Modal -->
   <div class="modal-backdrop" id="modalContact" onclick="if(event.target === this) closeModal('modalContact')">
@@ -3127,15 +3092,17 @@
           <p class="modal-subtitle">Found something broken? Tell the CIT ERP team.</p>
         </div>
       </div>
-      <form onsubmit="handleBugModalSubmit(event)">
+      <form onsubmit="handleBugModalSubmit(event)" novalidate>
         <div id="modal-bug-alert" style="display: none;"></div>
         <div class="form-group" style="margin-bottom: 12px;">
           <label class="form-label" for="modal-bug-name">Full Name</label>
           <input type="text" id="modal-bug-name" class="form-input" placeholder="e.g. Student Name" required />
+          <div class="field-error-msg" id="modal-bug-name-err"></div>
         </div>
         <div class="form-group" style="margin-bottom: 12px;">
           <label class="form-label" for="modal-bug-email">CIT Email</label>
           <input type="email" id="modal-bug-email" class="form-input" placeholder="student@cit.ac.in" required />
+          <div class="field-error-msg" id="modal-bug-email-err"></div>
         </div>
         <div class="form-group" style="margin-bottom: 12px;">
           <label class="form-label" for="modal-bug-cat">Issue Category</label>
@@ -3149,7 +3116,8 @@
         </div>
         <div class="form-group" style="margin-bottom: 14px;">
           <label class="form-label" for="modal-bug-desc">What happened?</label>
-          <textarea id="modal-bug-desc" class="form-input" style="height: 70px; resize: vertical; padding-top: 8px;" placeholder="Please describe the glitch or error..." required></textarea>
+          <textarea id="modal-bug-desc" class="form-input" style="height: 70px; resize: vertical; padding-top: 8px;" placeholder="Please describe the glitch or error..." required minlength="20"></textarea>
+          <div class="field-error-msg" id="modal-bug-desc-err"></div>
         </div>
         <button type="submit" class="btn-submit" id="btn-modal-bug-submit">Submit Bug Report</button>
       </form>
@@ -3204,7 +3172,7 @@
         <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; text-decoration: none; color: var(--text-main); font-weight: 600; font-size: 13px;">
           <span style="font-size: 16px;">📸</span> Instagram · @cit_campus_life
         </a>
-        <a href="https://cit.ac.in" target="_blank" rel="noopener noreferrer" style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; text-decoration: none; color: var(--text-main); font-weight: 600; font-size: 13px;">
+        <a href="https://www.cit.ac.in" target="_blank" rel="noopener noreferrer" style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; text-decoration: none; color: var(--text-main); font-weight: 600; font-size: 13px;">
           <span style="font-size: 16px;">🌐</span> Official Website · cit.ac.in
         </a>
       </div>
@@ -3294,18 +3262,20 @@
             ✓ Profile saved successfully and synced with CIT Academic Records.
           </div>
 
-          <form id="prof-details-form" onsubmit="handleProfileSave(event)">
+          <form id="prof-details-form" onsubmit="handleProfileSave(event)" novalidate>
             <div class="prof-form-grid">
               <!-- Full Name -->
               <div class="prof-field">
                 <label class="prof-label" for="prof-input-name">Full Name</label>
                 <input type="text" id="prof-input-name" class="prof-input" placeholder="Enter your full name" required />
+                <div class="field-error-msg" id="prof-input-name-err"></div>
               </div>
 
               <!-- Email -->
               <div class="prof-field">
                 <label class="prof-label" for="prof-input-email">Email Address</label>
                 <input type="email" id="prof-input-email" class="prof-input" placeholder="student@cit.ac.in" required />
+                <div class="field-error-msg" id="prof-input-email-err"></div>
               </div>
 
               <!-- Student ID / Roll No -->
@@ -3324,6 +3294,7 @@
               <div class="prof-field">
                 <label class="prof-label" for="prof-input-phone">Phone Number</label>
                 <input type="text" id="prof-input-phone" class="prof-input" placeholder="e.g. +91 98765 43210" />
+                <div class="field-error-msg" id="prof-input-phone-err"></div>
               </div>
 
               <!-- Academic Year / Semester -->
@@ -3348,12 +3319,14 @@
               <div class="prof-field">
                 <label class="prof-label" for="prof-input-github">GitHub Profile URL</label>
                 <input type="url" id="prof-input-github" class="prof-input" placeholder="https://github.com/username" />
+                <div class="field-error-msg" id="prof-input-github-err"></div>
               </div>
 
               <!-- LinkedIn -->
               <div class="prof-field">
                 <label class="prof-label" for="prof-input-linkedin">LinkedIn Profile URL</label>
                 <input type="url" id="prof-input-linkedin" class="prof-input" placeholder="https://linkedin.com/in/username" />
+                <div class="field-error-msg" id="prof-input-linkedin-err"></div>
               </div>
             </div>
 

@@ -15,6 +15,15 @@ Allow: /assets/
 Allow: /favicon.ico
 Allow: /sitemap.xml
 
+# Block Aggressive Scrapers & Exploit Crawlers
+User-agent: GPTBot
+User-agent: CCBot
+User-agent: Bytespider
+User-agent: Claude-Web
+Disallow: /admin
+Disallow: /api/
+Disallow: /login
+
 # Guarded Administration & Private Endpoints
 Disallow: /admin
 Disallow: /admin/
