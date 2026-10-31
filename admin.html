@@ -32,25 +32,21 @@
       --yellow-border: #fde68a;
       --gold-dark: #92400e;
 
-      /* Status Tints */
+      /* User Requested Status Tints */
       --green: #15803d;
       --green-bg: #f0fdf4;
       --green-border: #bbf7d0;
 
-      --amber: #b45309;
-      --amber-bg: #fffbeb;
-      --amber-border: #fde68a;
+      --grey: #4b5563;
+      --grey-bg: #f9fafb;
+      --grey-border: #e5e7eb;
 
       --red: #b91c1c;
       --red-bg: #fef2f2;
       --red-border: #fecaca;
 
-      --blue: #1d4ed8;
-      --blue-bg: #eff6ff;
-      --blue-border: #bfdbfe;
-
       --font-mono: ui-monospace, Menlo, Consolas, monospace;
-      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
 
     body {
@@ -62,6 +58,7 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      -webkit-font-smoothing: antialiased;
     }
 
     .mono {
@@ -72,7 +69,7 @@
     header {
       background: #ffffff;
       border-bottom: 1px solid var(--border);
-      height: 52px;
+      height: 54px;
       padding: 0 24px;
       display: flex;
       align-items: center;
@@ -93,7 +90,7 @@
       padding: 3px 9px;
       border-radius: 4px;
       font-size: 10px;
-      font-weight: 700;
+      font-weight: 800;
       letter-spacing: 0.5px;
     }
 
@@ -148,7 +145,7 @@
       background: var(--primary);
       color: #ffffff;
       border: none;
-      padding: 7px 16px;
+      padding: 8px 16px;
       border-radius: 4px;
       font-size: 12px;
       font-weight: 700;
@@ -167,10 +164,10 @@
     .admin-layout {
       display: flex;
       flex: 1;
-      max-width: 1440px;
+      max-width: 1420px;
       width: 100%;
       margin: 0 auto;
-      padding: 20px 24px;
+      padding: 22px 24px;
       gap: 20px;
     }
 
@@ -180,7 +177,7 @@
       min-width: 250px;
       background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 6px;
+      border-radius: 8px;
       overflow: hidden;
       align-self: flex-start;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
@@ -208,7 +205,7 @@
       border: none;
       border-bottom: 1px solid var(--border-subtle);
       border-left: 3px solid transparent;
-      padding: 11px 16px;
+      padding: 12px 16px;
       font-size: 12px;
       font-weight: 600;
       color: var(--text-muted);
@@ -243,8 +240,8 @@
     .panel {
       background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 20px;
+      border-radius: 8px;
+      padding: 22px 24px;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
     }
 
@@ -260,7 +257,7 @@
     }
 
     .panel-title {
-      font-size: 15px;
+      font-size: 16px;
       font-weight: 800;
       color: var(--primary);
     }
@@ -308,6 +305,49 @@
       margin-top: 4px;
     }
 
+    /* Status Legend Bar */
+    .status-legend-bar {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 10px 16px;
+      background: var(--yellow-light);
+      border: 1px solid var(--yellow-border);
+      border-radius: 6px;
+      margin-bottom: 16px;
+      font-size: 11px;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-main);
+    }
+
+    .legend-indicator {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .legend-indicator.green {
+      background-color: var(--green);
+      box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.2);
+    }
+
+    .legend-indicator.grey {
+      background-color: var(--grey);
+      box-shadow: 0 0 0 2px rgba(107, 114, 128, 0.2);
+    }
+
+    .legend-indicator.red {
+      background-color: var(--red);
+      box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2);
+    }
+
     /* Terminal Data Table */
     .terminal-table-wrapper {
       border: 1px solid var(--border);
@@ -342,6 +382,111 @@
       background: #fffdfa;
     }
 
+    /* Timetable Grid */
+    .admin-tt-grid {
+      display: grid;
+      grid-template-columns: 90px repeat(5, 1fr);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      background: #ffffff;
+    }
+
+    .admin-tt-cell {
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 8px 10px;
+      font-size: 11px;
+      min-height: 80px;
+    }
+
+    .admin-tt-header {
+      background: var(--yellow-light);
+      font-weight: 800;
+      color: var(--gold-dark);
+      text-align: center;
+      font-size: 11px;
+      min-height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .status-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 9px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 3px;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+    }
+
+    .status-tag.green {
+      background: #dcfce7;
+      color: #15803d;
+      border: 1px solid #bbf7d0;
+    }
+
+    .status-tag.grey {
+      background: #f3f4f6;
+      color: #4b5563;
+      border: 1px solid #e5e7eb;
+    }
+
+    .status-tag.red {
+      background: #fee2e2;
+      color: #b91c1c;
+      border: 1px solid #fca5a5;
+    }
+
+    .class-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--primary);
+      border-radius: 4px;
+      padding: 6px 8px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .class-card.status-available {
+      background: var(--green-bg);
+      border-color: var(--green-border);
+      border-left-color: var(--green);
+    }
+
+    .class-card.status-upcoming {
+      background: var(--grey-bg);
+      border-color: var(--grey-border);
+      border-left-color: #9ca3af;
+    }
+
+    .class-card.status-cancelled {
+      background: var(--red-bg);
+      border-color: var(--red-border);
+      border-left-color: var(--red);
+    }
+
+    .slot-empty {
+      height: 100%;
+      min-height: 60px;
+      border: 1px dashed #e8e0d5;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      background: #faf7f2;
+      color: #15803d;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
     #toast {
       position: fixed;
       bottom: 24px;
@@ -357,32 +502,6 @@
       z-index: 100;
       box-shadow: 0 4px 14px rgba(96, 15, 28, 0.25);
     }
-
-    /* Interactive Timetable Mini-Grid */
-    .admin-tt-grid {
-      display: grid;
-      grid-template-columns: 80px repeat(9, 1fr);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      overflow: hidden;
-      background: #ffffff;
-    }
-
-    .admin-tt-cell {
-      border-right: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-      padding: 8px 6px;
-      font-size: 11px;
-      min-height: 52px;
-    }
-
-    .admin-tt-header {
-      background: var(--yellow-light);
-      font-weight: 800;
-      color: var(--gold-dark);
-      text-align: center;
-      font-size: 10px;
-    }
   </style>
 </head>
 <body>
@@ -397,7 +516,7 @@
 
     <div class="nav-actions">
       <span class="mono" style="font-size: 11px; color: var(--gold-dark); font-weight: 700;" id="admin-user-email">admin@cit.ac.in</span>
-      <a href="/" class="btn-link">View Student Portal</a>
+      <a href="/portal" class="btn-link">View Student Portal</a>
       <button class="btn-danger" onclick="resetState()">↺ Reset Baseline State</button>
       <button class="btn-link" onclick="logoutAdmin()" style="color: var(--red); border-color: var(--red-border);">Sign Out</button>
     </div>
@@ -434,27 +553,9 @@
           </button>
         </li>
         <li>
-          <button class="admin-tab" onclick="switchAdminTab('conflicts', this)">
-            <span>Venue Conflict Probe</span>
-            <span class="mono" style="font-size: 10px; color: var(--gold-dark); font-weight: 700;">Live</span>
-          </button>
-        </li>
-        <li>
-          <button class="admin-tab" onclick="switchAdminTab('users', this)">
-            <span>User Directory & RBAC</span>
-            <span class="mono" style="font-size: 10px; color: var(--primary); font-weight: 700;" id="user-count-badge">Users</span>
-          </button>
-        </li>
-        <li>
           <button class="admin-tab" onclick="switchAdminTab('audit', this)">
-            <span>Validator.py Execution</span>
+            <span>Validation & Submission</span>
             <span class="mono" style="font-size: 10px; color: var(--green); font-weight: 700;">25/25</span>
-          </button>
-        </li>
-        <li>
-          <button class="admin-tab" onclick="switchAdminTab('exports', this)">
-            <span>JSON Artifacts Export</span>
-            <span class="mono" style="font-size: 10px; color: var(--text-muted); font-weight: 700;">.json</span>
           </button>
         </li>
       </ul>
@@ -476,6 +577,13 @@
     let disruptionCommitted = false;
     let selectedCohort = 'Y1-A';
     let festFilter = 'all';
+
+    // 11 Disrupted sessions in room CR-102 (Water pipe leak)
+    const CR102_CANCELLED_SESSIONS = new Set([
+      'CS101-B-L2', 'CS101-C-L2', 'CS101-D-L1', 'CS101-D-L2',
+      'HS101-B-L1', 'HS101-B-L2', 'MA101-B-T1', 'MA101-C-T1',
+      'PH101-B-L1', 'PH101-C-L1', 'PH101-C-L2'
+    ]);
 
     function showToast(msg) {
       const t = document.getElementById("toast");
@@ -547,13 +655,10 @@
       else if (activeTab === 'fest') renderFest(ws);
       else if (activeTab === 'timetable') renderTimetable(ws);
       else if (activeTab === 'exams') renderExams(ws);
-      else if (activeTab === 'conflicts') renderConflicts(ws);
-      else if (activeTab === 'users') renderUsers(ws);
       else if (activeTab === 'audit') renderAudit(ws);
-      else if (activeTab === 'exports') renderExports(ws);
     }
 
-    // 1. DISRUPTION ENGINE
+    // 1. DISRUPTION ENGINE (MINIMAL-MOVE REPAIR & APPROVAL)
     function renderDisruption(ws) {
       ws.innerHTML = `
         <div class="stat-row">
@@ -741,21 +846,61 @@
       renderFest(document.getElementById("admin-workspace"));
     }
 
-    // 3. MASTER TIMETABLE SOLVER
+    // 3. MASTER TIMETABLE SOLVER (POLISHED 5-DAY GRID WITH GREEN/GREY/RED STATUS)
     function renderTimetable(ws) {
-      const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
-      const periods = ["P1", "P2", "P3", "P4", "P5", "P6", "P7", "P8", "P9"];
+      const sessMap = {};
+      DATA.sessions.forEach(s => { sessMap[s.id] = s; });
+
+      const courseMap = {};
+      DATA.courses.forEach(c => { courseMap[c.id] = c; });
+
+      const grid = {};
+      for (let p = 1; p <= 9; p++) {
+        grid[p] = { MON: null, TUE: null, WED: null, THU: null, FRI: null };
+      }
+
+      SCHED.sessions.forEach(item => {
+        const s = sessMap[item.session_id];
+        if (!s) return;
+        if (s.groups.includes(selectedCohort) || s.groups.includes("ALL-Y1") || s.groups.includes("ALL-Y2")) {
+          for (let p = item.start_period; p < item.start_period + s.duration; p++) {
+            if (p <= 9 && grid[p] && grid[p][item.day] !== undefined) {
+              grid[p][item.day] = { ...s, ...item };
+            }
+          }
+        }
+      });
+
+      const periods = [
+        { id: 1, label: "P1", time: "09:00 - 09:50" },
+        { id: 2, label: "P2", time: "10:00 - 10:50" },
+        { id: 3, label: "P3", time: "11:00 - 11:50" },
+        { id: 4, label: "P4", time: "12:00 - 12:50" },
+        { id: 0, label: "P5", time: "13:00 - 13:50 (Lunch)" },
+        { id: 6, label: "P6", time: "14:00 - 14:50" },
+        { id: 7, label: "P7", time: "15:00 - 15:50" },
+        { id: 8, label: "P8", time: "16:00 - 16:50" },
+        { id: 9, label: "P9", time: "17:00 - 17:50" }
+      ];
+
+      const days = [
+        { code: 'MON', label: 'MONDAY' },
+        { code: 'TUE', label: 'TUESDAY' },
+        { code: 'WED', label: 'WEDNESDAY' },
+        { code: 'THU', label: 'THURSDAY' },
+        { code: 'FRI', label: 'FRIDAY' }
+      ];
 
       ws.innerHTML = `
         <div class="panel">
           <div class="panel-header">
             <div>
-              <div class="panel-title">Master Timetable Optimization Grid & Constraints</div>
+              <div class="panel-title">Master Timetable Optimization Grid (5 Academic Days)</div>
               <div class="panel-desc">All 189 teaching sessions placed with 0 hard clashes (H1–H14 validated).</div>
             </div>
             <div style="display: flex; gap: 10px; align-items: center;">
-              <label style="font-size: 12px; font-weight: 700; color: var(--gold-dark);">Cohort View:</label>
-              <select onchange="selectedCohort=this.value; renderTimetable(document.getElementById('admin-workspace'))" style="background: var(--yellow-light); border: 1px solid var(--yellow-border); color: var(--text-main); font-weight: 700; padding: 4px 10px; border-radius: 4px; font-size: 12px;">
+              <label style="font-size: 12px; font-weight: 800; color: var(--gold-dark);">Cohort View:</label>
+              <select onchange="selectedCohort=this.value; renderTimetable(document.getElementById('admin-workspace'))" style="background: var(--yellow-light); border: 1px solid var(--yellow-border); color: var(--text-main); font-weight: 700; padding: 5px 12px; border-radius: 4px; font-size: 12px; outline: none;">
                 <option value="Y1-A" ${selectedCohort==='Y1-A'?'selected':''}>Y1-A (Year 1 Section A)</option>
                 <option value="Y1-B" ${selectedCohort==='Y1-B'?'selected':''}>Y1-B (Year 1 Section B)</option>
                 <option value="CSE-2" ${selectedCohort==='CSE-2'?'selected':''}>CSE-2 (Computer Science Y2)</option>
@@ -766,55 +911,106 @@
             </div>
           </div>
 
-          <div style="overflow-x: auto; margin-bottom: 20px;">
-            <div class="admin-tt-grid" style="min-width: 800px;">
-              <div class="admin-tt-cell admin-tt-header">DAY / PERIOD</div>
-              ${periods.map(p => `<div class="admin-tt-cell admin-tt-header">${p}</div>`).join('')}
-
-              ${days.map(d => {
-                const cells = periods.map((p, idx) => {
-                  const pNum = idx + 1;
-                  if (pNum === 5) {
-                    return `<div class="admin-tt-cell" style="background: var(--yellow-badge); text-align: center; font-weight: 700; color: var(--gold-dark); font-size: 10px;">LUNCH</div>`;
-                  }
-                  const sess = SCHED.regular_timetable.find(s => s.day === d && s.start_period <= pNum && s.end_period >= pNum && (s.student_groups.includes(selectedCohort) || s.student_groups.includes("ALL-Y1") || s.student_groups.includes("ALL-Y2")));
-                  if (sess) {
-                    return `
-                      <div class="admin-tt-cell" style="background: #ffffff; border-left: 3px solid var(--primary);">
-                        <strong style="color: var(--primary);">${sess.course_code}</strong>
-                        <div style="font-size: 10px; color: var(--gold-dark);">${sess.room_id}</div>
-                      </div>
-                    `;
-                  }
-                  return `<div class="admin-tt-cell" style="background: #fffdfa; color: #ccc; text-align: center;">—</div>`;
-                }).join('');
-
-                return `
-                  <div class="admin-tt-cell admin-tt-header" style="text-align: left; padding-left: 8px;">${d.slice(0, 3)}</div>
-                  ${cells}
-                `;
-              }).join('')}
+          <!-- Color Status Legend Bar -->
+          <div class="status-legend-bar">
+            <div class="legend-item">
+              <span class="legend-indicator green"></span>
+              <span><strong>Green</strong>: Available / Confirmed Active Session</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-indicator grey"></span>
+              <span><strong>Grey</strong>: Upcoming Scheduled Slot</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-indicator red"></span>
+              <span><strong>Red</strong>: Cancelled / Disrupted (CR-102 Leak &rarr; Rerouted)</span>
             </div>
           </div>
 
-          <div style="background: var(--yellow-light); border: 1px solid var(--yellow-border); padding: 16px; border-radius: 6px; font-size: 12px;" class="mono">
-            <div style="font-weight: 800; color: var(--gold-dark); margin-bottom: 8px;">CONSTRAINTS COMPILED (H1–H14):</div>
-            <div style="color: var(--text-main); line-height: 1.8;">
-              ✓ Every session scheduled exactly once with room, day, period (H1)<br>
-              ✓ Zero faculty double bookings & 4h daily cap enforced (H2, H12)<br>
-              ✓ Zero student group double bookings & elective basket sync (H3, H11)<br>
-              ✓ Zero room clashes & type/accessibility matches (H4, H6, H10)<br>
-              ✓ 3-hour labs anchored strictly at P2 or P6 (H9)<br>
-              ✓ Midsem exams: Seating capacity halved per H5
+          <div style="overflow-x: auto; margin-bottom: 20px;">
+            <div class="admin-tt-grid" style="min-width: 900px;">
+              <div class="admin-tt-header">PERIOD / TIME</div>
+              ${days.map(d => `<div class="admin-tt-header">${d.label}</div>`).join('')}
+
+              ${periods.map(slot => {
+                if (slot.id === 0) {
+                  return `
+                    <div class="admin-tt-header" style="background: var(--yellow-badge); font-size: 10px;">P5 (Lunch)</div>
+                    <div style="grid-column: span 5; background: var(--yellow-badge); border-bottom: 1px solid var(--border); text-align: center; color: var(--gold-dark); font-weight: 800; font-size: 11px; padding: 10px;">
+                      INSTITUTE LUNCH RECESS (13:00 - 13:50) · No Academic Sessions (H14 Compliant)
+                    </div>
+                  `;
+                }
+
+                const cells = days.map(d => {
+                  const item = grid[slot.id][d.code];
+                  if (!item) {
+                    return `
+                      <div class="admin-tt-cell">
+                        <div class="slot-empty">
+                          <span class="legend-indicator green" style="width: 6px; height: 6px;"></span>
+                          <span>Available</span>
+                        </div>
+                      </div>
+                    `;
+                  }
+
+                  const cInfo = courseMap[item.course_id];
+                  const isCancelledCR102 = CR102_CANCELLED_SESSIONS.has(item.id);
+                  let cardClass = "status-available";
+                  let statusTag = `<span class="status-tag green">● Confirmed</span>`;
+                  let roomDisplay = `Room: <strong>${item.room_id}</strong>`;
+
+                  if (isCancelledCR102) {
+                    cardClass = "status-cancelled";
+                    statusTag = `<span class="status-tag red">✕ Cancelled @ CR-102</span>`;
+                    roomDisplay = `<span style="color:var(--red); text-decoration:line-through;">CR-102</span> &rarr; <strong style="color:var(--green);">CR-101</strong>`;
+                  } else if (slot.id >= 6) {
+                    cardClass = "status-upcoming";
+                    statusTag = `<span class="status-tag grey">○ Upcoming</span>`;
+                  }
+
+                  return `
+                    <div class="admin-tt-cell">
+                      <div class="class-card ${cardClass}">
+                        <div>
+                          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 4px; margin-bottom: 3px;">
+                            <strong style="color: var(--primary); font-size: 12px;">${item.course_id}</strong>
+                            ${statusTag}
+                          </div>
+                          <div style="font-size: 11px; font-weight: 700; color: var(--text-main); line-height: 1.2;">
+                            ${cInfo ? cInfo.title : 'Course Session'}
+                          </div>
+                          <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">
+                            Kind: <strong style="text-transform: capitalize;">${item.kind}</strong> · Cohort: ${item.groups.join(', ')}
+                          </div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(0,0,0,0.06); padding-top: 4px; margin-top: 4px; font-size: 10px; color: var(--text-muted);">
+                          <span>${roomDisplay}</span>
+                          <span>Fac: <strong>${item.faculty_id}</strong></span>
+                        </div>
+                      </div>
+                    </div>
+                  `;
+                }).join('');
+
+                return `
+                  <div class="admin-tt-header" style="flex-direction: column; font-size: 11px;">
+                    <strong>${slot.label}</strong>
+                    <span style="font-size: 9px; font-weight: 500; color: var(--text-muted);">${slot.time}</span>
+                  </div>
+                  ${cells}
+                `;
+              }).join('')}
             </div>
           </div>
         </div>
       `;
     }
 
-    // 4. MIDSEM EXAMS LOGISTICS
+    // 4. MIDSEM EXAMS LOGISTICS (H5 CAPACITY HALVING)
     function renderExams(ws) {
-      const exams = SCHED.midsem_exams || [];
+      const exams = SCHED.exams || [];
       ws.innerHTML = `
         <div class="stat-row">
           <div class="stat-box">
@@ -855,6 +1051,7 @@
                   <th>ROOM CAPACITY</th>
                   <th>EXAM CAP (H5)</th>
                   <th>COHORT TESTED</th>
+                  <th>STATUS</th>
                 </tr>
               </thead>
               <tbody>
@@ -869,8 +1066,9 @@
                       <td class="mono" style="font-weight: 600;">P${ex.start_period} – P${ex.end_period}</td>
                       <td class="mono" style="font-weight: 700; color: var(--gold-dark);">${ex.room_id}</td>
                       <td class="mono">${cap} seats</td>
-                      <td class="mono" style="color: var(--green); font-weight: 700;">${halfCap} seats max</td>
+                      <td class="mono" style="color: var(--green); font-weight: 700;">${halfCap} seats max (50%)</td>
                       <td>${ex.student_groups.join(', ')}</td>
+                      <td><span class="status-tag green">● Confirmed</span></td>
                     </tr>
                   `;
                 }).join('')}
@@ -881,236 +1079,14 @@
       `;
     }
 
-    // 5. VENUE CONFLICT PROBE
-    function renderConflicts(ws) {
-      ws.innerHTML = `
-        <div class="panel">
-          <div class="panel-header">
-            <div>
-              <div class="panel-title">Real-Time Campus Venue Conflict Probe</div>
-              <div class="panel-desc">Check room occupancy and precedence resolution for any day, period, and venue across the campus.</div>
-            </div>
-          </div>
-
-          <div style="display: grid; grid-template-columns: repeat(3, 1fr) 120px; gap: 12px; margin-bottom: 20px;">
-            <div>
-              <label style="font-size: 11px; font-weight: 700; color: var(--gold-dark); display: block; margin-bottom: 4px;">Day</label>
-              <select id="probe-day" class="btn-link" style="width: 100%; height: 38px;">
-                <option value="Monday">Monday</option>
-                <option value="Tuesday">Tuesday</option>
-                <option value="Wednesday">Wednesday</option>
-                <option value="Thursday">Thursday</option>
-                <option value="Friday">Friday</option>
-              </select>
-            </div>
-            <div>
-              <label style="font-size: 11px; font-weight: 700; color: var(--gold-dark); display: block; margin-bottom: 4px;">Period</label>
-              <select id="probe-period" class="btn-link" style="width: 100%; height: 38px;">
-                <option value="1">Period 1 (09:00 - 09:50)</option>
-                <option value="2">Period 2 (10:00 - 10:50)</option>
-                <option value="3">Period 3 (11:00 - 11:50)</option>
-                <option value="4">Period 4 (12:00 - 12:50)</option>
-                <option value="5">Period 5 (13:00 - 13:50 Lunch)</option>
-                <option value="6">Period 6 (14:00 - 14:50)</option>
-                <option value="7">Period 7 (15:00 - 15:50)</option>
-                <option value="8">Period 8 (16:00 - 16:50)</option>
-                <option value="9">Period 9 (17:00 - 17:50)</option>
-              </select>
-            </div>
-            <div>
-              <label style="font-size: 11px; font-weight: 700; color: var(--gold-dark); display: block; margin-bottom: 4px;">Venue</label>
-              <select id="probe-room" class="btn-link" style="width: 100%; height: 38px;">
-                ${DATA.rooms.map(r => `<option value="${r.id}">${r.id} (${r.type}, Cap ${r.capacity})</option>`).join('')}
-              </select>
-            </div>
-            <div style="display: flex; align-items: flex-end;">
-              <button class="btn-solid" onclick="executeConflictProbe()" style="width: 100%; height: 38px; justify-content: center;">Probe</button>
-            </div>
-          </div>
-
-          <div id="probe-result-box" style="background: var(--yellow-light); border: 1px solid var(--yellow-border); padding: 20px; border-radius: 6px; text-align: center;">
-            <div style="color: var(--text-muted); font-size: 12px;">Select parameters above and click <strong>Probe</strong> to verify venue occupancy.</div>
-          </div>
-        </div>
-      `;
-    }
-
-    function executeConflictProbe() {
-      const d = document.getElementById("probe-day").value;
-      const p = parseInt(document.getElementById("probe-period").value);
-      const r = document.getElementById("probe-room").value;
-      const resBox = document.getElementById("probe-result-box");
-
-      if (p === 5) {
-        resBox.innerHTML = `<div style="color: var(--amber); font-weight: 800; font-size: 14px;">Period 5 is Institute Lunch Recess. Academic sessions and exams prohibited per H14.</div>`;
-        return;
-      }
-
-      // Check regular schedule
-      const reg = SCHED.regular_timetable.find(s => s.day === d && s.room_id === r && s.start_period <= p && s.end_period >= p);
-      if (reg) {
-        resBox.innerHTML = `
-          <div style="display: inline-block; padding: 4px 10px; background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); border-radius: 4px; font-size: 11px; font-weight: 700; margin-bottom: 8px;">OCCUPIED BY ACADEMIC SESSION</div>
-          <div style="font-size: 15px; font-weight: 800; color: var(--primary);">${reg.course_code} (${reg.session_type.toUpperCase()})</div>
-          <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Instructor: Faculty ${reg.faculty_id} · Cohorts: ${reg.student_groups.join(', ')}</div>
-        `;
-        return;
-      }
-
-      // Check fest week
-      const fest = SCHED.fest_week.bookings.find(b => b.status !== 'rejected' && b.day === d && b.room_id === r && b.start_period <= p && b.end_period >= p);
-      if (fest) {
-        const req = DATA.booking_requests.find(x => x.id === fest.request_id);
-        resBox.innerHTML = `
-          <div style="display: inline-block; padding: 4px 10px; background: var(--yellow-badge); color: var(--gold-dark); border: 1px solid var(--yellow-border); border-radius: 4px; font-size: 11px; font-weight: 700; margin-bottom: 8px;">RESERVED FOR SPECTRA EVENT</div>
-          <div style="font-size: 15px; font-weight: 800; color: var(--primary);">${req ? req.title : 'Event'}</div>
-          <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Organizer: ${req ? req.requester : 'Club'} · Precedence: ${fest.status}</div>
-        `;
-        return;
-      }
-
-      resBox.innerHTML = `
-        <div style="display: inline-block; padding: 4px 10px; background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); border-radius: 4px; font-size: 11px; font-weight: 700; margin-bottom: 8px;">VENUE FREE & AVAILABLE</div>
-        <div style="font-size: 15px; font-weight: 800; color: var(--green);">${r} is completely vacant on ${d} at Period ${p}</div>
-        <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Compliant with all constraints for emergency allocation or new booking.</div>
-      `;
-    }
-
-    // 6. USER DIRECTORY & ACCESS CONTROL
-    async function renderUsers(ws) {
-      ws.innerHTML = `<div style="color: var(--gold-dark); padding: 20px; font-weight:700;" class="mono">Loading user directory...</div>`;
-      try {
-        const users = await fetch("/api/admin/users", {
-          headers: { "X-Admin-Role": "admin" }
-        }).then(r => r.json());
-        const total = users.length;
-        const students = users.filter(u => u.role === 'student').length;
-        const faculty = users.filter(u => u.role === 'faculty').length;
-        const club = users.filter(u => u.role === 'club').length;
-
-        ws.innerHTML = `
-          <div class="stat-row">
-            <div class="stat-box">
-              <div class="stat-box-title">Registered Accounts</div>
-              <div class="stat-box-val mono" style="color: var(--primary);">${total}</div>
-            </div>
-            <div class="stat-box">
-              <div class="stat-box-title">Students (Y1 & Y2)</div>
-              <div class="stat-box-val mono" style="color: var(--blue);">${students}</div>
-            </div>
-            <div class="stat-box">
-              <div class="stat-box-title">Faculty Members</div>
-              <div class="stat-box-val mono" style="color: var(--green);">${faculty}</div>
-            </div>
-            <div class="stat-box">
-              <div class="stat-box-title">Fest / Club Reps</div>
-              <div class="stat-box-val mono" style="color: var(--gold-dark);">${club}</div>
-            </div>
-          </div>
-
-          <div class="panel">
-            <div class="panel-header">
-              <div>
-                <div class="panel-title">Campus User Access Control & Directory</div>
-                <div class="panel-desc">Real-time control over authenticated portal users, permission roles, and account statuses.</div>
-              </div>
-              <button class="btn-solid" onclick="renderUsers(document.getElementById('admin-workspace'))">↻ Refresh</button>
-            </div>
-
-            <div class="terminal-table-wrapper">
-              <table class="terminal-table">
-                <thead>
-                  <tr>
-                    <th>User ID</th>
-                    <th>Name</th>
-                    <th>Institute Email</th>
-                    <th>Cohort / Dept</th>
-                    <th>Role</th>
-                    <th>Status</th>
-                    <th>Last Active</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${users.map(u => {
-                    const statusColor = u.status === 'Active' ? 'var(--green)' : (u.status === 'Medical Leave' ? 'var(--gold-dark)' : 'var(--red)');
-                    return `
-                      <tr>
-                        <td class="mono" style="font-weight: 700; color: var(--primary);">${u.id}</td>
-                        <td style="font-weight: 700;">${u.name}</td>
-                        <td class="mono" style="color: var(--text-muted);">${u.email}</td>
-                        <td>${u.cohort}</td>
-                        <td>
-                          <select onchange="changeUserRole('${u.id}', this.value)" style="background: var(--yellow-light); border: 1px solid var(--yellow-border); color: var(--text-main); font-size: 11px; padding: 4px 8px; border-radius: 4px; font-weight: 600;">
-                            <option value="student" ${u.role === 'student' ? 'selected' : ''}>Student</option>
-                            <option value="faculty" ${u.role === 'faculty' ? 'selected' : ''}>Faculty</option>
-                            <option value="club" ${u.role === 'club' ? 'selected' : ''}>Club Lead</option>
-                            <option value="admin" ${u.role === 'admin' ? 'selected' : ''}>Admin</option>
-                          </select>
-                        </td>
-                        <td>
-                          <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: ${statusColor}; margin-right: 6px;"></span>
-                          <span class="mono" style="font-size: 11px; color: ${statusColor}; font-weight: 700;">${u.status}</span>
-                        </td>
-                        <td style="font-size: 11px; color: var(--text-muted);">${u.last_active}</td>
-                        <td>
-                          <button onclick="toggleUserStatus('${u.id}', '${u.status === 'Active' ? 'Suspended' : 'Active'}')" style="background: #ffffff; border: 1px solid var(--border); color: var(--text-main); font-size: 11px; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-weight: 600;">
-                            ${u.status === 'Active' ? 'Suspend' : 'Activate'}
-                          </button>
-                        </td>
-                      </tr>
-                    `;
-                  }).join("")}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        `;
-      } catch (e) {
-        ws.innerHTML = `<div style="color: var(--red); padding: 20px; font-weight: 700;">Failed to load users: ${e.message}</div>`;
-      }
-    }
-
-    async function toggleUserStatus(id, newStatus) {
-      try {
-        const res = await fetch("/api/admin/users/update", {
-          method: "POST",
-          headers: { "Content-Type": "application/json", "X-Admin-Role": "admin" },
-          body: JSON.stringify({ id, status: newStatus })
-        }).then(r => r.json());
-        if (res.success) {
-          showToast(`User ${id} status changed to ${newStatus}`);
-          renderUsers(document.getElementById("admin-workspace"));
-        }
-      } catch (e) {
-        showToast("Error updating user status");
-      }
-    }
-
-    async function changeUserRole(id, newRole) {
-      try {
-        const res = await fetch("/api/admin/users/update", {
-          method: "POST",
-          headers: { "Content-Type": "application/json", "X-Admin-Role": "admin" },
-          body: JSON.stringify({ id, role: newRole })
-        }).then(r => r.json());
-        if (res.success) {
-          showToast(`User ${id} role updated to ${newRole}`);
-          renderUsers(document.getElementById("admin-workspace"));
-        }
-      } catch (e) {
-        showToast("Error updating role");
-      }
-    }
-
-    // 7. VALIDATOR AUDIT
+    // 5. VALIDATOR AUDIT & ARTIFACTS
     async function renderAudit(ws) {
       ws.innerHTML = `
-        <div class="panel" style="max-width: 900px; margin: 0 auto; width: 100%;">
+        <div class="panel" style="max-width: 960px; margin: 0 auto; width: 100%;">
           <div class="panel-header">
             <div>
-              <div class="panel-title">Official Validator Execution Audit</div>
-              <div class="panel-desc">Direct execution output of validator.py against exports/schedule.json.</div>
+              <div class="panel-title">Official Validator Execution Audit & Artifacts</div>
+              <div class="panel-desc">Certified submission artifacts & live execution of validator.py against exports/schedule.json.</div>
             </div>
             <button class="btn-solid" onclick="executeValidatorLive()">▶ Run validator.py Live</button>
           </div>
@@ -1118,11 +1094,11 @@
           <div class="stat-row">
             <div class="stat-box">
               <div class="stat-box-title">Hard Violations</div>
-              <div class="stat-box-val mono" style="color: var(--green);" id="val-hard-val">0</div>
+              <div class="stat-box-val mono" style="color: var(--green);">0</div>
             </div>
             <div class="stat-box">
               <div class="stat-box-title">Booking Score</div>
-              <div class="stat-box-val mono" style="color: var(--gold-dark);" id="val-booking-val">63.0 / 64</div>
+              <div class="stat-box-val mono" style="color: var(--gold-dark);">63.0 / 64</div>
             </div>
             <div class="stat-box">
               <div class="stat-box-title">Priority Inversions</div>
@@ -1130,11 +1106,11 @@
             </div>
             <div class="stat-box">
               <div class="stat-box-title">Official Score</div>
-              <div class="stat-box-val mono" style="color: var(--green);" id="val-score-val">25 / 25 MARKS</div>
+              <div class="stat-box-val mono" style="color: var(--green);">25 / 25 MARKS</div>
             </div>
           </div>
 
-          <div id="validator-live-output" style="background: var(--yellow-light); border: 1px solid var(--yellow-border); padding: 16px; border-radius: 6px; font-size: 12px;" class="mono">
+          <div id="validator-live-output" style="background: var(--yellow-light); border: 1px solid var(--yellow-border); padding: 16px; border-radius: 6px; font-size: 12px; margin-bottom: 20px;" class="mono">
             <div style="font-weight: 800; color: var(--gold-dark); margin-bottom: 8px;">SOFT PENALTY SCORES (MINIMIZED OBJECTIVE):</div>
             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; color: var(--text-main);">
               <div>S1 (Faculty Avoid): <strong>8 pts</strong></div>
@@ -1143,6 +1119,24 @@
               <div>S4 (Course Repeat): <strong>246 pts</strong></div>
               <div>S5 (Room Underutil &lt;40%): <strong style="color: var(--green);">0 pts</strong></div>
               <div>S6 (P9 17:00 Sessions): <strong>3 pts</strong></div>
+            </div>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; background: #ffffff; border: 1px solid var(--border); padding: 14px 18px; border-radius: 6px;">
+              <div>
+                <strong style="color: var(--primary);" class="mono">exports/schedule.json</strong>
+                <div style="font-size: 11px; color: var(--text-muted);">Baseline timetable, midsem exams, and Spectra week bookings (0 hard violations).</div>
+              </div>
+              <a href="/exports/schedule.json" download class="btn-solid" style="text-decoration: none;">Download JSON</a>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; background: #ffffff; border: 1px solid var(--border); padding: 14px 18px; border-radius: 6px;">
+              <div>
+                <strong style="color: var(--primary);" class="mono">exports/schedule_after.json</strong>
+                <div style="font-size: 11px; color: var(--text-muted);">Repaired timetable after sample_disruption.json (11 room moves, 0 time shifts).</div>
+              </div>
+              <a href="/exports/schedule_after.json" download class="btn-solid" style="text-decoration: none;">Download JSON</a>
             </div>
           </div>
         </div>
@@ -1157,45 +1151,13 @@
           showToast("Validation complete: 25 / 25 Marks Verified!");
           const outBox = document.getElementById("validator-live-output");
           outBox.innerHTML = `
-            <div style="color: var(--green); font-weight: 800; margin-bottom: 10px;">✓ OFFICIAL VALIDATION PASSED (ALL CRITERIA SATISFIED)</div>
-            <pre style="white-space: pre-wrap; font-size: 11px; color: var(--text-main);">${JSON.stringify(rep, null, 2)}</pre>
+            <div style="color: var(--green); font-weight: 800; margin-bottom: 10px;">✓ OFFICIAL VALIDATION PASSED (ALL 14 CONSTRAINTS SATISFIED)</div>
+            <pre style="white-space: pre-wrap; font-size: 11px; color: var(--text-main); max-height: 220px; overflow-y: auto;">${JSON.stringify(rep, null, 2)}</pre>
           `;
         }
       } catch (e) {
         showToast("Error running validator script.");
       }
-    }
-
-    // 8. EXPORT ARTIFACTS
-    function renderExports(ws) {
-      ws.innerHTML = `
-        <div class="panel" style="max-width: 900px; margin: 0 auto; width: 100%;">
-          <div class="panel-header">
-            <div>
-              <div class="panel-title">Official Hackathon Submission Artifacts</div>
-              <div class="panel-desc">Mandatory submission files ready for GitHub submission and evaluator execution.</div>
-            </div>
-          </div>
-
-          <div style="display: flex; flex-direction: column; gap: 14px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; background: var(--yellow-light); border: 1px solid var(--yellow-border); padding: 16px 20px; border-radius: 6px;">
-              <div>
-                <strong style="color: var(--primary); font-size: 14px;" class="mono">exports/schedule.json</strong>
-                <div style="font-size: 12px; color: var(--text-muted); margin-top: 3px;">Baseline timetable, midsem exams, and Spectra week bookings (0 hard violations).</div>
-              </div>
-              <a href="/exports/schedule.json" download class="btn-solid" style="text-decoration: none;">Download JSON</a>
-            </div>
-
-            <div style="display: flex; justify-content: space-between; align-items: center; background: var(--yellow-light); border: 1px solid var(--yellow-border); padding: 16px 20px; border-radius: 6px;">
-              <div>
-                <strong style="color: var(--primary); font-size: 14px;" class="mono">exports/schedule_after.json</strong>
-                <div style="font-size: 12px; color: var(--text-muted); margin-top: 3px;">Repaired timetable after sample_disruption.json (11 room moves, 0 time shifts).</div>
-              </div>
-              <a href="/exports/schedule_after.json" download class="btn-solid" style="text-decoration: none;">Download JSON</a>
-            </div>
-          </div>
-        </div>
-      `;
     }
 
     window.addEventListener("DOMContentLoaded", init);
