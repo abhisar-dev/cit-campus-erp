@@ -1,22 +1,6 @@
 {
   "version": 2,
-  "functions": {
-    "api/index.py": {
-      "includeFiles": "public/**,exports/**,report.json"
-    }
-  },
   "rewrites": [
-    { "source": "/admin/login", "destination": "/admin_login.html" },
-    { "source": "/admin/auth", "destination": "/admin_login.html" },
-    { "source": "/admin", "destination": "/admin.html" },
-    { "source": "/login", "destination": "/login.html" },
-    { "source": "/auth", "destination": "/login.html" },
-    { "source": "/portal", "destination": "/index.html" },
-    { "source": "/dashboard", "destination": "/index.html" },
-    { "source": "/api/data", "destination": "/public/cit_public.json" },
-    { "source": "/api/schedule", "destination": "/exports/schedule.json" },
-    { "source": "/api/schedule_after", "destination": "/exports/schedule_after.json" },
-    { "source": "/api/validate", "destination": "/public/report.json" },
-    { "source": "/api/(.*)", "destination": "/api/index.py" }
+    { "source": "/(.*)", "destination": "/api/index.py" }
   ]
 }

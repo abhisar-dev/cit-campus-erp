@@ -4,6 +4,19 @@ import os
 import urllib.parse
 import re
 
+MIME_TYPES = {
+    ".html": "text/html; charset=utf-8",
+    ".css": "text/css; charset=utf-8",
+    ".js": "application/javascript; charset=utf-8",
+    ".json": "application/json; charset=utf-8",
+    ".png": "image/png",
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".svg": "image/svg+xml",
+    ".ico": "image/x-icon",
+    ".webp": "image/webp"
+}
+
 USERS_DB = [
     {"id": "CIT-U001", "name": "Aarav Sharma", "email": "student@cit.ac.in", "role": "student", "cohort": "Y1-A", "status": "Active", "last_active": "Just now"},
     {"id": "CIT-U002", "name": "Prof. S. R. Mohanty", "email": "faculty.f19@cit.ac.in", "role": "faculty", "cohort": "Faculty F19 (Physics)", "status": "Active", "last_active": "12m ago"},
@@ -14,14 +27,18 @@ USERS_DB = [
 ]
 
 def find_file(rel_path):
+    # Strip leading slashes
+    clean_rel = rel_path.lstrip("/\\")
     candidates = [
-        os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), rel_path),
-        os.path.join(os.getcwd(), rel_path),
-        os.path.join(os.path.dirname(os.path.abspath(__file__)), rel_path),
-        os.path.join("/var/task", rel_path)
+        os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), clean_rel),
+        os.path.join(os.getcwd(), clean_rel),
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), clean_rel),
+        os.path.join("/var/task", clean_rel),
+        os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "dist", clean_rel),
+        os.path.join(os.getcwd(), "dist", clean_rel)
     ]
     for c in candidates:
-        if os.path.exists(c):
+        if os.path.exists(c) and os.path.isfile(c):
             return c
     return None
 
@@ -30,7 +47,7 @@ def read_data_file(rel_path):
     if path and os.path.exists(path):
         with open(path, "rb") as f:
             return f.read()
-    return b"{}"
+    return None
 
 class handler(http.server.BaseHTTPRequestHandler):
     def get_requested_path(self):
@@ -51,47 +68,97 @@ class handler(http.server.BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_cors_headers("text/plain")
 
+    def serve_file(self, rel_path, default_mime="text/html; charset=utf-8"):
+        content = read_data_file(rel_path)
+        if content is not None:
+            _, ext = os.path.splitext(rel_path)
+            content_type = MIME_TYPES.get(ext.lower(), default_mime)
+            self.send_response(200)
+            self.send_cors_headers(content_type)
+            self.wfile.write(content)
+            return True
+        return False
+
     def do_GET(self):
         req_path = self.get_requested_path()
 
-        if req_path.endswith("/api/data") or req_path.endswith("/data"):
-            content = read_data_file(os.path.join("public", "cit_public.json"))
-            self.send_response(200)
-            self.send_cors_headers()
-            self.wfile.write(content)
-            return
+        # Dedicated Admin Login Route
+        if req_path in ("/admin/login", "/admin/auth", "/admin-login", "/admin/signin"):
+            if self.serve_file("admin_login.html"):
+                return
 
-        if req_path.endswith("/api/schedule") or req_path.endswith("/schedule"):
-            content = read_data_file(os.path.join("exports", "schedule.json"))
-            self.send_response(200)
-            self.send_cors_headers()
-            self.wfile.write(content)
-            return
+        # Dedicated User Login & Register route
+        if req_path in ("/login", "/auth"):
+            if self.serve_file("login.html"):
+                return
 
-        if req_path.endswith("/api/schedule_after") or req_path.endswith("/schedule_after"):
-            content = read_data_file(os.path.join("exports", "schedule_after.json"))
-            self.send_response(200)
-            self.send_cors_headers()
-            self.wfile.write(content)
-            return
+        # Dedicated Admin Terminal route
+        if req_path in ("/admin", "/admin.html"):
+            if self.serve_file("admin.html"):
+                return
 
-        if req_path.endswith("/api/validate") or req_path.endswith("/validate"):
+        # User portal routes
+        if req_path in ("/", "/index.html", "/portal", "/dashboard", "/timetable", "/bookings"):
+            if self.serve_file("index.html"):
+                return
+
+        # API Endpoints
+        if req_path.endswith("/api/data") or req_path == "/data":
+            content = read_data_file("public/cit_public.json")
+            if content:
+                self.send_response(200)
+                self.send_cors_headers("application/json; charset=utf-8")
+                self.wfile.write(content)
+                return
+
+        if req_path.endswith("/api/schedule") or req_path == "/schedule":
+            content = read_data_file("exports/schedule.json")
+            if content:
+                self.send_response(200)
+                self.send_cors_headers("application/json; charset=utf-8")
+                self.wfile.write(content)
+                return
+
+        if req_path.endswith("/api/schedule_after") or req_path == "/schedule_after":
+            content = read_data_file("exports/schedule_after.json")
+            if content:
+                self.send_response(200)
+                self.send_cors_headers("application/json; charset=utf-8")
+                self.wfile.write(content)
+                return
+
+        if req_path.endswith("/api/validate") or req_path == "/validate":
             content = read_data_file("report.json")
-            self.send_response(200)
-            self.send_cors_headers()
-            self.wfile.write(content)
-            return
+            if not content:
+                content = read_data_file("public/report.json")
+            if content:
+                self.send_response(200)
+                self.send_cors_headers("application/json; charset=utf-8")
+                self.wfile.write(content)
+                return
 
-        if req_path.endswith("/api/admin/users") or req_path.endswith("/users"):
+        if req_path.endswith("/api/admin/users") or req_path == "/admin/users":
             self.send_response(200)
-            self.send_cors_headers()
+            self.send_cors_headers("application/json; charset=utf-8")
             self.wfile.write(json.dumps(USERS_DB).encode("utf-8"))
             return
 
-        # Default fallback
-        self.send_response(200)
-        self.send_cors_headers()
-        self.wfile.write(json.dumps({"status": "CIT ERP Serverless API Online", "path": req_path}).encode("utf-8"))
+        # Serve static assets from /public/ or /exports/
+        if req_path.startswith("/public/") or req_path.startswith("/exports/"):
+            if self.serve_file(req_path):
+                return
+
+        # Direct file check (e.g. favicon, css, js)
+        if self.serve_file(req_path):
+            return
+
+        # Default fallback: User Dashboard
+        if self.serve_file("index.html"):
+            return
+
+        self.send_response(404)
+        self.send_cors_headers("text/plain")
+        self.wfile.write(b"404 Not Found")
 
     def do_POST(self):
         req_path = self.get_requested_path()
@@ -99,9 +166,9 @@ class handler(http.server.BaseHTTPRequestHandler):
         body = self.rfile.read(content_length).decode("utf-8") if content_length > 0 else "{}"
 
         # User Authentication API
-        if req_path.endswith("/api/auth/login") or req_path.endswith("/auth/login") or req_path.endswith("/login"):
+        if req_path.endswith("/api/auth/login") or req_path.endswith("/auth/login"):
             self.send_response(200)
-            self.send_cors_headers()
+            self.send_cors_headers("application/json; charset=utf-8")
             try:
                 data = json.loads(body)
                 email = data.get("email", "").strip()
@@ -175,9 +242,9 @@ class handler(http.server.BaseHTTPRequestHandler):
             return
 
         # Signup API
-        if req_path.endswith("/api/auth/signup") or req_path.endswith("/auth/signup") or req_path.endswith("/signup"):
+        if req_path.endswith("/api/auth/signup") or req_path.endswith("/auth/signup"):
             self.send_response(200)
-            self.send_cors_headers()
+            self.send_cors_headers("application/json; charset=utf-8")
             try:
                 data = json.loads(body)
                 name = data.get("name", "New CIT Member")
@@ -207,7 +274,7 @@ class handler(http.server.BaseHTTPRequestHandler):
         # Admin User Management Update API
         if req_path.endswith("/api/admin/users/update") or req_path.endswith("/users/update"):
             self.send_response(200)
-            self.send_cors_headers()
+            self.send_cors_headers("application/json; charset=utf-8")
             try:
                 data = json.loads(body)
                 uid = data.get("id")
@@ -226,7 +293,7 @@ class handler(http.server.BaseHTTPRequestHandler):
         # NLP Venue Booking Parser API
         if req_path.endswith("/api/parse-nlp") or req_path.endswith("/parse-nlp"):
             self.send_response(200)
-            self.send_cors_headers()
+            self.send_cors_headers("application/json; charset=utf-8")
             try:
                 req = json.loads(body)
             except Exception:
@@ -244,7 +311,6 @@ class handler(http.server.BaseHTTPRequestHandler):
                 "confidence": 0.95
             }
 
-            # Parse attendance specifically
             att_match = re.search(r"(\d+)\s*(?:people|log|students|participants|members|pax)", raw)
             if att_match:
                 res["attendance"] = int(att_match.group(1))
@@ -253,7 +319,6 @@ class handler(http.server.BaseHTTPRequestHandler):
                 if gen_match and int(gen_match.group(1)) not in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13):
                     res["attendance"] = int(gen_match.group(1))
 
-            # Parse equipment needs
             if "projector" in raw:
                 res["needs"].append("projector")
             if any(w in raw for w in ["mic", "pa system", "sound", "speaker", "audio"]):
@@ -263,7 +328,6 @@ class handler(http.server.BaseHTTPRequestHandler):
             if any(w in raw for w in ["accessible", "wheelchair", "ramps"]):
                 res["needs"].append("accessible")
 
-            # Parse room types
             if "auditorium" in raw or "audi" in raw:
                 res["room_types"] = ["auditorium"]
             elif "seminar hall" in raw or "sh-1" in raw or "sh-2" in raw:
@@ -273,12 +337,10 @@ class handler(http.server.BaseHTTPRequestHandler):
             elif "oat" in raw or "open air" in raw or "outdoor" in raw:
                 res["room_types"] = ["outdoor"]
 
-            # Parse duration
             dur_match = re.search(r"(\d+)\s*(?:hour|ghante|hr)", raw)
             if dur_match:
                 res["duration_periods"] = int(dur_match.group(1))
 
-            # Parse day
             day_map = {
                 "mon": "MON", "monday": "MON", "somwar": "MON",
                 "tue": "TUE", "tuesday": "TUE", "mangalwar": "TUE",
@@ -295,7 +357,6 @@ class handler(http.server.BaseHTTPRequestHandler):
                         found_day = v
                         break
 
-            # Parse timings
             from_p = 10
             if "6 to 8 pm" in raw or "6 baje" in raw or "6 pm" in raw or "evening" in raw or "shaam" in raw:
                 from_p = 10
@@ -311,5 +372,5 @@ class handler(http.server.BaseHTTPRequestHandler):
             return
 
         self.send_response(404)
-        self.send_cors_headers()
+        self.send_cors_headers("application/json; charset=utf-8")
         self.wfile.write(json.dumps({"error": "Endpoint not found", "path": req_path}).encode("utf-8"))
