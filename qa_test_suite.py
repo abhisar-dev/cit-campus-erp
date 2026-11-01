@@ -467,20 +467,48 @@ class QATestRunner:
     # --------------------------------------------------------------------------
     def test_database_and_cloud(self):
         print("\n--- [SUITE 6: Neon Serverless Database & Dual-Persistence] ---")
+        # Test 1: DB Status & Live Telemetry
         admin_headers = {"Authorization": f"Bearer {self.admin_token}"}
         t_db = TestResult("GET /api/admin/db/status (Neon Serverless Telemetry)", "Database")
         code, body, elapsed, _ = self.request("/api/admin/db/status", headers=admin_headers)
         t_db.duration_ms = elapsed
         if code == 200 and isinstance(body, dict) and body.get("success"):
             neon_info = body.get("neon", {})
+            stats_info = body.get("stats", {})
             provider = neon_info.get("provider", "Unknown")
             is_connected = neon_info.get("connected", False)
             t_db.passed = True
-            t_db.details = f"Provider: {provider} | Connected: {is_connected} | Msg: {neon_info.get('message')}"
+            t_db.details = f"Provider: {provider} | Connected: {is_connected} | Users: {stats_info.get('users_count', 0)} | Bookings: {stats_info.get('custom_bookings_count', 0)}"
         else:
             t_db.passed = False
             t_db.details = f"Status {code}: {body}"
         self.log(t_db)
+
+        # Test 2: OWASP Rejection on Database Management Endpoint
+        t_owasp = TestResult("OWASP Access Control :: POST /api/admin/db/manage (Unauthenticated Rejection)", "Security")
+        code, body, elapsed, _ = self.request("/api/admin/db/manage", method="POST", data={"action": "clear_bookings"})
+        t_owasp.duration_ms = elapsed
+        if code == 401:
+            t_owasp.passed = True
+            t_owasp.details = "Safely blocked anonymous database management attempt: HTTP 401"
+        else:
+            t_owasp.passed = False
+            t_owasp.details = f"Expected HTTP 401, got {code}: {body}"
+        self.log(t_owasp)
+
+        # Test 3: Authorized Database Sanitation & Management
+        t_mgmt = TestResult("Database Management :: POST /api/admin/db/manage (Sanitize Bookings & Lockouts)", "Database")
+        code, body, elapsed, _ = self.request("/api/admin/db/manage", method="POST", data={"action": "clear_bookings"}, headers=admin_headers)
+        t_mgmt.duration_ms = elapsed
+        if code == 200 and isinstance(body, dict) and body.get("success"):
+            # Also reset failed attempt counters from negative testing
+            self.request("/api/admin/db/manage", method="POST", data={"action": "reset_attempts"}, headers=admin_headers)
+            t_mgmt.passed = True
+            t_mgmt.details = f"Cleaned database state: {body.get('message')} (Active custom bookings: {body.get('stats', {}).get('custom_bookings_count', 0)})"
+        else:
+            t_mgmt.passed = False
+            t_mgmt.details = f"Status {code}: {body}"
+        self.log(t_mgmt)
 
     def run_all(self):
         print(f"\n{'='*75}")

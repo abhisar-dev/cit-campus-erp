@@ -2278,30 +2278,126 @@
           </div>
         </div>
 
-        <!-- Local Snapshot & Disaster Recovery -->
+        <!-- Database Management & Maintenance Console -->
+        <div class="content-box" style="max-width: 920px; border-top: 3px solid var(--primary);">
+          <div class="content-box-head">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="font-size: 20px;">🗄️</span>
+              <div>
+                <div class="content-box-title">Database Operations & Sanitation Console</div>
+                <div class="content-box-subtitle">Clear test reservations, unlock accounts, purge disposable users, and manage dual-sync persistence</div>
+              </div>
+            </div>
+            <button class="btn-topbar" style="padding: 5px 12px; font-size: 11px;" onclick="fetchDatabaseTelemetry()">
+              🔄 Refresh DB Stats
+            </button>
+          </div>
+
+          <div style="padding: 22px;">
+            <!-- Database live metrics -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 20px;">
+              <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: 6px; padding: 12px;">
+                <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Active Users</div>
+                <div style="font-size: 18px; font-weight: 800; color: var(--text-main); margin-top: 4px;" id="db-stat-users">${USERS_DATA.length} Accounts</div>
+                <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Institutional directory</div>
+              </div>
+              <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: 6px; padding: 12px;">
+                <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Custom Bookings</div>
+                <div style="font-size: 18px; font-weight: 800; color: ${CUSTOM_BOOKINGS.length > 0 ? '#d97706' : 'var(--green-dark)'}; margin-top: 4px;" id="db-stat-bookings">${CUSTOM_BOOKINGS.length} Requests</div>
+                <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Dynamic reservations</div>
+              </div>
+              <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: 6px; padding: 12px;">
+                <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Booking Overrides</div>
+                <div style="font-size: 18px; font-weight: 800; color: var(--text-main); margin-top: 4px;" id="db-stat-overrides">${Object.keys(BOOKING_OVERRIDES).length} Rules</div>
+                <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">State modifications</div>
+              </div>
+              <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: 6px; padding: 12px;">
+                <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Audit Trail Events</div>
+                <div style="font-size: 18px; font-weight: 800; color: var(--text-main); margin-top: 4px;" id="db-stat-logs">${AUDIT_LOGS.length} Logs</div>
+                <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Security log entries</div>
+              </div>
+            </div>
+
+            <!-- Action buttons grid -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px;">
+              <div style="background: #ffffff; border: 1px solid var(--border); border-radius: 6px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                  <strong style="font-size: 13px;">🧹 Clear Custom Reservations</strong>
+                  <p style="color: var(--text-muted); font-size: 11.5px; margin-top: 4px;">
+                    Purges all dynamic/test student venue bookings and resets timetable overrides across both local store and Neon PostgreSQL.
+                  </p>
+                </div>
+                <button class="btn-topbar" style="margin-top: 12px; background: #fff7ed; border-color: #fdba74; color: #c2410c; font-weight: 700;" onclick="executeDbAction('clear_bookings', 'Purge all custom venue reservations and resets?')">
+                  Clear Bookings (${CUSTOM_BOOKINGS.length})
+                </button>
+              </div>
+
+              <div style="background: #ffffff; border: 1px solid var(--border); border-radius: 6px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                  <strong style="font-size: 13px;">🔓 Unlock Accounts & Reset Attempts</strong>
+                  <p style="color: var(--text-muted); font-size: 11.5px; margin-top: 4px;">
+                    Resets failed login attempt counters to 0 across all student, faculty, and administrative accounts to release lockouts.
+                  </p>
+                </div>
+                <button class="btn-topbar" style="margin-top: 12px; background: #f0fdf4; border-color: #86efac; color: #15803d; font-weight: 700;" onclick="executeDbAction('reset_attempts', 'Reset failed login counters across all accounts?')">
+                  Reset Failed Attempts
+                </button>
+              </div>
+
+              <div style="background: #ffffff; border: 1px solid var(--border); border-radius: 6px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                  <strong style="font-size: 13px;">👤 Purge Disposable Test Users</strong>
+                  <p style="color: var(--text-muted); font-size: 11.5px; margin-top: 4px;">
+                    Removes temporary QA registrations (e.g. alice@gmail.com) while preserving official institutional accounts.
+                  </p>
+                </div>
+                <button class="btn-topbar" style="margin-top: 12px; background: #eff6ff; border-color: #93c5fd; color: #1d4ed8; font-weight: 700;" onclick="executeDbAction('purge_test_users', 'Purge non-standard and test user accounts?')">
+                  Purge Test Users
+                </button>
+              </div>
+
+              <div style="background: #ffffff; border: 1px solid var(--border); border-radius: 6px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                  <strong style="font-size: 13px;">📜 Reset Audit Trail</strong>
+                  <p style="color: var(--text-muted); font-size: 11.5px; margin-top: 4px;">
+                    Restores system security audit events back to the pristine 6 institutional baseline logs.
+                  </p>
+                </div>
+                <button class="btn-topbar" style="margin-top: 12px; background: #faf5ff; border-color: #d8b4fe; color: #7e22ce; font-weight: 700;" onclick="executeDbAction('reset_audit_logs', 'Restore audit logs to baseline defaults?')">
+                  Reset Audit Trail
+                </button>
+              </div>
+            </div>
+
+            <!-- Factory Reset Card -->
+            <div style="border-top: 1px solid var(--border); margin-top: 20px; padding-top: 18px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+              <div>
+                <strong style="color: var(--red); font-size: 13px;">⚠️ Complete Factory Reset to Institutional Baseline</strong>
+                <p style="color: var(--text-muted); font-size: 11.5px; margin-top: 3px;">
+                  Fully sanitizes the entire persistent store and Neon PostgreSQL: restores default accounts, removes all custom bookings, clears overrides, and resets settings.
+                </p>
+              </div>
+              <button class="btn-action btn-action-reject" style="padding: 8px 16px; font-weight: 800; letter-spacing: 0.3px;" onclick="resetBaselineData()">
+                Factory Reset Database
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- System Snapshot & Export -->
         <div class="content-box" style="max-width: 920px;">
           <div class="content-box-head">
-            <div class="content-box-title">System Snapshot & Disaster Recovery</div>
-            <div class="content-box-subtitle">Offline exports and emergency state restoration</div>
+            <div class="content-box-title">System Snapshot & JSON Export</div>
+            <div class="content-box-subtitle">Offline exports and disaster recovery snapshot files</div>
           </div>
           <div style="padding: 22px;">
-            <div style="margin-bottom: 18px;">
+            <div>
               <strong>Export Full System State (JSON)</strong>
               <p style="color: var(--text-muted); font-size: 12px; margin-top: 4px;">
-                Exports institutional users (${USERS_DATA.length}), booking overrides (${Object.keys(BOOKING_OVERRIDES).length}), and audit events (${AUDIT_LOGS.length}) in portable JSON format.
+                Exports institutional users (${USERS_DATA.length}), bookings (${getAllNormalizedBookings().length}), overrides (${Object.keys(BOOKING_OVERRIDES).length}), and audit events (${AUDIT_LOGS.length}) in portable JSON format.
               </p>
               <button class="btn-topbar" style="margin-top: 8px;" onclick="exportFullJSONBackup()">
                 📥 Download Complete Snapshot (JSON)
-              </button>
-            </div>
-
-            <div style="border-top: 1px solid var(--border); padding-top: 18px;">
-              <strong style="color: var(--red);">Reset System State to Institutional Baseline</strong>
-              <p style="color: var(--text-muted); font-size: 12px; margin-top: 4px;">
-                Clears custom student venue reservations and resets all booking statuses to baseline records.
-              </p>
-              <button class="btn-action btn-action-reject" style="margin-top: 8px; padding: 7px 14px;" onclick="resetBaselineData()">
-                Reset to Baseline Data
               </button>
             </div>
           </div>
@@ -2369,14 +2465,48 @@
       showToast("✓ System backup downloaded.");
     }
 
-    function resetBaselineData() {
-      if (!confirm("Are you sure you want to reset custom bookings to baseline institute data?")) return;
-      localStorage.removeItem('cit_custom_bookings');
-      localStorage.removeItem('cit_booking_overrides');
-      CUSTOM_BOOKINGS = [];
-      BOOKING_OVERRIDES = {};
-      refreshAdminState(true);
-      showToast("✓ Reset to baseline data completed.");
+    async function executeDbAction(action, confirmMsg) {
+      if (confirmMsg && !confirm(confirmMsg)) return;
+      showToast('Executing database operation: ' + action + '...');
+      try {
+        const res = await fetch('/api/admin/db/manage', {
+          method: 'POST',
+          headers: getAdminHeaders(),
+          body: JSON.stringify({ action: action })
+        }).then(r => r.json());
+
+        if (res && res.success) {
+          if (action === 'clear_bookings' || action === 'reset_baseline') {
+            localStorage.removeItem('cit_custom_bookings');
+            localStorage.removeItem('cit_booking_overrides');
+            CUSTOM_BOOKINGS = [];
+            BOOKING_OVERRIDES = {};
+          }
+          await refreshAdminState(true);
+          showToast('✓ ' + (res.message || 'Operation completed successfully.'));
+        } else {
+          showToast('⚠ Error: ' + (res.message || 'Database operation failed.'));
+        }
+      } catch (e) {
+        showToast('⚠ Failed to execute database operation.');
+      }
+    }
+
+    async function fetchDatabaseTelemetry() {
+      try {
+        const res = await fetch('/api/admin/db/status').then(r => r.json());
+        if (res && res.stats) {
+          showToast(`✓ DB Telemetry: ${res.stats.users_count} users, ${res.stats.custom_bookings_count} bookings, ${res.stats.audit_logs_count} logs`);
+          await refreshAdminState(true);
+        }
+      } catch (e) {
+        showToast('⚠ Could not retrieve telemetry.');
+      }
+    }
+
+    async function resetBaselineData() {
+      if (!confirm("DANGER: Are you sure you want to completely factory reset the database to baseline? This will erase all custom reservations, test accounts, and reload pristine defaults.")) return;
+      await executeDbAction('reset_baseline');
     }
 
     /* -------------------------------------------------------------------------

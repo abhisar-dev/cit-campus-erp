@@ -251,6 +251,7 @@ AUDIT_LOGS = [
     {"id": "AUD-105", "user": "Cultural Committee", "email": "cultural@cit.ac.in", "role": "club", "action": "Requested Audi-1 for Spectra Fest Cultural Night (BR-01)", "module": "Venue Bookings", "status": "Approved", "timestamp": "1h ago", "online": False},
     {"id": "AUD-106", "user": "Office of Academic Affairs", "email": "admin@cit.ac.in", "role": "admin", "action": "Executed OR-Tools CP-SAT solver constraint validation (0 hard violations)", "module": "Academic Engine", "status": "Success", "timestamp": "2h ago", "online": True}
 ]
+INITIAL_AUDIT_LOGS = [dict(x) for x in AUDIT_LOGS]
 WEBSITE_SETTINGS = {
     "announcement": "Welcome to Chilika Institute of Technology (CIT) Campus ERP · Conflict-Free Timetable & Venue Services Active",
     "maintenance": False,
@@ -318,28 +319,45 @@ OFFICIAL_ANNOUNCEMENTS = [
 
 DB_FILE = "/tmp/cit_users_db.json"
 
-def _apply_saved_state(saved: dict):
+def _apply_saved_state(saved: dict, replace_all: bool = False):
     global USERS_DB, USER_CREDENTIALS, USER_PROFILES, CUSTOM_BOOKINGS, BOOKING_OVERRIDES, AUDIT_LOGS, WEBSITE_SETTINGS
-    if "users" in saved and isinstance(saved["users"], list):
-        for u in saved["users"]:
-            if not any(x["email"].lower() == u["email"].lower() for x in USERS_DB):
-                USERS_DB.append(u)
-            else:
-                existing = next((x for x in USERS_DB if x["email"].lower() == u["email"].lower()), None)
-                if existing and u.get("password_hash") and not existing.get("password_hash"):
-                    existing["password_hash"] = u["password_hash"]
-    if "credentials" in saved and isinstance(saved["credentials"], dict):
-        USER_CREDENTIALS.update(saved["credentials"])
-    if "profiles" in saved and isinstance(saved["profiles"], dict):
-        USER_PROFILES.update(saved["profiles"])
-    if "custom_bookings" in saved and isinstance(saved["custom_bookings"], list):
-        CUSTOM_BOOKINGS = saved["custom_bookings"]
-    if "booking_overrides" in saved and isinstance(saved["booking_overrides"], dict):
-        BOOKING_OVERRIDES.update(saved["booking_overrides"])
-    if "audit_logs" in saved and isinstance(saved["audit_logs"], list) and len(saved["audit_logs"]) > 0:
-        AUDIT_LOGS = saved["audit_logs"]
-    if "settings" in saved and isinstance(saved["settings"], dict):
-        WEBSITE_SETTINGS.update(saved["settings"])
+    if replace_all:
+        if "users" in saved and isinstance(saved["users"], list):
+            USERS_DB = list(saved["users"])
+        if "credentials" in saved and isinstance(saved["credentials"], dict):
+            USER_CREDENTIALS = dict(saved["credentials"])
+        if "profiles" in saved and isinstance(saved["profiles"], dict):
+            USER_PROFILES = dict(saved["profiles"])
+        if "custom_bookings" in saved and isinstance(saved["custom_bookings"], list):
+            CUSTOM_BOOKINGS = list(saved["custom_bookings"])
+        if "booking_overrides" in saved and isinstance(saved["booking_overrides"], dict):
+            BOOKING_OVERRIDES = dict(saved["booking_overrides"])
+        if "audit_logs" in saved and isinstance(saved["audit_logs"], list):
+            AUDIT_LOGS = list(saved["audit_logs"])
+        if "settings" in saved and isinstance(saved["settings"], dict):
+            WEBSITE_SETTINGS.clear()
+            WEBSITE_SETTINGS.update(saved["settings"])
+    else:
+        if "users" in saved and isinstance(saved["users"], list):
+            for u in saved["users"]:
+                if not any(x["email"].lower() == u["email"].lower() for x in USERS_DB):
+                    USERS_DB.append(u)
+                else:
+                    existing = next((x for x in USERS_DB if x["email"].lower() == u["email"].lower()), None)
+                    if existing and u.get("password_hash") and not existing.get("password_hash"):
+                        existing["password_hash"] = u["password_hash"]
+        if "credentials" in saved and isinstance(saved["credentials"], dict):
+            USER_CREDENTIALS.update(saved["credentials"])
+        if "profiles" in saved and isinstance(saved["profiles"], dict):
+            USER_PROFILES.update(saved["profiles"])
+        if "custom_bookings" in saved and isinstance(saved["custom_bookings"], list):
+            CUSTOM_BOOKINGS = saved["custom_bookings"]
+        if "booking_overrides" in saved and isinstance(saved["booking_overrides"], dict):
+            BOOKING_OVERRIDES.update(saved["booking_overrides"])
+        if "audit_logs" in saved and isinstance(saved["audit_logs"], list) and len(saved["audit_logs"]) > 0:
+            AUDIT_LOGS = saved["audit_logs"]
+        if "settings" in saved and isinstance(saved["settings"], dict):
+            WEBSITE_SETTINGS.update(saved["settings"])
 
     for u in USERS_DB:
         if u.get("password_hash") and u.get("email"):
@@ -359,7 +377,7 @@ def load_persistent_db():
         try:
             neon_state = neon_db.load_state_from_neon()
             if neon_state:
-                _apply_saved_state(neon_state)
+                _apply_saved_state(neon_state, replace_all=True)
                 print("[DATABASE] Successfully loaded state from Neon Serverless PostgreSQL.")
                 return
             else:
@@ -373,7 +391,7 @@ def load_persistent_db():
         if os.path.exists(DB_FILE):
             with open(DB_FILE, "r", encoding="utf-8") as f:
                 saved = json.load(f)
-                _apply_saved_state(saved)
+                _apply_saved_state(saved, replace_all=True)
                 # Seed Neon if connected but empty
                 if neon_db and neon_db.is_neon_configured():
                     neon_db.save_state_to_neon(saved)
@@ -622,7 +640,18 @@ class handler(http.server.BaseHTTPRequestHandler):
             self.send_response(200)
             self.send_cors_headers("application/json; charset=utf-8")
             status = neon_db.test_neon_status() if neon_db else {"configured": False, "provider": "Local Store"}
-            self.wfile.write(json.dumps({"success": True, "neon": status}).encode("utf-8"))
+            self.wfile.write(json.dumps({
+                "success": True,
+                "neon": status,
+                "stats": {
+                    "users_count": len(USERS_DB),
+                    "credentials_count": len(USER_CREDENTIALS),
+                    "custom_bookings_count": len(CUSTOM_BOOKINGS),
+                    "booking_overrides_count": len(BOOKING_OVERRIDES),
+                    "audit_logs_count": len(AUDIT_LOGS),
+                    "failed_logins": sum(1 for c in USER_CREDENTIALS.values() if c.get("failed_attempts", 0) > 0)
+                }
+            }).encode("utf-8"))
             return
 
         if req_path.endswith("/api/admin/bookings") or req_path == "/admin/bookings":
@@ -1349,6 +1378,97 @@ class handler(http.server.BaseHTTPRequestHandler):
             except Exception:
                 pass
             self.wfile.write(json.dumps({"success": True, "settings": WEBSITE_SETTINGS}).encode("utf-8"))
+            return
+
+        if req_path.endswith("/api/admin/db/manage") or req_path == "/admin/db/manage":
+            try:
+                data = json.loads(body)
+            except Exception:
+                data = {}
+            if not verify_admin_clearance(self.headers, data):
+                self.send_response(401)
+                self.send_cors_headers("application/json; charset=utf-8")
+                self.wfile.write(json.dumps({"success": False, "message": "Unauthorized. Administrative clearance required to manage database."}).encode("utf-8"))
+                return
+
+            action = data.get("action", "status")
+            standard_emails = {"student@cit.ac.in", "faculty@cit.ac.in", "spectra.club@cit.ac.in", "admin@cit.ac.in", "admin"}
+
+            if action == "clear_bookings":
+                count = len(CUSTOM_BOOKINGS)
+                CUSTOM_BOOKINGS.clear()
+                BOOKING_OVERRIDES.clear()
+                save_persistent_db()
+                msg = f"Successfully purged {count} custom venue reservation(s) and reset overrides."
+            elif action == "reset_attempts":
+                reset_count = sum(1 for c in USER_CREDENTIALS.values() if c.get("failed_attempts", 0) > 0)
+                for c in USER_CREDENTIALS.values():
+                    c["failed_attempts"] = 0
+                save_persistent_db()
+                msg = f"Reset failed login attempt counters on {reset_count} account(s)."
+            elif action == "purge_test_users":
+                initial_u = len(USERS_DB)
+                initial_c = len(USER_CREDENTIALS)
+                USERS_DB[:] = [u for u in USERS_DB if u.get("email") in standard_emails]
+                for k in list(USER_CREDENTIALS.keys()):
+                    if k not in standard_emails:
+                        del USER_CREDENTIALS[k]
+                    else:
+                        USER_CREDENTIALS[k]["failed_attempts"] = 0
+                save_persistent_db()
+                msg = f"Purged {initial_u - len(USERS_DB)} non-standard user(s) and {initial_c - len(USER_CREDENTIALS)} test credential(s)."
+            elif action == "reset_audit_logs":
+                AUDIT_LOGS.clear()
+                AUDIT_LOGS.extend(INITIAL_AUDIT_LOGS)
+                save_persistent_db()
+                msg = f"Reset audit trail to {len(INITIAL_AUDIT_LOGS)} baseline events."
+            elif action == "reset_baseline":
+                USERS_DB[:] = [
+                    {"id": "CIT-U001", "name": "Arjun Sharma", "email": "student@cit.ac.in", "role": "student", "cohort": "Y1-A", "status": "Active", "last_active": "Just now", "password_hash": hash_password("password123")},
+                    {"id": "CIT-U002", "name": "Dr. Priya Nair", "email": "faculty@cit.ac.in", "role": "faculty", "cohort": "Faculty Member", "status": "Active", "last_active": "12m ago"},
+                    {"id": "CIT-U003", "name": "Spectra Tech Club", "email": "spectra.club@cit.ac.in", "role": "club", "cohort": "Club Operations", "status": "Active", "last_active": "1h ago"}
+                ]
+                USER_CREDENTIALS.clear()
+                USER_CREDENTIALS.update({
+                    "student@cit.ac.in": {"hash": hash_password("password123"), "failed_attempts": 0},
+                    "faculty@cit.ac.in": {"hash": hash_password("faculty123"), "failed_attempts": 0},
+                    "spectra.club@cit.ac.in": {"hash": hash_password("club123"), "failed_attempts": 0},
+                    "admin@cit.ac.in": {"hash": hash_password("admin123"), "failed_attempts": 0},
+                    "admin": {"hash": hash_password("admin123"), "failed_attempts": 0}
+                })
+                CUSTOM_BOOKINGS.clear()
+                BOOKING_OVERRIDES.clear()
+                USER_PROFILES.clear()
+                AUDIT_LOGS.clear()
+                AUDIT_LOGS.extend(INITIAL_AUDIT_LOGS)
+                WEBSITE_SETTINGS.clear()
+                WEBSITE_SETTINGS.update({
+                    "announcement": "Welcome to Chilika Institute of Technology (CIT) Campus ERP · Conflict-Free Timetable & Venue Services Active",
+                    "maintenance": False,
+                    "allow_signup": True,
+                    "ai_assistant": True
+                })
+                save_persistent_db()
+                msg = "Complete database reset to institutional factory baseline successfully executed."
+            else:
+                msg = "Database status queried."
+
+            self.send_response(200)
+            self.send_cors_headers("application/json; charset=utf-8")
+            status = neon_db.test_neon_status() if neon_db else {"configured": False, "provider": "Local Store"}
+            self.wfile.write(json.dumps({
+                "success": True,
+                "message": msg,
+                "stats": {
+                    "users_count": len(USERS_DB),
+                    "credentials_count": len(USER_CREDENTIALS),
+                    "custom_bookings_count": len(CUSTOM_BOOKINGS),
+                    "booking_overrides_count": len(BOOKING_OVERRIDES),
+                    "audit_logs_count": len(AUDIT_LOGS),
+                    "failed_logins": sum(1 for c in USER_CREDENTIALS.values() if c.get("failed_attempts", 0) > 0),
+                    "neon": status
+                }
+            }).encode("utf-8"))
             return
 
         if req_path.endswith("/api/admin/db/setup") or req_path == "/admin/db/setup":
