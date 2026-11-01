@@ -2085,18 +2085,6 @@
       `;
     }
 
-    showToast("Announcement ticker paused.");
-      } else {
-        track.classList.remove("is-paused");
-        if (pauseIcon) pauseIcon.style.display = "block";
-        if (playIcon) playIcon.style.display = "none";
-        if (toggleBtn) {
-          toggleBtn.setAttribute("title", "Pause announcement scroller");
-          toggleBtn.setAttribute("aria-label", "Pause scroller");
-        }
-        showToast("Announcement ticker resumed.");
-      }
-    }
 
     function openNoticeModal(id) {
       window.currentNoticeModalId = id;
