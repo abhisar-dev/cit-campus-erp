@@ -2711,33 +2711,234 @@ function renderBookings(content) {
     }
 
     // 3. AI BOOKING ASSISTANT
+    const CIT_PERIOD_TIMES = {
+      1: { start: '08:00', end: '09:00' },
+      2: { start: '09:00', end: '10:00' },
+      3: { start: '10:00', end: '11:00' },
+      4: { start: '11:00', end: '12:00' },
+      5: { start: '12:00', end: '13:00' },
+      6: { start: '14:00', end: '15:00' },
+      7: { start: '15:00', end: '16:00' },
+      8: { start: '16:00', end: '17:00' },
+      9: { start: '17:00', end: '18:00' },
+      10: { start: '18:00', end: '19:00' },
+      11: { start: '19:00', end: '20:00' },
+      12: { start: '20:00', end: '21:00' },
+      13: { start: '21:00', end: '22:00' }
+    };
+
+    function getPeriodTimeString(startP, endP) {
+      const s = CIT_PERIOD_TIMES[startP] ? CIT_PERIOD_TIMES[startP].start : `P${startP}`;
+      const e = CIT_PERIOD_TIMES[endP] ? CIT_PERIOD_TIMES[endP].end : `P${endP}`;
+      return `${s} – ${e}`;
+    }
+
+    function getFullDayName(d) {
+      const map = { MON: 'Monday', TUE: 'Tuesday', WED: 'Wednesday', THU: 'Thursday', FRI: 'Friday', SAT: 'Saturday' };
+      return map[d] || d;
+    }
+
+    function detectRoomFromQuery(q) {
+      const lower = q.toLowerCase();
+      const crMatch = q.match(/\bCR[-\s]?([12]0[1-5])\b/i);
+      if (crMatch) return `CR-${crMatch[1]}`;
+
+      const lhMatch = q.match(/\bLH[-\s]?([1-6])\b/i);
+      if (lhMatch) return `LH-${lhMatch[1]}`;
+
+      const shMatch = q.match(/\bSH[-\s]?([12])\b/i);
+      if (shMatch) return `SH-${shMatch[1]}`;
+
+      const csMatch = q.match(/\bCS[-\s]?(?:LAB)?[-\s]?([12])\b/i);
+      if (csMatch) return `CS-LAB-${csMatch[1]}`;
+
+      const elecMatch = q.match(/\b(?:ELEC|EE)[-\s]?(?:LAB)?[-\s]?([12])\b/i);
+      if (elecMatch) return `ELEC-LAB-${elecMatch[1]}`;
+
+      if (lower.includes('oat') || lower.includes('open air') || lower.includes('amphi')) return 'OAT';
+      if (lower.includes('phy') || lower.includes('physics lab')) return 'PHY-LAB';
+      if (lower.includes('mech') || lower.includes('workshop')) return 'MECH-WS';
+      if (lower.includes('civil') || lower.includes('civil lab')) return 'CIVIL-LAB';
+      if (lower.includes('audi') || lower.includes('aud') || lower.includes('auditorium')) return 'AUD';
+      if (lower.includes('seminar') || lower.includes('sh-1') || lower.includes('sh1')) return 'SH-1';
+      if (lower.includes('computer lab') || lower.includes('cslab')) return 'CS-LAB-1';
+      if (lower.includes('electronics lab')) return 'ELEC-LAB-1';
+      if (lower.includes('lecture hall') || lower.includes('lh')) return 'LH-1';
+      if (lower.includes('classroom') || lower.includes('class room')) return 'CR-101';
+
+      return null;
+    }
+
+    function detectDayFromQuery(q) {
+      const lower = q.toLowerCase();
+      if (lower.includes('mon') || lower.includes('somwar')) return 'MON';
+      if (lower.includes('tue') || lower.includes('mangal')) return 'TUE';
+      if (lower.includes('wed') || lower.includes('budh')) return 'WED';
+      if (lower.includes('thu') || lower.includes('guru') || lower.includes('brihaspati')) return 'THU';
+      if (lower.includes('fri') || lower.includes('shukra')) return 'FRI';
+      if (lower.includes('sat') || lower.includes('shani')) return 'SAT';
+
+      if (lower.includes('today') || lower.includes('aaj')) {
+        const days = ['MON', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'MON'];
+        return days[new Date().getDay()] || 'MON';
+      }
+      if (lower.includes('tomorrow') || lower.includes('kal')) {
+        const days = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'MON', 'MON'];
+        return days[new Date().getDay()] || 'TUE';
+      }
+
+      return 'FRI';
+    }
+
+    function detectPeriodsFromQuery(q) {
+      const lower = q.toLowerCase();
+      
+      const rangeMatch = q.match(/(?:P|period|slot)\s*([0-9]{1,2})\s*(?:to|se|-|through|\/)\s*(?:P|period|slot)?\s*([0-9]{1,2})/i);
+      if (rangeMatch) {
+        const s = Math.min(13, Math.max(1, parseInt(rangeMatch[1], 10)));
+        const e = Math.min(13, Math.max(s, parseInt(rangeMatch[2], 10)));
+        return { startP: s, endP: e, explicit: true };
+      }
+
+      const singleMatch = q.match(/(?:P|period|slot)\s*([0-9]{1,2})\b/i);
+      if (singleMatch) {
+        const p = Math.min(13, Math.max(1, parseInt(singleMatch[1], 10)));
+        return { startP: p, endP: p, explicit: true };
+      }
+
+      if (lower.includes('morning') || lower.includes('subah') || lower.includes('10 am') || lower.includes('11 am') || lower.includes('9 am')) {
+        return { startP: 2, endP: 3, explicit: true };
+      }
+      if (lower.includes('lunch') || lower.includes('dopeher') || lower.includes('12 pm') || lower.includes('1 pm')) {
+        return { startP: 4, endP: 5, explicit: true };
+      }
+      if (lower.includes('afternoon') || lower.includes('dopahar') || lower.includes('2 pm') || lower.includes('3 pm')) {
+        return { startP: 6, endP: 7, explicit: true };
+      }
+      if (lower.includes('evening') || lower.includes('shaam') || lower.includes('4 pm') || lower.includes('5 pm')) {
+        return { startP: 8, endP: 9, explicit: true };
+      }
+      if (lower.includes('night') || lower.includes('raat') || lower.includes('6 pm') || lower.includes('7 pm') || lower.includes('8 pm')) {
+        return { startP: 10, endP: 12, explicit: true };
+      }
+
+      return { startP: 6, endP: 7, explicit: false };
+    }
+
+    function checkRoomOccupancy(room, day, startP, endP, customList) {
+      if (SCHED && SCHED.sessions) {
+        for (const item of SCHED.sessions) {
+          if (item.room_id === room && item.day === day) {
+            const s = (DATA && DATA.sessions) ? DATA.sessions.find(sess => sess.id === item.session_id) : null;
+            const duration = s ? (s.duration || 1) : 1;
+            const itemEnd = item.start_period + duration - 1;
+            if (!(endP < item.start_period || startP > itemEnd)) {
+              const facObj = (DATA && DATA.faculty) ? DATA.faculty.find(f => f.id === item.faculty_id || f.id === (s ? s.faculty_id : '')) : null;
+              const facultyName = facObj ? facObj.name : (item.faculty_id || (s ? s.faculty_id : 'Faculty'));
+              return {
+                type: 'Academic Lecture/Lab',
+                course: s ? s.course_id : 'Session',
+                faculty: facultyName,
+                groups: (s && s.groups) ? s.groups.join(', ') : '',
+                period: `P${item.start_period}–P${itemEnd}`
+              };
+            }
+          }
+        }
+      }
+
+      if (customList && customList.length) {
+        for (const b of customList) {
+          if (b.room_id === room && (b.day === day || b.day === getFullDayName(day)) && b.status === 'approved') {
+            const bStart = parseInt(b.start_period, 10) || 1;
+            const bEnd = parseInt(b.end_period, 10) || bStart;
+            if (!(endP < bStart || startP > bEnd)) {
+              return {
+                type: 'Confirmed Venue Reservation',
+                course: b.title || 'Reserved Event',
+                faculty: b.requester || 'Campus Member',
+                groups: '',
+                period: `P${bStart}–P${bEnd}`
+              };
+            }
+          }
+        }
+      }
+
+      return null;
+    }
+
+    function getFreeSlotsForRoom(room, day, customList) {
+      const freePeriods = [];
+      for (let p = 1; p <= 13; p++) {
+        const clash = checkRoomOccupancy(room, day, p, p, customList);
+        if (!clash) freePeriods.push(p);
+      }
+      return freePeriods;
+    }
+
+    function groupContiguousSlots(periods) {
+      if (!periods || !periods.length) return [];
+      const groups = [];
+      let curStart = periods[0];
+      let curEnd = periods[0];
+      for (let i = 1; i < periods.length; i++) {
+        if (periods[i] === curEnd + 1) {
+          curEnd = periods[i];
+        } else {
+          groups.push({ start: curStart, end: curEnd });
+          curStart = periods[i];
+          curEnd = periods[i];
+        }
+      }
+      groups.push({ start: curStart, end: curEnd });
+      return groups;
+    }
+
+    function getFreeRoomsForSlot(day, startP, endP, customList) {
+      const allRooms = (DATA && DATA.rooms) ? DATA.rooms : [];
+      const freeRooms = [];
+      for (const r of allRooms) {
+        const clash = checkRoomOccupancy(r.id, day, startP, endP, customList);
+        if (!clash) {
+          freeRooms.push({
+            id: r.id,
+            capacity: r.capacity || 60,
+            type: r.type || 'hall'
+          });
+        }
+      }
+      return freeRooms;
+    }
+
     function renderAI(content) {
       content.innerHTML = `
-        <div class="content-card" style="max-width: 850px; margin: 0 auto;">
+        <div class="content-card" style="max-width: 880px; margin: 0 auto;">
           <div class="card-title-row">
             <div>
               <div class="title-text">AI Venue Booking Assistant</div>
-              <div class="subtitle-text">Natural language booking query · Supports English and Hinglish</div>
+              <div class="subtitle-text">Natural language venue check & instant reservation · Supports English and Hinglish</div>
             </div>
             <span class="mono" style="font-size: 11px; background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); padding: 3px 8px; border-radius: 4px; font-weight: 700;">
-              AI Online
+              AI Online · Real-time Precedence Engine
             </span>
           </div>
 
           <div style="display: flex; gap: 8px; margin-bottom: 12px;">
-            <input type="text" id="ai-query-input" class="form-input" placeholder="e.g. Can we book Seminar Hall SH-1 on Friday from P6 to P8 for guest lecture?" onkeydown="if(event.key==='Enter') handleAIQuery();" />
+            <input type="text" id="ai-query-input" class="form-input" placeholder="e.g. Auditorium AUD chahiye Friday P6 se P8 tak for drama club rehearsal" onkeydown="if(event.key==='Enter') handleAIQuery();" />
             <button onclick="handleAIQuery()" class="btn-submit" style="width: auto; padding: 0 20px; white-space: nowrap; margin-top: 0;">Check Venue</button>
           </div>
 
-          <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 16px;">
-            <strong>Quick Queries:</strong>
-            <a href="javascript:void(0)" onclick="setQuery('Auditorium AUD chahiye Friday P6 se P8 tak for drama club rehearsal')" style="color: var(--primary); margin-left: 6px;">Auditorium Friday P6-P8</a> · 
-            <a href="javascript:void(0)" onclick="setQuery('Is CR-101 available on Monday P3 for robotics club?')" style="color: var(--primary); margin-left: 6px;">CR-101 Monday P3</a> ·
-            <a href="javascript:void(0)" onclick="setQuery('Need SH-1 on Wednesday P2 for AI workshop')" style="color: var(--primary); margin-left: 6px;">SH-1 Wednesday P2</a>
+          <div style="font-size: 11.5px; color: var(--text-muted); margin-bottom: 16px; line-height: 1.8;">
+            <strong style="color: var(--text-main);">Quick Conflict-Free Queries:</strong>
+            <a href="javascript:void(0)" onclick="setQuery('Auditorium AUD chahiye Friday P6 se P8 tak for drama club rehearsal')" style="color: var(--primary); font-weight: 700; margin-left: 6px;">Auditorium Friday P6-P8</a> · 
+            <a href="javascript:void(0)" onclick="setQuery('Is CR-101 available on Monday Period 5 for robotics club?')" style="color: var(--primary); font-weight: 700; margin-left: 6px;">CR-101 Monday P5</a> ·
+            <a href="javascript:void(0)" onclick="setQuery('Need Seminar Hall SH-1 on Wednesday afternoon for AI workshop')" style="color: var(--primary); font-weight: 700; margin-left: 6px;">SH-1 Wednesday Afternoon</a> ·
+            <a href="javascript:void(0)" onclick="setQuery('Show all available free venues on Friday')" style="color: #0284c7; font-weight: 700; margin-left: 6px;">🏛️ Explore Friday Venues</a>
           </div>
 
           <div id="ai-response-area" style="background: var(--yellow-light); border: 1px solid var(--yellow-border); border-radius: 6px; padding: 16px; min-height: 120px; font-size: 12px; line-height: 1.6;">
-            <div style="color: var(--text-muted);">Ask any venue booking question above in English or Hinglish to check real-time availability and apply instantly.</div>
+            <div style="color: var(--text-muted);">Ask any venue booking question above or click a quick query to check conflict-free availability and apply instantly.</div>
           </div>
 
           <!-- Inline Venue Booking Application Container -->
@@ -2747,12 +2948,14 @@ function renderBookings(content) {
     }
 
     function setQuery(text) {
-      document.getElementById('ai-query-input').value = text;
+      const input = document.getElementById('ai-query-input');
+      if (input) input.value = text;
       handleAIQuery();
     }
 
     async function handleAIQuery() {
-      const q = document.getElementById('ai-query-input').value.trim();
+      const qInput = document.getElementById('ai-query-input');
+      const q = qInput ? qInput.value.trim() : '';
       if (window.CITAnalytics) window.CITAnalytics.trackEvent('AI Venue Assistant', 'Query Submitted', q);
       if (!q) return;
 
@@ -2760,141 +2963,237 @@ function renderBookings(content) {
       const formContainer = document.getElementById('ai-booking-form-container');
       if (formContainer) formContainer.style.display = 'none';
 
-      area.innerHTML = "<div style='color: var(--gold-dark); font-weight: 700;'>Checking timetable and precedence constraints...</div>";
+      area.innerHTML = "<div style='color: var(--gold-dark); font-weight: 700;'>Checking real-time timetable and precedence constraints...</div>";
 
-      // Detect room
-      const lower = q.toLowerCase();
-      let matchedRoom = 'AUD';
-      if (lower.includes('oat')) matchedRoom = 'OAT';
-      else if (lower.includes('phy-lab') || lower.includes('physics lab')) matchedRoom = 'PHY-LAB';
-      else if (lower.includes('mech-ws') || lower.includes('mechanical')) matchedRoom = 'MECH-WS';
-      else if (lower.includes('civil-lab') || lower.includes('civil lab')) matchedRoom = 'CIVIL-LAB';
-      else {
-        const rMatch = q.match(/\b(LH-[1-6]|CR-[12]0[1-5]|SH-[12]|CS-LAB-[12]|ELEC-LAB-[12])\b/i);
-        if (rMatch) {
-          matchedRoom = rMatch[1].toUpperCase();
-        } else if (lower.includes('seminar') || lower.includes('sh-1') || lower.includes('sh1') || lower.includes('sem-01')) {
-          matchedRoom = 'SH-1';
-        } else if (lower.includes('audi') || lower.includes('aud')) {
-          matchedRoom = 'AUD';
-        } else if (lower.includes('lecture hall') || lower.includes('lh1')) {
-          matchedRoom = 'LH-1';
-        }
-      }
-
-      // Detect day
-      let day = 'MON';
-      if (lower.includes('tue') || lower.includes('mangal')) day = 'TUE';
-      else if (lower.includes('wed') || lower.includes('budh')) day = 'WED';
-      else if (lower.includes('thu') || lower.includes('guru') || lower.includes('brihaspati')) day = 'THU';
-      else if (lower.includes('fri') || lower.includes('shukra')) day = 'FRI';
-
-      // Detect periods
-      let startP = 6;
-      let endP = 7;
-      const pMatch = q.match(/P([1-9])(?:\s*(?:to|se|-)\s*P?([1-9]))?/i);
-      if (pMatch) {
-        startP = parseInt(pMatch[1], 10);
-        endP = pMatch[2] ? parseInt(pMatch[2], 10) : startP;
-      } else if (lower.includes('morning') || lower.includes('subah') || lower.includes('10 am')) {
-        startP = 2; endP = 3;
-      } else if (lower.includes('evening') || lower.includes('shaam') || lower.includes('4 pm')) {
-        startP = 7; endP = 8;
-      }
-
-      // Verify against real dataset sessions
-      let clash = null;
-      if (SCHED && SCHED.sessions) {
-        for (const item of SCHED.sessions) {
-          if (item.room_id === matchedRoom && item.day === day) {
-            const s = (DATA.sessions || []).find(sess => sess.id === item.session_id);
-            const duration = s ? s.duration : 1;
-            const itemEnd = item.start_period + duration - 1;
-            if (!(endP < item.start_period || startP > itemEnd)) {
-              clash = {
-                type: 'Academic Lecture/Lab',
-                details: `${s ? s.course_id : 'Session'} (${s ? s.groups.join(', ') : ''}) with Faculty ${item.faculty_id}`,
-                period: `P${item.start_period}–P${itemEnd}`
-              };
-              break;
-            }
-          }
-        }
-      }
-
-      // Verify against custom confirmed bookings only (fake fest_week bot data removed)
       let customList = [];
       try {
         customList = JSON.parse(localStorage.getItem('cit_custom_bookings') || '[]');
       } catch (e) {}
 
-      if (!clash && customList && customList.length) {
-        for (const b of customList) {
-          if (b.room_id === matchedRoom && b.day === day && b.status === 'approved') {
-            if (!(endP < b.start_period || startP > b.end_period)) {
-              clash = {
-                type: 'Confirmed Venue Reservation',
-                details: b.title || 'Approved Booking',
-                period: `P${b.start_period}–P${b.end_period}`
-              };
-              break;
-            }
-          }
-        }
+      const lower = q.toLowerCase();
+      const detectedRoom = detectRoomFromQuery(q);
+      const isExploratory = !detectedRoom || lower.includes('show all') || lower.includes('all available') || lower.includes('all venues') || lower.includes('which rooms') || lower.includes('kya khali hai') || lower.includes('explore');
+      const day = detectDayFromQuery(q);
+      const fullDay = getFullDayName(day);
+      const detectedTitle = extractEventTitle(q);
+
+      // SCENARIO 1: EXPLORATORY VENUE QUERY (Show full availability grid)
+      if (isExploratory) {
+        const allRooms = (DATA && DATA.rooms) ? DATA.rooms : [];
+        const days = ['MON', 'TUE', 'WED', 'THU', 'FRI'];
+
+        const categorized = {
+          'Auditoriums & Open Stages': allRooms.filter(r => ['auditorium', 'outdoor'].includes(r.type) || ['AUD', 'OAT'].includes(r.id)),
+          'Seminar & Audio-Visual Halls': allRooms.filter(r => r.type === 'seminar' || ['SH-1', 'SH-2'].includes(r.id)),
+          'Lecture Halls': allRooms.filter(r => r.type === 'lecture_hall' || r.id.startsWith('LH-')),
+          'Classrooms': allRooms.filter(r => r.type === 'classroom' || r.id.startsWith('CR-')),
+          'Labs & Workshops': allRooms.filter(r => r.type === 'lab' || r.id.includes('LAB') || r.id.includes('WS'))
+        };
+
+        area.innerHTML = `
+          <div style="background: #ffffff; border: 1.5px solid var(--primary); border-radius: 8px; padding: 18px; margin-bottom: 8px; box-shadow: 0 4px 12px rgba(15,23,42,0.06);">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+              <div>
+                <div style="font-size: 11px; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px;">Campus Venue Availability Explorer</div>
+                <div style="font-size: 17px; font-weight: 800; color: var(--text-main); margin-top: 2px;">
+                  🏛️ Conflict-Free Venues Available on ${fullDay}
+                </div>
+              </div>
+              <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                ${days.map(d => `
+                  <button type="button" class="btn-topbar ${d === day ? 'active' : ''}" style="padding: 5px 12px; font-size: 11px; font-weight: 800; ${d === day ? 'background:var(--primary); color:#fff; border-color:var(--primary);' : ''}" onclick="setQuery('Show available venues on ${d}')">${d}</button>
+                `).join('')}
+              </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+              ${Object.entries(categorized).map(([catTitle, rooms]) => {
+                if (!rooms.length) return '';
+                return `
+                  <div>
+                    <div style="font-size: 12px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px;">
+                      ${catTitle} (${rooms.length})
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px;">
+                      ${rooms.map(r => {
+                        const freeP = getFreeSlotsForRoom(r.id, day, customList);
+                        const groups = groupContiguousSlots(freeP);
+                        const isAllFree = freeP.length === 13;
+                        let badge = '';
+                        if (isAllFree) {
+                          badge = '<span style="color:#166534; background:#dcfce7; padding:2px 7px; border-radius:4px; font-weight:700; font-size:10.5px;">✓ 100% Free All Day</span>';
+                        } else if (groups.length) {
+                          badge = `<span style="color:#0369a1; background:#e0f2fe; padding:2px 7px; border-radius:4px; font-weight:700; font-size:10.5px;">✓ Free: ${groups.map(g => g.start === g.end ? `P${g.start}` : `P${g.start}–${g.end}`).slice(0, 2).join(', ')}${groups.length > 2 ? '...' : ''}</span>`;
+                        } else {
+                          badge = '<span style="color:#991b1b; background:#fee2e2; padding:2px 7px; border-radius:4px; font-weight:700; font-size:10.5px;">Fully Occupied</span>';
+                        }
+
+                        const targetSlot = groups.length ? groups[0] : { start: 6, end: 7 };
+
+                        return `
+                          <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: 6px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between;">
+                            <div>
+                              <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 6px; margin-bottom: 4px;">
+                                <strong style="color: var(--primary); font-size: 13.5px;">${r.id}</strong>
+                                <div>${badge}</div>
+                              </div>
+                              <div style="font-size: 11px; color: var(--text-muted);">
+                                Capacity: <strong>${r.capacity || 60} seats</strong> · Type: <span style="text-transform: capitalize;">${(r.type || 'hall').replace('_', ' ')}</span>
+                              </div>
+                            </div>
+                            <div style="margin-top: 10px; display: flex; justify-content: flex-end;">
+                              <button type="button" class="btn-topbar" style="font-size: 11px; padding: 5px 12px; font-weight: 700; background: #fff;" onclick="openBookingApplicationForm('${r.id}', '${day}', ${targetSlot.start}, ${targetSlot.end}, 'Campus Activity in ${r.id}', false)">
+                                ⚡ Reserve ${r.id} &rarr;
+                              </button>
+                            </div>
+                          </div>
+                        `;
+                      }).join('')}
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        `;
+        return;
       }
 
-      const roomObj = (DATA.rooms || []).find(r => r.id === matchedRoom);
-      const capText = roomObj ? ` (Capacity: ${roomObj.capacity} seats)` : '';
-      const detectedTitle = extractEventTitle(q);
+      // SCENARIO 2: SPECIFIC VENUE CHECK
+      const matchedRoom = detectedRoom;
+      const periods = detectPeriodsFromQuery(q);
+      const startP = periods.startP;
+      const endP = periods.endP;
+      const timeStr = getPeriodTimeString(startP, endP);
+
+      const roomObj = (DATA && DATA.rooms) ? DATA.rooms.find(r => r.id === matchedRoom) : null;
+      const cap = roomObj ? roomObj.capacity : 60;
+      const roomType = roomObj ? (roomObj.type || 'Hall') : 'Hall';
+
+      const clash = checkRoomOccupancy(matchedRoom, day, startP, endP, customList);
+      const freeSlots = groupContiguousSlots(getFreeSlotsForRoom(matchedRoom, day, customList));
+      const freeAltRooms = getFreeRoomsForSlot(day, startP, endP, customList).filter(r => r.id !== matchedRoom);
 
       if (clash) {
         area.innerHTML = `
-          <div style="margin-bottom: 8px;"><strong>Query Parsed:</strong> ${escapeHtml(q)}</div>
-          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; background: #ffffff; padding: 10px; border-radius: 4px; border: 1px solid var(--border); margin-bottom: 10px;" class="mono">
-            <div>Venue: <strong>${matchedRoom}</strong>${capText}</div>
-            <div>Day: <strong>${day}</strong></div>
-            <div>Requested Slot: <strong>P${startP} – P${endP}</strong></div>
-          </div>
-          <div style="color: var(--red); font-weight: 700;">
-            ✕ Slot Unavailable: ${matchedRoom} on ${day} is occupied by ${clash.type} "${clash.details}" during ${clash.period}.
-          </div>
-          <div style="font-size: 11px; color: var(--text-muted); margin-top: 8px;">
-            Institutional Rule: Academic classes and confirmed bookings have strict precedence.
-          </div>
-          <div style="margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
-            <div style="font-size: 11.5px; color: var(--text-muted);">Need this venue or an alternate slot for administrative review?</div>
-            <button class="btn-topbar" style="background: #ffffff; border-color: var(--border); font-size: 11.5px; font-weight: 700; padding: 6px 14px; cursor: pointer;" onclick="openBookingApplicationForm('${matchedRoom}', '${day}', ${startP}, ${endP}, '${escapeHtml(detectedTitle)}', true)">
-              Request Administrative Exemption &rarr;
-            </button>
+          <div style="background: #ffffff; border: 1.5px solid #f87171; border-radius: 8px; padding: 18px; margin-bottom: 8px; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.08);">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 10px;">
+              <div>
+                <div style="font-size: 11px; font-weight: 800; color: #b91c1c; text-transform: uppercase; letter-spacing: 0.5px;">
+                  ✕ REQUESTED SLOT OCCUPIED
+                </div>
+                <div style="font-size: 17px; font-weight: 800; color: var(--text-main); margin-top: 3px;">
+                  ${matchedRoom} on ${fullDay} Period ${startP}${endP !== startP ? `–${endP}` : ''} (${timeStr}) is Unavailable
+                </div>
+              </div>
+              <span class="mono" style="font-size: 11px; background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; padding: 4px 10px; border-radius: 4px; font-weight: 800;">
+                Schedule Conflict
+              </span>
+            </div>
+
+            <!-- Occupancy Reason Card -->
+            <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; padding: 12px 14px; color: #7f1d1d; font-size: 12px; margin-bottom: 16px; line-height: 1.5;">
+              <strong>Occupied By:</strong> ${clash.type} "<strong>${escapeHtml(clash.course)}</strong>"${clash.groups ? ` (Cohort ${escapeHtml(clash.groups)})` : ''} with Faculty ${escapeHtml(clash.faculty)} during <strong>${clash.period}</strong>.
+            </div>
+
+            <!-- Section 1: Conflict-Free Slots in THIS Room on THIS Day -->
+            <div style="margin-bottom: 16px; background: #f8fafc; border: 1px solid var(--border); border-radius: 6px; padding: 12px;">
+              <div style="font-size: 12.5px; font-weight: 800; color: var(--text-main); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                <span>💡</span> Available Conflict-Free Slots in ${matchedRoom} on ${fullDay}:
+              </div>
+              ${freeSlots.length ? `
+                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                  ${freeSlots.map(s => `
+                    <button type="button" class="btn-topbar" style="background: #ffffff; border-color: var(--green); color: #166534; font-weight: 800; font-size: 11.5px; padding: 7px 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px;" onclick="openBookingApplicationForm('${matchedRoom}', '${day}', ${s.start}, ${s.end}, '${escapeHtml(detectedTitle)}', false)">
+                      <span>✓</span> Period ${s.start}${s.end !== s.start ? `–${s.end}` : ''} (${getPeriodTimeString(s.start, s.end)}) &rarr;
+                    </button>
+                  `).join('')}
+                </div>
+              ` : `
+                <div style="font-size: 12px; color: var(--text-muted);">
+                  ${matchedRoom} is fully occupied for scheduled academic sessions on ${fullDay}. Please choose an alternative venue below.
+                </div>
+              `}
+            </div>
+
+            <!-- Section 2: Alternative Venues Free during this Period -->
+            <div style="margin-bottom: 16px; padding-top: 12px; border-top: 1px solid var(--border);">
+              <div style="font-size: 12.5px; font-weight: 800; color: var(--text-main); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                <span>🏛️</span> ${freeAltRooms.length} Alternative Venues Completely Free on ${fullDay} (${timeStr}):
+              </div>
+              <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                ${freeAltRooms.slice(0, 8).map(r => `
+                  <button type="button" class="btn-topbar" style="background: #ffffff; font-size: 11.5px; font-weight: 700; padding: 6px 14px; cursor: pointer;" onclick="openBookingApplicationForm('${r.id}', '${day}', ${startP}, ${endP}, '${escapeHtml(detectedTitle)}', false)">
+                    ⚡ Book ${r.id} (${r.capacity} seats) &rarr;
+                  </button>
+                `).join('')}
+                ${freeAltRooms.length > 8 ? `<button type="button" class="btn-topbar" onclick="setQuery('Show all available free venues on ${day}')" style="font-size:11px;">+ View all ${freeAltRooms.length} free halls</button>` : ''}
+              </div>
+            </div>
+
+            <!-- Exemption Button -->
+            <div style="display: flex; justify-content: flex-end; align-items: center; padding-top: 10px; border-top: 1px dashed var(--border);">
+              <button type="button" class="btn-topbar" style="font-size: 11.5px; padding: 6px 14px;" onclick="openBookingApplicationForm('${matchedRoom}', '${day}', ${startP}, ${endP}, '${escapeHtml(detectedTitle)}', true)">
+                Request Special Administrative Exemption &rarr;
+              </button>
+            </div>
           </div>
         `;
       } else {
         area.innerHTML = `
-          <div style="margin-bottom: 8px;"><strong>Query Parsed:</strong> ${escapeHtml(q)}</div>
-          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; background: #ffffff; padding: 10px; border-radius: 4px; border: 1px solid var(--border); margin-bottom: 10px;" class="mono">
-            <div>Venue: <strong>${matchedRoom}</strong>${capText}</div>
-            <div>Day: <strong>${day}</strong></div>
-            <div>Requested Slot: <strong>P${startP} – P${endP}</strong></div>
-          </div>
-          <div style="color: var(--green); font-weight: 700; display: flex; align-items: center; gap: 6px;">
-            <span style="font-size: 16px;">✓</span> Slot Available: ${matchedRoom} is completely free on ${day} Period ${startP} to ${endP}.
-          </div>
-          <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">
-            Institutional Rule: Venue complies with capacity and zero-clash constraints.
-          </div>
-
-          <div style="margin-top: 14px; padding: 14px; background: #ffffff; border: 1.5px solid var(--green); border-radius: 6px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
-            <div>
-              <div style="font-weight: 800; font-size: 13.5px; color: var(--text-main);">
-                🎉 Slot is Free — Apply & Reserve this Venue
+          <div style="background: #ffffff; border: 1.5px solid #22c55e; border-radius: 8px; padding: 18px; margin-bottom: 8px; box-shadow: 0 4px 12px rgba(34, 197, 94, 0.08);">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 12px;">
+              <div>
+                <div style="font-size: 11px; font-weight: 800; color: #166534; text-transform: uppercase; letter-spacing: 0.5px;">
+                  ✓ SLOT 100% CONFLICT-FREE & AVAILABLE
+                </div>
+                <div style="font-size: 17px; font-weight: 800; color: var(--text-main); margin-top: 3px;">
+                  ${matchedRoom} is Completely Free on ${fullDay} · Period ${startP}${endP !== startP ? `–${endP}` : ''} (${timeStr})
+                </div>
               </div>
-              <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 2px;">
-                Instant submission to Academic Operations clearance queue with conflict-free precedence.
-              </div>
+              <span class="mono" style="font-size: 11px; background: #dcfce7; color: #15803d; border: 1px solid #86efac; padding: 4px 10px; border-radius: 4px; font-weight: 800;">
+                Zero Clashes
+              </span>
             </div>
-            <button class="btn-action" style="background: var(--primary); color: #ffffff; border: none; padding: 9px 20px; font-weight: 800; font-size: 12.5px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; box-shadow: 0 2px 4px rgba(15,23,42,0.12);" onclick="openBookingApplicationForm('${matchedRoom}', '${day}', ${startP}, ${endP}, '${escapeHtml(detectedTitle)}', false)">
-              <span>📝</span> Apply for this Venue Now &rarr;
-            </button>
+
+            <!-- Parameter Strip -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; background: #f8fafc; border: 1px solid var(--border); border-radius: 6px; padding: 10px; margin-bottom: 14px;" class="mono">
+              <div>Venue: <strong style="color:var(--primary);">${matchedRoom}</strong> <span style="font-size:11px; color:var(--text-muted);">(${cap} seats)</span></div>
+              <div>Day: <strong>${fullDay}</strong></div>
+              <div>Slot: <strong>P${startP}${endP !== startP ? `–P${endP}` : ''}</strong></div>
+              <div>Time: <strong>${timeStr}</strong></div>
+            </div>
+
+            <!-- Primary Action Card -->
+            <div style="background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 6px; padding: 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+              <div>
+                <div style="font-weight: 800; font-size: 14px; color: #166534;">
+                  🎉 Verified Precedence Compliant — Instant Reservation Ready
+                </div>
+                <div style="font-size: 12px; color: #15803d; margin-top: 3px;">
+                  No conflicting timetable lectures or approved reservations. Submit directly for Dean clearance.
+                </div>
+              </div>
+              <button class="btn-action" style="background: var(--primary); color: #ffffff; border: none; padding: 10px 22px; font-weight: 800; font-size: 13px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; box-shadow: 0 2px 6px rgba(15,23,42,0.18);" onclick="openBookingApplicationForm('${matchedRoom}', '${day}', ${startP}, ${endP}, '${escapeHtml(detectedTitle)}', false)">
+                <span>📝</span> Apply for this Venue Now &rarr;
+              </button>
+            </div>
+
+            <!-- Other free timings in this room -->
+            ${freeSlots.length > 1 ? `
+              <div style="margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--border);">
+                <div style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">
+                  Other Free Slots in ${matchedRoom} on ${fullDay}:
+                </div>
+                <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                  ${freeSlots.filter(s => !(s.start === startP && s.end === endP)).map(s => `
+                    <button type="button" class="btn-topbar" style="font-size: 11px; padding: 4px 10px; background: #fff;" onclick="openBookingApplicationForm('${matchedRoom}', '${day}', ${s.start}, ${s.end}, '${escapeHtml(detectedTitle)}', false)">
+                      Period ${s.start}${s.end !== s.start ? `–${s.end}` : ''} (${getPeriodTimeString(s.start, s.end)})
+                    </button>
+                  `).join('')}
+                </div>
+              </div>
+            ` : ''}
           </div>
         `;
       }
