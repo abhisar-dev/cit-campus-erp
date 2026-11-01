@@ -176,7 +176,7 @@ class QATestRunner:
             t3.details = "Could not inspect index.html"
         self.log(t3)
 
-        # Test 4: Campus Live Marquee Bar & Pause-on-Hover
+        # Test 4: Campus Live Marquee Bar & Pause-on-Hover (Pause Button Removed)
         t_mq = TestResult("Marquee Component :: Campus Live Ticker & Pause-on-Hover", "UI / UX")
         t_mq.duration_ms = elapsed
         if code == 200 and isinstance(body, str):
@@ -184,12 +184,13 @@ class QATestRunner:
             has_track = "marquee-track" in body
             has_keyframes = "marquee-scroll" in body
             has_pause_hover = "marquee-track-container:hover" in body or "animation-play-state: paused" in body
-            if has_marquee_bar and has_track and has_keyframes and has_pause_hover:
+            has_no_pause_btn = "marquee-toggle-btn" not in body
+            if has_marquee_bar and has_track and has_keyframes and has_pause_hover and has_no_pause_btn:
                 t_mq.passed = True
-                t_mq.details = "Verified: Proper CSS marquee with pause-on-hover & infinite loop active."
+                t_mq.details = "Verified: Proper CSS marquee with pause-on-hover active (pause button removed per specification)."
             else:
                 t_mq.passed = False
-                t_mq.details = f"Missing components: bar={has_marquee_bar}, track={has_track}, keyframes={has_keyframes}, pause_hover={has_pause_hover}"
+                t_mq.details = f"Missing components: bar={has_marquee_bar}, track={has_track}, keyframes={has_keyframes}, pause_hover={has_pause_hover}, no_pause_btn={has_no_pause_btn}"
         else:
             t_mq.passed = False
             t_mq.details = "Could not inspect index.html"
@@ -200,14 +201,15 @@ class QATestRunner:
         t_sec.duration_ms = elapsed
         if code == 200 and isinstance(body, str):
             has_render_ann = "renderAnnouncements" in body
+            has_render_tab_ann = "currentTab === 'announcements'" in body
             has_modal = "modalNoticeDetail" in body
             has_tab = "tab-announcements" in body
-            if has_render_ann and has_modal and has_tab:
+            if has_render_ann and has_modal and has_tab and has_render_tab_ann:
                 t_sec.passed = True
-                t_sec.details = "Verified: Announcements section, navigation tab, and modal circular viewer active."
+                t_sec.details = "Verified: Campus Notices section active with functional tab router and circular modal."
             else:
                 t_sec.passed = False
-                t_sec.details = f"Missing components: render={has_render_ann}, modal={has_modal}, tab={has_tab}"
+                t_sec.details = f"Missing components: render={has_render_ann}, tab_router={has_render_tab_ann}, modal={has_modal}, tab={has_tab}"
         else:
             t_sec.passed = False
             t_sec.details = "Could not inspect index.html"

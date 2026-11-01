@@ -1800,15 +1800,6 @@
       </div>
 
       <div class="marquee-controls">
-        <button type="button" class="marquee-control-btn" id="marquee-toggle-btn" onclick="toggleMarqueePlayback()" title="Pause or play notice scroller" aria-label="Pause or play scroller">
-          <svg id="marquee-pause-icon" width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-            <rect x="5" y="4" width="4" height="16" rx="1"></rect>
-            <rect x="15" y="4" width="4" height="16" rx="1"></rect>
-          </svg>
-          <svg id="marquee-play-icon" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="display: none;">
-            <polygon points="5 3 19 12 5 21 5 3"></polygon>
-          </svg>
-        </button>
         <button type="button" class="marquee-view-all-btn" onclick="switchUserTab('announcements', document.getElementById('tab-announcements'))" title="Open complete notice board">
           <span>All Notices</span>
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -1899,7 +1890,7 @@
       if (window.CITAnalytics) {
         window.CITAnalytics.trackEvent('Call To Action', 'Click', 'Hero: Book Venue with AI');
       }
-      switchUserTab('ai', document.querySelectorAll('.tab-item')[2]);
+      switchUserTab('ai');
       setTimeout(() => {
         const inp = document.getElementById('ai-query-input');
         if (inp) inp.focus();
@@ -1910,6 +1901,16 @@
       if (window.CITAnalytics) window.CITAnalytics.trackEvent('Navigation', 'Tab Switch', t);
       currentTab = t;
       document.querySelectorAll(".tab-item").forEach(item => item.classList.remove("active"));
+      if (!btn) {
+        if (t === 'announcements') {
+          btn = document.getElementById('tab-announcements');
+        } else {
+          btn = Array.from(document.querySelectorAll(".tab-item")).find(b => {
+            const oc = b.getAttribute('onclick') || '';
+            return oc.includes(`'${t}'`);
+          });
+        }
+      }
       if (btn) btn.classList.add("active");
       renderTab();
     }
@@ -2056,8 +2057,7 @@
     let LIVE_BROADCAST = "Welcome to Chilika Institute of Technology (CIT) Campus ERP · Conflict-Free Timetable & Venue Services Active";
     let announcementFilter = 'all';
     let announcementSearch = '';
-    let isMarqueePaused = false;
-    window.currentNoticeModalId = null;
+        window.currentNoticeModalId = null;
 
     function initMarquee() {
       const track = document.getElementById("marquee-track");
@@ -2085,23 +2085,7 @@
       `;
     }
 
-    function toggleMarqueePlayback() {
-      const track = document.getElementById("marquee-track");
-      const pauseIcon = document.getElementById("marquee-pause-icon");
-      const playIcon = document.getElementById("marquee-play-icon");
-      const toggleBtn = document.getElementById("marquee-toggle-btn");
-      if (!track) return;
-
-      isMarqueePaused = !isMarqueePaused;
-      if (isMarqueePaused) {
-        track.classList.add("is-paused");
-        if (pauseIcon) pauseIcon.style.display = "none";
-        if (playIcon) playIcon.style.display = "block";
-        if (toggleBtn) {
-          toggleBtn.setAttribute("title", "Resume announcement scroller");
-          toggleBtn.setAttribute("aria-label", "Resume scroller");
-        }
-        showToast("Announcement ticker paused.");
+    showToast("Announcement ticker paused.");
       } else {
         track.classList.remove("is-paused");
         if (pauseIcon) pauseIcon.style.display = "block";
@@ -2351,14 +2335,29 @@
 
     function renderTab() {
       const content = document.getElementById("portal-content");
+      if (!content) return;
+
+      // Self-contained tabs that do not require solver DATA/SCHED matrices
+      if (currentTab === 'announcements') {
+        renderAnnouncements(content);
+        return;
+      }
+      if (currentTab === 'privacy') {
+        renderPrivacy(content);
+        return;
+      }
+      if (currentTab === 'terms') {
+        renderTerms(content);
+        return;
+      }
+
+      // Solver-dependent tabs
       if (!DATA || !SCHED) return;
 
       if (currentTab === 'timetable') renderTimetable(content);
       else if (currentTab === 'bookings') renderBookings(content);
       else if (currentTab === 'ai') renderAI(content);
       else if (currentTab === 'exams') renderExams(content);
-      else if (currentTab === 'privacy') renderPrivacy(content);
-      else if (currentTab === 'terms') renderTerms(content);
     }
 
     // 1. WEEKLY TIMETABLE VIEW (POLISHED & CLEAR WITH GREEN / GREY / RED CODING)
@@ -2625,7 +2624,7 @@
               <div class="title-text">Spectra Fest Week 7 — Venue Allocation Status</div>
               <div class="subtitle-text">Official decisions following CIT institutional precedence rules</div>
             </div>
-            <button onclick="switchUserTab('ai', document.querySelectorAll('.tab-item')[2])" style="background: var(--primary); color: #fff; border: none; padding: 7px 14px; border-radius: 4px; font-size: 12px; font-weight: 700; cursor: pointer;">
+            <button onclick="switchUserTab('ai')" style="background: var(--primary); color: #fff; border: none; padding: 7px 14px; border-radius: 4px; font-size: 12px; font-weight: 700; cursor: pointer;">
               + Request New Venue Booking
             </button>
           </div>
