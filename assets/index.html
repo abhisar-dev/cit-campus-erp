@@ -40,6 +40,12 @@
   <meta name="twitter:description" content="Official Chilika Institute of Technology (CIT) Campus ERP portal. Conflict-free timetables, venue booking, and student services." />
   <meta name="twitter:image" content="/public/social-preview.png" />
   <meta name="twitter:image:alt" content="Chilika Institute of Technology (CIT) Campus ERP & Academic Timetables" />
+
+  <!-- High-Legibility Modern Typography (Plus Jakarta Sans & JetBrains Mono) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
   <style>
     *, *::before, *::after {
       box-sizing: border-box;
@@ -50,13 +56,16 @@
     :root {
       --bg: #fbf6ee; /* Light warm cream canvas */
       --card-bg: #ffffff;
-      --border: #e8e0d5;
+      --border: #e6dfd5;
       --border-dark: #d5cbbe;
-      --text-main: #1c1917;
-      --text-muted: #44403c;
+      --border-subtle: #f2eee8;
+      --text-main: #0f172a; /* Slate 900 for razor-sharp clarity */
+      --text-muted: #475569; /* Slate 600 for clear secondary reading */
+      --text-dim: #64748b; /* Slate 500 */
       --primary: #600f1c; /* Official CIT Maroon */
       --primary-hover: #4a0b15;
       --primary-light: #fdf2f2;
+      --primary-border: #f8d7da;
       --yellow-light: #fef9ed;
       --yellow-badge: #fef3c7;
       --yellow-border: #fde68a;
@@ -75,24 +84,35 @@
       --red-bg: #fef2f2;
       --red-border: #fecaca;
 
-      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      --font-mono: ui-monospace, Menlo, Consolas, monospace;
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace;
     }
 
     body {
       background-color: var(--bg);
       color: var(--text-main);
       font-family: var(--font-sans);
-      font-size: 13px;
-      line-height: 1.5;
+      font-size: 13.5px;
+      line-height: 1.55;
+      letter-spacing: -0.012em;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+      font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    }
+
+    h1, h2, h3, h4, .title-text, .cta-title, .brand-name, .modal-title {
+      font-family: var(--font-sans);
+      letter-spacing: -0.028em;
+      font-weight: 800;
     }
 
     .mono {
       font-family: var(--font-mono);
+      letter-spacing: -0.02em;
     }
 
     /* Top University Header */
@@ -451,7 +471,8 @@
 
     table.calendar-table {
       width: 100%;
-      border-collapse: collapse;
+      border-collapse: separate;
+      border-spacing: 0;
       font-size: 12px;
     }
 
@@ -463,12 +484,13 @@
     table.calendar-table th {
       background: var(--yellow-light);
       color: var(--gold-dark);
-      font-size: 11px;
+      font-size: 11.5px;
       font-weight: 800;
       text-align: center;
-      padding: 10px 6px;
+      padding: 11px 8px;
       width: 18%;
-      letter-spacing: 0.4px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
     }
 
     table.calendar-table th.time-header {
@@ -479,18 +501,20 @@
     td.time-cell {
       background: #fdfaf5;
       color: var(--primary);
-      font-size: 11px;
+      font-size: 11.5px;
       font-weight: 700;
+      font-family: var(--font-mono);
       text-align: center;
       vertical-align: middle;
-      padding: 8px 6px;
+      padding: 10px 8px;
+      letter-spacing: -0.02em;
     }
 
     td.slot-container {
-      height: 82px;
+      height: 86px;
       vertical-align: top;
       background: #ffffff;
-      padding: 5px;
+      padding: 6px;
     }
 
     /* Class Slot Card */
@@ -498,19 +522,21 @@
       background: #ffffff;
       border: 1px solid var(--border);
       border-left: 4px solid var(--primary);
-      border-radius: 6px;
-      padding: 6px 8px;
+      border-radius: 8px;
+      padding: 7px 9px;
       height: 100%;
-      min-height: 72px;
+      min-height: 74px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      font-size: 11px;
-      transition: box-shadow 0.15s ease;
+      font-size: 11.5px;
+      transition: all 0.15s ease;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
     }
 
     .class-pill:hover {
-      box-shadow: 0 3px 8px rgba(96, 15, 28, 0.08);
+      box-shadow: 0 4px 12px rgba(96, 15, 28, 0.09);
+      transform: translateY(-1px);
     }
 
     .class-pill.status-available {
@@ -535,12 +561,13 @@
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      font-size: 9px;
-      font-weight: 800;
-      padding: 2px 6px;
-      border-radius: 3px;
+      font-size: 9.5px;
+      font-weight: 700;
+      padding: 2.5px 7px;
+      border-radius: 9999px;
       letter-spacing: 0.3px;
       text-transform: uppercase;
+      font-family: var(--font-mono);
     }
 
     .status-tag.green {
@@ -550,9 +577,9 @@
     }
 
     .status-tag.grey {
-      background: #f3f4f6;
-      color: #1f2937;
-      border: 1px solid #e5e7eb;
+      background: #f1f5f9;
+      color: #334155;
+      border: 1px solid #e2e8f0;
     }
 
     .status-tag.red {
