@@ -1,0 +1,9 @@
+{
+  "name": "cit-campus-erp",
+  "version": "1.0.0",
+  "description": "Chilika Institute of Technology (CIT) Campus ERP & Admin OS",
+  "scripts": {
+    "start": "python server.py",
+    "db:terminal": "node scripts/cit-neon-terminal.js"
+  }
+}
