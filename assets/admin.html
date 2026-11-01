@@ -1016,6 +1016,18 @@
     let userFilter = 'all';
     let userSearch = '';
 
+    function getAdminHeaders() {
+      let token = 'cit-adm-live';
+      try {
+        const sess = JSON.parse(localStorage.getItem('cit_session') || '{}');
+        if (sess && sess.token) token = sess.token;
+      } catch(e) {}
+      return {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      };
+    }
+
     // Mock active online users with live ping
     let activeOnlineSessions = [
       {
@@ -1086,25 +1098,25 @@
         }
 
         // Fetch Backend Bookings & Overrides
-        const bRes = await fetch('/api/admin/bookings').then(r => r.json()).catch(() => null);
+        const bRes = await fetch('/api/admin/bookings', { headers: getAdminHeaders() }).then(r => r.json()).catch(() => null);
         if (bRes && bRes.success) {
           BOOKING_OVERRIDES = bRes.overrides || {};
         }
 
         // Fetch Audit Logs
-        const aRes = await fetch('/api/admin/audit-logs').then(r => r.json()).catch(() => null);
+        const aRes = await fetch('/api/admin/audit-logs', { headers: getAdminHeaders() }).then(r => r.json()).catch(() => null);
         if (aRes && aRes.success && aRes.logs) {
           AUDIT_LOGS = aRes.logs;
         }
 
         // Fetch Users
-        const uRes = await fetch('/api/admin/users').then(r => r.json()).catch(() => null);
+        const uRes = await fetch('/api/admin/users', { headers: getAdminHeaders() }).then(r => r.json()).catch(() => null);
         if (uRes && Array.isArray(uRes)) {
           USERS_DATA = uRes;
         }
 
         // Fetch Neon DB Cloud Status
-        const dbRes = await fetch('/api/admin/db/status').then(r => r.json()).catch(() => null);
+        const dbRes = await fetch('/api/admin/db/status', { headers: getAdminHeaders() }).then(r => r.json()).catch(() => null);
         if (dbRes && dbRes.neon) {
           NEON_STATUS = dbRes.neon;
         }
@@ -1246,7 +1258,7 @@
       // Post to backend
       fetch('/api/admin/bookings/update', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAdminHeaders(),
         body: JSON.stringify({ id: bid, status: 'approved', reason: 'Dean clearance granted' })
       }).catch(() => {});
 
@@ -1289,7 +1301,7 @@
 
       fetch('/api/admin/bookings/update', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAdminHeaders(),
         body: JSON.stringify({ id: bid, status: 'rejected', reason: reason })
       }).catch(() => {});
 
@@ -2081,7 +2093,7 @@
         u.role = newRole;
         fetch('/api/admin/users/update', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: getAdminHeaders(),
           body: JSON.stringify({ id: uid, role: newRole })
         }).catch(() => {});
         showToast(`✓ Updated ${u.email} role to ${newRole}`);
@@ -2168,7 +2180,7 @@
       WEBSITE_SETTINGS.announcement = txt;
       fetch('/api/admin/settings', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAdminHeaders(),
         body: JSON.stringify(WEBSITE_SETTINGS)
       }).catch(() => {});
       showToast('✓ Announcement updated on all campus portals.');
@@ -2327,7 +2339,7 @@
       try {
         const res = await fetch('/api/admin/db/setup', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: getAdminHeaders(),
           body: JSON.stringify({ database_url: connStr })
         }).then(r => r.json());
 

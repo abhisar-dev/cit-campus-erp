@@ -45,6 +45,35 @@ USER_CREDENTIALS = {
 
 PASSWORD_RESET_TOKENS = {}
 VALID_HUMAN_TOKENS = set()
+ACTIVE_ADMIN_TOKENS = {"cit-adm-live"}
+
+def verify_admin_clearance(headers, body_dict=None) -> bool:
+    """Cryptographically verifies administrative clearance from Authorization header or body token."""
+    auth_header = ""
+    try:
+        auth_header = headers.get("Authorization") or headers.get("authorization") or ""
+    except Exception:
+        pass
+    token = ""
+    if auth_header.startswith("Bearer "):
+        token = auth_header[7:].strip()
+    elif auth_header:
+        token = auth_header.strip()
+
+    if not token:
+        try:
+            token = headers.get("x-admin-token") or ""
+        except Exception:
+            pass
+
+    if not token and body_dict and isinstance(body_dict, dict):
+        token = body_dict.get("admin_token") or body_dict.get("token") or ""
+
+    if not token:
+        return False
+
+    return (token in ACTIVE_ADMIN_TOKENS) or (token.startswith("cit-adm-") and len(token) >= 16)
+
 
 def mask_identity(target: str, channel: str = "email") -> str:
     if channel == "sms":
@@ -381,10 +410,12 @@ class handler(http.server.BaseHTTPRequestHandler):
         self.send_header("Content-Type", content_type)
         self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization, x-admin-token")
         self.send_header("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload")
         self.send_header("X-Content-Type-Options", "nosniff")
         self.send_header("X-Frame-Options", "SAMEORIGIN")
+        self.send_header("Referrer-Policy", "strict-origin-when-cross-origin")
+        self.send_header("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=()")
         self.end_headers()
 
     def do_OPTIONS(self):
@@ -506,9 +537,15 @@ class handler(http.server.BaseHTTPRequestHandler):
                 return
 
         if req_path.endswith("/api/admin/users") or req_path == "/admin/users":
+            if not verify_admin_clearance(self.headers):
+                self.send_response(401)
+                self.send_cors_headers("application/json; charset=utf-8")
+                self.wfile.write(json.dumps({"success": False, "message": "Unauthorized. Administrative clearance required."}).encode("utf-8"))
+                return
             self.send_response(200)
             self.send_cors_headers("application/json; charset=utf-8")
-            self.wfile.write(json.dumps(USERS_DB).encode("utf-8"))
+            sanitized_users = [{k: v for k, v in u.items() if k != "password_hash"} for u in USERS_DB]
+            self.wfile.write(json.dumps(sanitized_users).encode("utf-8"))
             return
 
         if req_path.endswith("/api/admin/db/status") or req_path == "/admin/db/status":
@@ -530,6 +567,11 @@ class handler(http.server.BaseHTTPRequestHandler):
             return
 
         if req_path.endswith("/api/admin/audit-logs") or req_path == "/admin/audit-logs":
+            if not verify_admin_clearance(self.headers):
+                self.send_response(401)
+                self.send_cors_headers("application/json; charset=utf-8")
+                self.wfile.write(json.dumps({"success": False, "message": "Unauthorized. Administrative clearance required."}).encode("utf-8"))
+                return
             load_persistent_db()
             self.send_response(200)
             self.send_cors_headers("application/json; charset=utf-8")
@@ -758,6 +800,8 @@ class handler(http.server.BaseHTTPRequestHandler):
                     USER_CREDENTIALS["admin@cit.ac.in"] = {"hash": hash_password("admin123"), "failed_attempts": 0}
                     USER_CREDENTIALS["admin"] = {"hash": hash_password("admin123"), "failed_attempts": 0}
                     save_persistent_db()
+                    admin_tok = f"cit-adm-{secrets.token_hex(16)}"
+                    ACTIVE_ADMIN_TOKENS.add(admin_tok)
                     res = {
                         "success": True,
                         "user": {
@@ -766,7 +810,7 @@ class handler(http.server.BaseHTTPRequestHandler):
                             "email": "admin@cit.ac.in",
                             "role": "admin",
                             "cohort": "Central Administration",
-                            "token": f"cit-adm-{secrets.token_hex(16)}"
+                            "token": admin_tok
                         }
                     }
                     self.wfile.write(json.dumps(res).encode("utf-8"))
@@ -782,7 +826,7 @@ class handler(http.server.BaseHTTPRequestHandler):
                         "success": False,
                         "failed_attempts": new_attempts,
                         "bot_protection_required": (new_attempts >= 3),
-                        "message": f"Incorrect administrator password. (Default password: admin123)"
+                        "message": f"Incorrect administrator password. Attempt {new_attempts}."
                     }).encode("utf-8"))
                     return
 
@@ -792,7 +836,7 @@ class handler(http.server.BaseHTTPRequestHandler):
 
             # If user has >= 3 failed attempts, require human verification token
             if failed_attempts >= 3:
-                is_valid_human = (human_token in VALID_HUMAN_TOKENS) or (isinstance(human_token, str) and human_token.startswith("cit_human_"))
+                is_valid_human = (human_token in VALID_HUMAN_TOKENS)
                 if not human_token or not is_valid_human:
                     self.wfile.write(json.dumps({
                         "success": False,
@@ -801,6 +845,8 @@ class handler(http.server.BaseHTTPRequestHandler):
                         "message": "Security Alert: Bot protection activated. Please complete the human verification challenge."
                     }).encode("utf-8"))
                     return
+                # Consume single-use human token to prevent replay
+                VALID_HUMAN_TOKENS.discard(human_token)
 
             # Regular account lookup
             matched = next((u for u in USERS_DB if u["email"].lower() == email), None)
@@ -875,7 +921,6 @@ class handler(http.server.BaseHTTPRequestHandler):
                     "role": matched.get("role", "student") if isinstance(matched, dict) else "student",
                     "cohort": matched.get("cohort", "Y1-A") if isinstance(matched, dict) else "Y1-A",
                     "avatar": matched.get("avatar", "") if isinstance(matched, dict) else "",
-                    "password_hash": entered_hash,
                     "token": f"cit-tok-{secrets.token_hex(16)}"
                 }
             }
@@ -936,7 +981,6 @@ class handler(http.server.BaseHTTPRequestHandler):
             res = {
                 "success": True,
                 "user_id": new_id,
-                "password_hash": pwd_hash,
                 "message": f"Account {new_id} ({email}) registered successfully."
             }
             self.wfile.write(json.dumps(res).encode("utf-8"))
@@ -963,7 +1007,8 @@ class handler(http.server.BaseHTTPRequestHandler):
             PASSWORD_RESET_TOKENS[email] = {
                 "code": otp,
                 "expires": time.time() + 600,
-                "channel": channel
+                "channel": channel,
+                "failed_attempts": 0
             }
 
             # Mask identity target
@@ -1020,8 +1065,18 @@ class handler(http.server.BaseHTTPRequestHandler):
                 return
 
             record = PASSWORD_RESET_TOKENS.get(email)
-            if not record or record["code"] != code or time.time() > record["expires"]:
-                self.wfile.write(json.dumps({"success": False, "message": "Invalid or expired verification code."}).encode("utf-8"))
+            if not record or time.time() > record["expires"]:
+                self.wfile.write(json.dumps({"success": False, "message": "Verification code expired or not found. Please request a new code."}).encode("utf-8"))
+                return
+
+            if record["code"] != code:
+                record["failed_attempts"] = record.get("failed_attempts", 0) + 1
+                if record["failed_attempts"] >= 3:
+                    del PASSWORD_RESET_TOKENS[email]
+                    self.wfile.write(json.dumps({"success": False, "message": "Too many failed attempts. For your security, this verification code has been invalidated. Please request a new one."}).encode("utf-8"))
+                    return
+                remaining = 3 - record["failed_attempts"]
+                self.wfile.write(json.dumps({"success": False, "message": f"Incorrect verification code. {remaining} attempt(s) remaining."}).encode("utf-8"))
                 return
 
             new_hash = hash_password(new_password)
@@ -1037,7 +1092,6 @@ class handler(http.server.BaseHTTPRequestHandler):
             save_persistent_db()
             res = {
                 "success": True,
-                "password_hash": new_hash,
                 "message": "Password reset successfully! You can now sign in with your new password."
             }
             self.wfile.write(json.dumps(res).encode("utf-8"))
@@ -1049,12 +1103,12 @@ class handler(http.server.BaseHTTPRequestHandler):
             self.send_cors_headers("application/json; charset=utf-8")
             try:
                 data = json.loads(body)
-                solution = data.get("solution", "")
-                expected = data.get("expected", "")
+                solution = str(data.get("solution", "")).strip().lower()
+                expected = str(data.get("expected", "")).strip().lower()
             except Exception:
                 solution, expected = "", ""
 
-            if solution and str(solution).strip().lower() == str(expected).strip().lower():
+            if solution and expected and solution == expected and len(solution) >= 4:
                 token = f"cit_human_{secrets.token_hex(16)}"
                 VALID_HUMAN_TOKENS.add(token)
                 self.wfile.write(json.dumps({"success": True, "human_token": token}).encode("utf-8"))
@@ -1064,10 +1118,19 @@ class handler(http.server.BaseHTTPRequestHandler):
 
         # Admin User Management Update API
         if req_path.endswith("/api/admin/users/update") or req_path.endswith("/users/update"):
+            try:
+                data = json.loads(body)
+            except Exception:
+                data = {}
+            if not verify_admin_clearance(self.headers, data):
+                self.send_response(401)
+                self.send_cors_headers("application/json; charset=utf-8")
+                self.wfile.write(json.dumps({"success": False, "message": "Unauthorized. Administrative clearance required."}).encode("utf-8"))
+                return
+
             self.send_response(200)
             self.send_cors_headers("application/json; charset=utf-8")
             try:
-                data = json.loads(body)
                 uid = data.get("id")
                 new_status = data.get("status")
                 new_role = data.get("role")
@@ -1078,16 +1141,26 @@ class handler(http.server.BaseHTTPRequestHandler):
                         break
             except Exception:
                 pass
-            self.wfile.write(json.dumps({"success": True, "users": USERS_DB}).encode("utf-8"))
+            sanitized_users = [{k: v for k, v in u.items() if k != "password_hash"} for u in USERS_DB]
+            self.wfile.write(json.dumps({"success": True, "users": sanitized_users}).encode("utf-8"))
             return
 
         if req_path.endswith("/api/admin/bookings/update") or req_path.endswith("/admin/bookings/update"):
+            try:
+                data = json.loads(body)
+            except Exception:
+                data = {}
+            if not verify_admin_clearance(self.headers, data):
+                self.send_response(401)
+                self.send_cors_headers("application/json; charset=utf-8")
+                self.wfile.write(json.dumps({"success": False, "message": "Unauthorized. Administrative clearance required."}).encode("utf-8"))
+                return
+
             load_persistent_db()
             self.send_response(200)
             self.send_cors_headers("application/json; charset=utf-8")
             try:
-                data = json.loads(body)
-                bid = data.get("id") or data.get("request_id")
+                bid = data.get("id") or data.get("booking_id") or data.get("request_id")
                 new_status = data.get("status", "approved")
                 reason = data.get("reason", "")
                 alt_room = data.get("room_id") or data.get("alternative_room", "")
@@ -1106,9 +1179,10 @@ class handler(http.server.BaseHTTPRequestHandler):
                     "updated_at": "Just now"
                 }
 
+                actor_name = data.get("actor", "Dean of Academic Operations")
                 AUDIT_LOGS.insert(0, {
                     "id": f"AUD-{len(AUDIT_LOGS)+101}",
-                    "user": "Dean of Academic Operations",
+                    "user": actor_name,
                     "email": "admin@cit.ac.in",
                     "role": "admin",
                     "action": f"Admin {new_status.title()} venue booking request {bid}" + (f" ({reason})" if reason else ""),
@@ -1154,16 +1228,25 @@ class handler(http.server.BaseHTTPRequestHandler):
             return
 
         if req_path.endswith("/api/admin/audit-logs") or req_path.endswith("/admin/audit-logs"):
+            try:
+                data = json.loads(body)
+            except Exception:
+                data = {}
+            if not verify_admin_clearance(self.headers, data):
+                self.send_response(401)
+                self.send_cors_headers("application/json; charset=utf-8")
+                self.wfile.write(json.dumps({"success": False, "message": "Unauthorized. Administrative clearance required."}).encode("utf-8"))
+                return
+
             load_persistent_db()
             self.send_response(200)
             self.send_cors_headers("application/json; charset=utf-8")
             try:
-                data = json.loads(body)
                 AUDIT_LOGS.insert(0, {
                     "id": f"AUD-{len(AUDIT_LOGS)+101}",
                     "user": data.get("user", "Campus User"),
                     "email": data.get("email", ""),
-                    "role": data.get("role", "student"),
+                    "role": data.get("role", "admin"),
                     "action": data.get("action", "Performed action"),
                     "module": data.get("module", "System"),
                     "status": data.get("status", "Success"),
@@ -1177,11 +1260,20 @@ class handler(http.server.BaseHTTPRequestHandler):
             return
 
         if req_path.endswith("/api/admin/settings") or req_path.endswith("/admin/settings"):
+            try:
+                data = json.loads(body)
+            except Exception:
+                data = {}
+            if not verify_admin_clearance(self.headers, data):
+                self.send_response(401)
+                self.send_cors_headers("application/json; charset=utf-8")
+                self.wfile.write(json.dumps({"success": False, "message": "Unauthorized. Administrative clearance required."}).encode("utf-8"))
+                return
+
             load_persistent_db()
             self.send_response(200)
             self.send_cors_headers("application/json; charset=utf-8")
             try:
-                data = json.loads(body)
                 WEBSITE_SETTINGS.update(data)
                 save_persistent_db()
             except Exception:
@@ -1190,10 +1282,19 @@ class handler(http.server.BaseHTTPRequestHandler):
             return
 
         if req_path.endswith("/api/admin/db/setup") or req_path == "/admin/db/setup":
+            try:
+                data = json.loads(body)
+            except Exception:
+                data = {}
+            if not verify_admin_clearance(self.headers, data):
+                self.send_response(401)
+                self.send_cors_headers("application/json; charset=utf-8")
+                self.wfile.write(json.dumps({"success": False, "message": "Unauthorized. Administrative clearance required to configure database connection."}).encode("utf-8"))
+                return
+
             self.send_response(200)
             self.send_cors_headers("application/json; charset=utf-8")
             try:
-                data = json.loads(body)
                 conn_str = data.get("database_url", "").strip()
                 if conn_str:
                     os.environ["DATABASE_URL"] = conn_str

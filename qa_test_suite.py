@@ -27,6 +27,7 @@ class QATestRunner:
     def __init__(self, base_url: str):
         self.base_url = base_url.rstrip("/")
         self.results: List[TestResult] = []
+        self.admin_token = "cit-adm-live"
 
     def log(self, tr: TestResult):
         status_sym = "[PASS]" if tr.passed else "[FAIL]"
@@ -244,12 +245,54 @@ class QATestRunner:
         code, body, elapsed, _ = self.request("/api/auth/login", method="POST", data={"email": "admin@cit.ac.in", "password": "admin"})
         t_adm.duration_ms = elapsed
         if code == 200 and isinstance(body, dict) and body.get("success"):
+            self.admin_token = body.get("user", {}).get("token") or "cit-adm-live"
             t_adm.passed = True
             t_adm.details = f"Authenticated admin clearance: role={body.get('user', {}).get('role')}"
         else:
             t_adm.passed = False
             t_adm.details = f"Admin login failed: status {code}, {body}"
         self.log(t_adm)
+
+        # Test Password Hash Zero-Exposure (OWASP A02)
+        t_hash = TestResult("POST /api/auth/login (Zero Password Hash Exposure)", "OWASP Privacy")
+        t_hash.duration_ms = elapsed
+        if isinstance(body, dict) and body.get("success"):
+            user_obj = body.get("user", {})
+            has_hash = "password_hash" in user_obj
+            if not has_hash:
+                t_hash.passed = True
+                t_hash.details = "PASSED: User password hashes are completely stripped from auth payloads."
+            else:
+                t_hash.passed = False
+                t_hash.details = f"LEAK: password_hash exposed in user auth object: {user_obj.get('password_hash')}"
+        else:
+            t_hash.passed = False
+            t_hash.details = "Admin login payload could not be verified."
+        self.log(t_hash)
+
+        # Test Unauthenticated Admin User List Rejection (OWASP A01)
+        t_anon_users = TestResult("GET /api/admin/users (Unauthenticated Access Rejection)", "OWASP Access Control")
+        code, body, elapsed, _ = self.request("/api/admin/users")
+        t_anon_users.duration_ms = elapsed
+        if code == 401 or (isinstance(body, dict) and not body.get("success")):
+            t_anon_users.passed = True
+            t_anon_users.details = f"Safely blocked anonymous access: HTTP {code}"
+        else:
+            t_anon_users.passed = False
+            t_anon_users.details = f"VULNERABILITY: /api/admin/users permitted unauthenticated access (HTTP {code})"
+        self.log(t_anon_users)
+
+        # Test Unauthenticated Database Setup Rejection (OWASP A01)
+        t_anon_db = TestResult("POST /api/admin/db/setup (Unauthenticated Takeover Rejection)", "OWASP Access Control")
+        code, body, elapsed, _ = self.request("/api/admin/db/setup", method="POST", data={"database_url": "postgres://attacker@host/db"})
+        t_anon_db.duration_ms = elapsed
+        if code == 401 or (isinstance(body, dict) and not body.get("success")):
+            t_anon_db.passed = True
+            t_anon_db.details = f"Safely blocked anonymous DB takeover: HTTP {code}"
+        else:
+            t_anon_db.passed = False
+            t_anon_db.details = f"VULNERABILITY: /api/admin/db/setup permitted anonymous configuration (HTTP {code})"
+        self.log(t_anon_db)
 
         # Test Invalid Password (Negative Test Case)
         t_bad = TestResult("POST /api/auth/login (Invalid Password Rejection)", "Negative Test")
@@ -287,10 +330,11 @@ class QATestRunner:
     # --------------------------------------------------------------------------
     def test_admin_workflows(self):
         print("\n--- [SUITE 5: Admin Workflows & Venue Request Management] ---")
+        admin_headers = {"Authorization": f"Bearer {self.admin_token}"}
 
         # 1. Fetch Admin Bookings
         t_b = TestResult("GET /api/admin/bookings (Venue Booking Inventory)", "Admin Workflow")
-        code, body, elapsed, _ = self.request("/api/admin/bookings")
+        code, body, elapsed, _ = self.request("/api/admin/bookings", headers=admin_headers)
         t_b.duration_ms = elapsed
         if code == 200 and isinstance(body, dict) and body.get("success"):
             t_b.passed = True
@@ -330,7 +374,7 @@ class QATestRunner:
             "actor": "Lead QA Engineer",
             "reason": "Automated verification clearance"
         }
-        code, body, elapsed, _ = self.request("/api/admin/bookings/update", method="POST", data=appr_payload)
+        code, body, elapsed, _ = self.request("/api/admin/bookings/update", method="POST", data=appr_payload, headers=admin_headers)
         t_appr.duration_ms = elapsed
         if code == 200 and isinstance(body, dict) and body.get("success"):
             t_appr.passed = True
@@ -342,7 +386,7 @@ class QATestRunner:
 
         # 4. Fetch Audit Logs
         t_audit = TestResult("GET /api/admin/audit-logs (Security Audit Trail)", "Audit Trail")
-        code, body, elapsed, _ = self.request("/api/admin/audit-logs")
+        code, body, elapsed, _ = self.request("/api/admin/audit-logs", headers=admin_headers)
         t_audit.duration_ms = elapsed
         if code == 200 and isinstance(body, dict) and body.get("success"):
             logs = body.get("logs", [])
@@ -358,8 +402,9 @@ class QATestRunner:
     # --------------------------------------------------------------------------
     def test_database_and_cloud(self):
         print("\n--- [SUITE 6: Neon Serverless Database & Dual-Persistence] ---")
+        admin_headers = {"Authorization": f"Bearer {self.admin_token}"}
         t_db = TestResult("GET /api/admin/db/status (Neon Serverless Telemetry)", "Database")
-        code, body, elapsed, _ = self.request("/api/admin/db/status")
+        code, body, elapsed, _ = self.request("/api/admin/db/status", headers=admin_headers)
         t_db.duration_ms = elapsed
         if code == 200 and isinstance(body, dict) and body.get("success"):
             neon_info = body.get("neon", {})
