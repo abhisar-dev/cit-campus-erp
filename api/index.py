@@ -258,6 +258,64 @@ WEBSITE_SETTINGS = {
     "ai_assistant": True
 }
 
+OFFICIAL_ANNOUNCEMENTS = [
+    {
+        "id": "CIT-ANN-2026-001",
+        "ref": "CIT/EXAM/2026/042",
+        "category": "Examinations",
+        "title": "Spring 2026 Mid-Semester Examination Schedule Published",
+        "date": "01 Nov 2026",
+        "urgent": True,
+        "summary": "The Midsem examination timetable for 2026 is officially live under the Midsem Exams tab. Zero course clashes verified by the Google OR-Tools optimization engine.",
+        "details": "All undergraduate and postgraduate cohorts can view their designated examination halls and seating sessions. Students must carry their physical CIT ID card and arrive 15 minutes before period commencement. Any scheduling conflicts should be reported immediately to the Examination Cell.",
+        "author": "Controller of Examinations"
+    },
+    {
+        "id": "CIT-ANN-2026-002",
+        "ref": "CIT/SPECTRA/2026/089",
+        "category": "Events & Venues",
+        "title": "Spectra Tech Fest 2026 Venue Booking Windows Open",
+        "date": "31 Oct 2026",
+        "urgent": False,
+        "summary": "Student clubs and event organizers can submit venue reservation requests for the Main Auditorium, Open Air Theater, and LH-101 using the AI Booking Assistant.",
+        "details": "Special priority slots are reserved on Wednesday and Friday afternoon periods. Requests are reviewed and certified by Dean of Student Affairs within 24 hours. Ensure estimated attendee counts match room fire code capacities.",
+        "author": "Spectra Organizing Committee & Dean (SW)"
+    },
+    {
+        "id": "CIT-ANN-2026-003",
+        "ref": "CIT/ACAD/2026/038",
+        "category": "Academic",
+        "title": "Classroom Allocation & Capacity Compliance Certified",
+        "date": "30 Oct 2026",
+        "urgent": False,
+        "summary": "All 27 classrooms and laboratories have achieved 100% seating compliance under constraint H5, guaranteeing adequate seating for every student group.",
+        "details": "The academic timetable grid features strict adherence to lecture durations and mandatory lunch recess at Period 5 (13:00 - 13:50). Laboratory sessions in CSE and Electronics blocks have been equipped with updated bench equipment.",
+        "author": "Office of Academic Affairs"
+    },
+    {
+        "id": "CIT-ANN-2026-004",
+        "ref": "CIT/ESTATES/2026/114",
+        "category": "Facilities",
+        "title": "Smart AV & Projection Upgrades in Seminar Halls",
+        "date": "29 Oct 2026",
+        "urgent": False,
+        "summary": "Audio-visual systems, laser projection, and Gigabit Ethernet drops upgraded in CR-101, CR-102, and LH-301.",
+        "details": "High-definition hybrid recording equipment is now active. Faculty and presenters can connect wirelessly or via standard HDMI. For technical assistance during sessions, dial campus extension 4401.",
+        "author": "Estates & Infrastructure Cell"
+    },
+    {
+        "id": "CIT-ANN-2026-005",
+        "ref": "CIT/ADMIN/2026/007",
+        "category": "Administrative",
+        "title": "Dual-Persistence Cloud Database Telemetry Active",
+        "date": "28 Oct 2026",
+        "urgent": False,
+        "summary": "ERP backend upgraded with automatic synchronization between Neon Serverless PostgreSQL and resilient local store.",
+        "details": "User sessions, venue reservation approvals, and audit trails now leverage instant zero-downtime failover with strict OWASP cybersecurity controls.",
+        "author": "CIT IT Services & Systems Division"
+    }
+]
+
 DB_FILE = "/tmp/cit_users_db.json"
 
 def _apply_saved_state(saved: dict):
@@ -494,6 +552,18 @@ class handler(http.server.BaseHTTPRequestHandler):
                 return
 
         # API Endpoints
+        if req_path.endswith("/api/announcements") or req_path == "/announcements":
+            load_persistent_db()
+            self.send_response(200)
+            self.send_cors_headers("application/json; charset=utf-8")
+            resp = {
+                "success": True,
+                "broadcast": WEBSITE_SETTINGS.get("announcement", ""),
+                "announcements": OFFICIAL_ANNOUNCEMENTS
+            }
+            self.wfile.write(json.dumps(resp).encode("utf-8"))
+            return
+
         if req_path.endswith("/api/data") or req_path == "/data":
             content = read_data_file("assets/cit_public.json")
             if not content:

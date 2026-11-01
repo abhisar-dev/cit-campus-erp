@@ -1434,6 +1434,215 @@
     a[title*="Print" i], a[title*="Export" i] {
       display: none !important;
     }
+
+    /* ==========================================================================
+       CAMPUS ANNOUNCEMENTS TICKER BAR & MARQUEE (HIGH PERFORMANCE CSS)
+       ========================================================================== */
+    .campus-marquee-bar {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 1px 3px rgba(96, 15, 28, 0.03);
+      position: sticky;
+      top: 0;
+      z-index: 90;
+      width: 100%;
+    }
+
+    .marquee-inner {
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .marquee-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--primary);
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.6px;
+      padding: 5px 12px;
+      border-radius: 6px;
+      flex-shrink: 0;
+      border: none;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+    .marquee-badge:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(96, 15, 28, 0.25);
+    }
+
+    .marquee-pulse-dot {
+      width: 7px;
+      height: 7px;
+      background: #4ade80;
+      border-radius: 50%;
+      display: inline-block;
+      box-shadow: 0 0 0 rgba(74, 222, 128, 0.7);
+      animation: pulse-beacon 1.8s infinite;
+    }
+
+    @keyframes pulse-beacon {
+      0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.8);
+      }
+      70% {
+        transform: scale(1.1);
+        box-shadow: 0 0 0 6px rgba(74, 222, 128, 0);
+      }
+      100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(74, 222, 128, 0);
+      }
+    }
+
+    .marquee-track-container {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      mask-image: linear-gradient(to right, transparent 0%, black 20px, black calc(100% - 20px), transparent 100%);
+      -webkit-mask-image: linear-gradient(to right, transparent 0%, black 20px, black calc(100% - 20px), transparent 100%);
+    }
+
+    .marquee-track {
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+      will-change: transform;
+      animation: marquee-scroll 42s linear infinite;
+    }
+
+    /* Proper pause-on-hover & accessibility freeze */
+    .marquee-track-container:hover .marquee-track,
+    .marquee-track.is-paused {
+      animation-play-state: paused !important;
+    }
+
+    @keyframes marquee-scroll {
+      0% {
+        transform: translateX(0);
+      }
+      100% {
+        transform: translateX(-50%);
+      }
+    }
+
+    .marquee-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 20px;
+      padding-right: 20px;
+      flex-shrink: 0;
+    }
+
+    .marquee-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text-main);
+      text-decoration: none;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 4px;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .marquee-item:hover {
+      color: var(--primary);
+      background: var(--yellow-light);
+    }
+    .marquee-item:focus-visible {
+      outline: 2px solid var(--primary);
+    }
+
+    .marquee-pill {
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 4px;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      display: inline-block;
+    }
+    .pill-exam { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+    .pill-event { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+    .pill-acad { background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; }
+    .pill-facil { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+    .pill-admin { background: #f3e8ff; color: #6b21a8; border: 1px solid #e9d5ff; }
+
+    .marquee-sep {
+      color: var(--border-dark);
+      font-size: 13px;
+      user-select: none;
+    }
+
+    .marquee-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .marquee-control-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .marquee-control-btn:hover {
+      background: var(--bg);
+      color: var(--primary);
+      border-color: var(--primary-border);
+    }
+
+    .marquee-view-all-btn {
+      background: var(--yellow-badge);
+      border: 1px solid var(--yellow-border);
+      color: var(--gold-dark);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 11px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .marquee-view-all-btn:hover {
+      background: #fde68a;
+      color: #78350f;
+      transform: translateY(-1px);
+    }
+
+    .announcement-card:hover {
+      border-color: var(--primary-border) !important;
+      box-shadow: 0 4px 12px rgba(96, 15, 28, 0.05) !important;
+    }
+
   </style>
 </head>
 <body>
@@ -1563,6 +1772,7 @@
   <nav class="user-nav">
     <div class="nav-list">
       <button class="tab-item active" onclick="switchUserTab('timetable', this)">Weekly Timetable</button>
+      <button class="tab-item" id="tab-announcements" onclick="switchUserTab('announcements', this)">Campus Notices</button>
       <button class="tab-item" onclick="switchUserTab('bookings', this)">Spectra Venue Bookings</button>
       <button class="tab-item" onclick="switchUserTab('ai', this)">AI Booking Assistant</button>
       <button class="tab-item" onclick="switchUserTab('exams', this)">Midsem Exams</button>
@@ -1570,6 +1780,44 @@
       <button class="tab-item" onclick="switchUserTab('terms', this)">Terms & Conditions</button>
     </div>
   </nav>
+
+<!-- Campus Announcements Ticker Bar (Proper Smooth Marquee) -->
+  <div class="campus-marquee-bar" id="campus-marquee-bar" role="region" aria-label="Campus Live Announcements">
+    <div class="marquee-inner">
+      <button type="button" class="marquee-badge" onclick="switchUserTab('announcements', document.getElementById('tab-announcements'))" title="Click to open Campus Notice Board">
+        <span class="marquee-pulse-dot" aria-hidden="true"></span>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+        </svg>
+        <span class="marquee-badge-text">NOTICES</span>
+      </button>
+
+      <div class="marquee-track-container" id="marquee-track-container" title="Hover to pause announcement ticker">
+        <div class="marquee-track" id="marquee-track">
+          <!-- Populated by initMarquee() with duplicate track for seamless infinite scroll -->
+        </div>
+      </div>
+
+      <div class="marquee-controls">
+        <button type="button" class="marquee-control-btn" id="marquee-toggle-btn" onclick="toggleMarqueePlayback()" title="Pause or play notice scroller" aria-label="Pause or play scroller">
+          <svg id="marquee-pause-icon" width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+            <rect x="5" y="4" width="4" height="16" rx="1"></rect>
+            <rect x="15" y="4" width="4" height="16" rx="1"></rect>
+          </svg>
+          <svg id="marquee-play-icon" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="display: none;">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+        </button>
+        <button type="button" class="marquee-view-all-btn" onclick="switchUserTab('announcements', document.getElementById('tab-announcements'))" title="Open complete notice board">
+          <span>All Notices</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- Main Content Body -->
   <main id="portal-content">
@@ -1723,16 +1971,382 @@
       }
 
       try {
-        const [d, s] = await Promise.all([
+        const [d, s, ann] = await Promise.all([
           fetch("/api/data").then(r => r.json()),
-          fetch("/api/schedule").then(r => r.json())
+          fetch("/api/schedule").then(r => r.json()),
+          fetch("/api/announcements").then(r => r.json()).catch(() => null)
         ]);
         DATA = d;
         SCHED = s;
+        if (ann && ann.announcements && ann.announcements.length) {
+          CAMPUS_ANNOUNCEMENTS = ann.announcements;
+        }
+        if (ann && ann.broadcast) {
+          LIVE_BROADCAST = ann.broadcast;
+        }
+        initMarquee();
         renderTab();
       } catch (e) {
         document.getElementById("portal-content").innerHTML = "<div style='color:red; padding: 24px;'>API error. Ensure server.py is running.</div>";
       }
+    }
+
+
+    // =========================================================================
+    // CAMPUS ANNOUNCEMENTS & PROPER MARQUEE ENGINE
+    // =========================================================================
+    let CAMPUS_ANNOUNCEMENTS = [
+      {
+        id: "CIT-ANN-2026-001",
+        ref: "CIT/EXAM/2026/042",
+        category: "Examinations",
+        title: "Spring 2026 Mid-Semester Examination Schedule Published",
+        date: "01 Nov 2026",
+        urgent: true,
+        summary: "The Midsem examination timetable for 2026 is officially live under the Midsem Exams tab. Zero course clashes verified by the Google OR-Tools optimization engine.",
+        details: "All undergraduate and postgraduate cohorts can view their designated examination halls and seating sessions. Students must carry their physical CIT ID card and arrive 15 minutes before period commencement. Any scheduling conflicts should be reported immediately to the Examination Cell.",
+        author: "Controller of Examinations"
+      },
+      {
+        id: "CIT-ANN-2026-002",
+        ref: "CIT/SPECTRA/2026/089",
+        category: "Events & Venues",
+        title: "Spectra Tech Fest 2026 Venue Booking Windows Open",
+        date: "31 Oct 2026",
+        urgent: false,
+        summary: "Student clubs and event organizers can submit venue reservation requests for the Main Auditorium, Open Air Theater, and LH-101 using the AI Booking Assistant.",
+        details: "Special priority slots are reserved on Wednesday and Friday afternoon periods. Requests are reviewed and certified by Dean of Student Affairs within 24 hours. Ensure estimated attendee counts match room fire code capacities.",
+        author: "Spectra Organizing Committee & Dean (SW)"
+      },
+      {
+        id: "CIT-ANN-2026-003",
+        ref: "CIT/ACAD/2026/038",
+        category: "Academic",
+        title: "Classroom Allocation & Capacity Compliance Certified",
+        date: "30 Oct 2026",
+        urgent: false,
+        summary: "All 27 classrooms and laboratories have achieved 100% seating compliance under constraint H5, guaranteeing adequate seating for every student group.",
+        details: "The academic timetable grid features strict adherence to lecture durations and mandatory lunch recess at Period 5 (13:00 - 13:50). Laboratory sessions in CSE and Electronics blocks have been equipped with updated bench equipment.",
+        author: "Office of Academic Affairs"
+      },
+      {
+        id: "CIT-ANN-2026-004",
+        ref: "CIT/ESTATES/2026/114",
+        category: "Facilities",
+        title: "Smart AV & Projection Upgrades in Seminar Halls",
+        date: "29 Oct 2026",
+        urgent: false,
+        summary: "Audio-visual systems, laser projection, and Gigabit Ethernet drops upgraded in CR-101, CR-102, and LH-301.",
+        details: "High-definition hybrid recording equipment is now active. Faculty and presenters can connect wirelessly or via standard HDMI. For technical assistance during sessions, dial campus extension 4401.",
+        author: "Estates & Infrastructure Cell"
+      },
+      {
+        id: "CIT-ANN-2026-005",
+        ref: "CIT/ADMIN/2026/007",
+        category: "Administrative",
+        title: "Dual-Persistence Cloud Database Telemetry Active",
+        date: "28 Oct 2026",
+        urgent: false,
+        summary: "ERP backend upgraded with automatic synchronization between Neon Serverless PostgreSQL and resilient local store.",
+        details: "User sessions, venue reservation approvals, and audit trails now leverage instant zero-downtime failover with strict OWASP cybersecurity controls.",
+        author: "CIT IT Services & Systems Division"
+      }
+    ];
+
+    let LIVE_BROADCAST = "Welcome to Chilika Institute of Technology (CIT) Campus ERP · Conflict-Free Timetable & Venue Services Active";
+    let announcementFilter = 'all';
+    let announcementSearch = '';
+    let isMarqueePaused = false;
+    window.currentNoticeModalId = null;
+
+    function initMarquee() {
+      const track = document.getElementById("marquee-track");
+      if (!track) return;
+
+      const itemsHtml = CAMPUS_ANNOUNCEMENTS.map(item => {
+        const pillClass = item.category === 'Examinations' ? 'pill-exam' :
+                          item.category === 'Academic' ? 'pill-acad' :
+                          item.category === 'Events & Venues' ? 'pill-event' :
+                          item.category === 'Facilities' ? 'pill-facil' : 'pill-admin';
+        return `
+          <div class="marquee-item" onclick="openNoticeModal('${item.id}')" role="button" tabindex="0" title="Click to view full circular">
+            <span class="marquee-pill ${pillClass}">${item.category}</span>
+            <span class="marquee-text">${item.title}</span>
+            <span class="mono" style="font-size: 11px; color: var(--text-dim);">(${item.date})</span>
+          </div>
+          <span class="marquee-sep" aria-hidden="true">•</span>
+        `;
+      }).join('');
+
+      // Seamless dual track for 100% infinite continuous loop
+      track.innerHTML = `
+        <div class="marquee-group">${itemsHtml}</div>
+        <div class="marquee-group" aria-hidden="true">${itemsHtml}</div>
+      `;
+    }
+
+    function toggleMarqueePlayback() {
+      const track = document.getElementById("marquee-track");
+      const pauseIcon = document.getElementById("marquee-pause-icon");
+      const playIcon = document.getElementById("marquee-play-icon");
+      const toggleBtn = document.getElementById("marquee-toggle-btn");
+      if (!track) return;
+
+      isMarqueePaused = !isMarqueePaused;
+      if (isMarqueePaused) {
+        track.classList.add("is-paused");
+        if (pauseIcon) pauseIcon.style.display = "none";
+        if (playIcon) playIcon.style.display = "block";
+        if (toggleBtn) {
+          toggleBtn.setAttribute("title", "Resume announcement scroller");
+          toggleBtn.setAttribute("aria-label", "Resume scroller");
+        }
+        showToast("Announcement ticker paused.");
+      } else {
+        track.classList.remove("is-paused");
+        if (pauseIcon) pauseIcon.style.display = "block";
+        if (playIcon) playIcon.style.display = "none";
+        if (toggleBtn) {
+          toggleBtn.setAttribute("title", "Pause announcement scroller");
+          toggleBtn.setAttribute("aria-label", "Pause scroller");
+        }
+        showToast("Announcement ticker resumed.");
+      }
+    }
+
+    function openNoticeModal(id) {
+      window.currentNoticeModalId = id;
+      const notice = CAMPUS_ANNOUNCEMENTS.find(a => a.id === id);
+      if (!notice) return;
+
+      const pillClass = notice.category === 'Examinations' ? 'pill-exam' :
+                        notice.category === 'Academic' ? 'pill-acad' :
+                        notice.category === 'Events & Venues' ? 'pill-event' :
+                        notice.category === 'Facilities' ? 'pill-facil' : 'pill-admin';
+
+      const badgeEl = document.getElementById("notice-modal-badge");
+      const titleEl = document.getElementById("notice-modal-title");
+      const metaEl = document.getElementById("notice-modal-meta");
+      const summaryEl = document.getElementById("notice-modal-summary");
+      const detailsEl = document.getElementById("notice-modal-details");
+      const authorEl = document.getElementById("notice-modal-author");
+
+      if (badgeEl) badgeEl.innerHTML = `<span class="marquee-pill ${pillClass}">${notice.category}</span> ${notice.urgent ? '<span class="mono" style="font-size: 10px; font-weight: 800; background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; padding: 2px 7px; border-radius: 3px;">● URGENT PRIORITY</span>' : ''}`;
+      if (titleEl) titleEl.innerText = notice.title;
+      if (metaEl) metaEl.innerText = `CIRCULAR REF: ${notice.ref} · DATE: ${notice.date}`;
+      if (summaryEl) summaryEl.innerText = notice.summary;
+      if (detailsEl) detailsEl.innerText = notice.details;
+      if (authorEl) authorEl.innerText = notice.author;
+
+      openModal("modalNoticeDetail");
+    }
+
+    function setAnnouncementFilter(cat) {
+      announcementFilter = cat;
+      const content = document.getElementById("portal-content");
+      if (currentTab === 'announcements') renderAnnouncements(content);
+    }
+
+    function searchAnnouncements(txt) {
+      announcementSearch = txt;
+      const content = document.getElementById("portal-content");
+      if (currentTab === 'announcements') renderAnnouncements(content);
+    }
+
+    function copyNoticeLink(id) {
+      const notice = CAMPUS_ANNOUNCEMENTS.find(a => a.id === id);
+      const url = window.location.origin + "/#notice=" + (notice ? notice.ref : id);
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(() => {
+          showToast("Circular reference link copied to clipboard!");
+        }).catch(() => {
+          showToast("Notice Ref: " + (notice ? notice.ref : id));
+        });
+      } else {
+        showToast("Notice Ref: " + (notice ? notice.ref : id));
+      }
+    }
+
+    // 2. OFFICIAL CAMPUS ANNOUNCEMENTS & BULLETINS SECTION
+    function renderAnnouncements(content) {
+      const allCount = CAMPUS_ANNOUNCEMENTS.length;
+      const examCount = CAMPUS_ANNOUNCEMENTS.filter(a => a.category === 'Examinations').length;
+      const acadCount = CAMPUS_ANNOUNCEMENTS.filter(a => a.category === 'Academic').length;
+      const eventCount = CAMPUS_ANNOUNCEMENTS.filter(a => a.category === 'Events & Venues').length;
+      const facilCount = CAMPUS_ANNOUNCEMENTS.filter(a => a.category === 'Facilities').length;
+      const adminCount = CAMPUS_ANNOUNCEMENTS.filter(a => a.category === 'Administrative').length;
+
+      let filtered = CAMPUS_ANNOUNCEMENTS;
+      if (announcementFilter !== 'all') {
+        filtered = filtered.filter(a => a.category.toLowerCase().includes(announcementFilter.toLowerCase()));
+      }
+      if (announcementSearch && announcementSearch.trim() !== '') {
+        const q = announcementSearch.toLowerCase();
+        filtered = filtered.filter(a => 
+          a.title.toLowerCase().includes(q) || 
+          a.summary.toLowerCase().includes(q) || 
+          a.ref.toLowerCase().includes(q) ||
+          a.author.toLowerCase().includes(q)
+        );
+      }
+
+      content.innerHTML = `
+        <div class="content-card" style="margin-bottom: 22px;">
+          <!-- Announcements Header Banner -->
+          <div class="portal-cta-banner" style="margin-bottom: 18px;">
+            <div class="cta-left">
+              <div class="cta-pill-tag mono">
+                <span>●</span>
+                <span>CAMPUS BULLETIN BOARD · OFFICIAL COMMUNICATIONS</span>
+              </div>
+              <h1 class="cta-title">Official Campus Notices & Bulletins</h1>
+              <p class="cta-desc">
+                Authoritative circulars, academic schedules, and institutional announcements verified by the Office of the Registrar and Academic Senate.
+              </p>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <span class="mono" style="font-size: 11px; background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); padding: 3px 9px; border-radius: 4px; font-weight: 700;">
+                  ● ${allCount} Active Bulletins
+                </span>
+                <span class="mono" style="font-size: 11px; background: var(--primary-light); color: var(--primary); border: 1px solid var(--primary-border); padding: 3px 9px; border-radius: 4px; font-weight: 700;">
+                  Google OR-Tools Verified
+                </span>
+                <span class="mono" style="font-size: 11px; background: var(--yellow-badge); color: var(--gold-dark); border: 1px solid var(--yellow-border); padding: 3px 9px; border-radius: 4px; font-weight: 700;">
+                  Dual-Persistence Neon Sync
+                </span>
+              </div>
+            </div>
+
+            <div class="cta-capsule mono">
+              <div class="cta-stat-col">
+                <div class="cta-stat-val" style="color: var(--primary);">${allCount}</div>
+                <div class="cta-stat-sub">Total Notices</div>
+              </div>
+              <div class="cta-stat-sep"></div>
+              <div class="cta-stat-col">
+                <div class="cta-stat-val" style="color: var(--red);">${CAMPUS_ANNOUNCEMENTS.filter(a=>a.urgent).length}</div>
+                <div class="cta-stat-sub">High Priority</div>
+              </div>
+              <div class="cta-stat-sep"></div>
+              <div class="cta-stat-col">
+                <div class="cta-stat-val" style="color: var(--green);">100%</div>
+                <div class="cta-stat-sub">Verified</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Priority Administrative Broadcast Banner -->
+          ${LIVE_BROADCAST ? `
+            <div style="background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border: 1px solid #fde68a; border-left: 4px solid var(--primary); border-radius: 8px; padding: 16px 20px; margin-bottom: 20px; display: flex; align-items: flex-start; gap: 14px; box-shadow: 0 2px 8px rgba(120, 53, 15, 0.05);">
+              <div style="width: 36px; height: 36px; border-radius: 8px; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 6px rgba(96, 15, 28, 0.2);">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+              </div>
+              <div style="flex: 1;">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px; flex-wrap: wrap;">
+                  <span class="mono" style="font-size: 10px; font-weight: 800; background: var(--primary); color: #fff; padding: 2px 7px; border-radius: 4px; letter-spacing: 0.5px;">LIVE CAMPUS BROADCAST</span>
+                  <span style="font-size: 11px; color: var(--gold-dark); font-weight: 600;">Office of the Registrar & IT Directorate</span>
+                </div>
+                <div style="font-size: 14px; font-weight: 700; color: #78350f; line-height: 1.45;">
+                  ${LIVE_BROADCAST}
+                </div>
+              </div>
+            </div>
+          ` : ''}
+
+          <!-- Search & Filter Controls Bar -->
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 14px; margin-bottom: 18px; flex-wrap: wrap; background: #ffffff; padding: 14px 16px; border: 1px solid var(--border); border-radius: 8px;">
+            <!-- Category Filter Pills -->
+            <div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;">
+              <button onclick="setAnnouncementFilter('all')" class="filter-pill ${announcementFilter === 'all' ? 'active' : ''}">All Notices (${allCount})</button>
+              <button onclick="setAnnouncementFilter('exam')" class="filter-pill ${announcementFilter === 'exam' ? 'active' : ''}">Exams (${examCount})</button>
+              <button onclick="setAnnouncementFilter('acad')" class="filter-pill ${announcementFilter === 'acad' ? 'active' : ''}">Academic (${acadCount})</button>
+              <button onclick="setAnnouncementFilter('event')" class="filter-pill ${announcementFilter === 'event' ? 'active' : ''}">Venues & Events (${eventCount})</button>
+              <button onclick="setAnnouncementFilter('facil')" class="filter-pill ${announcementFilter === 'facil' ? 'active' : ''}">Facilities (${facilCount})</button>
+              <button onclick="setAnnouncementFilter('admin')" class="filter-pill ${announcementFilter === 'admin' ? 'active' : ''}">Administrative (${adminCount})</button>
+            </div>
+
+            <!-- Live Search Box -->
+            <div style="position: relative; min-width: 260px; flex: 1; max-width: 360px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 10px; top: 10px; color: var(--text-dim);">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input type="text" value="${announcementSearch}" oninput="searchAnnouncements(this.value)" placeholder="Search notices by title, ID, or keyword..." class="form-input" style="padding-left: 32px; height: 34px; font-size: 12px; margin: 0;" />
+              ${announcementSearch ? `
+                <button type="button" onclick="searchAnnouncements('')" style="position: absolute; right: 8px; top: 7px; background: transparent; border: none; font-size: 14px; cursor: pointer; color: var(--text-muted);">&times;</button>
+              ` : ''}
+            </div>
+          </div>
+
+          <!-- Notices Cards Feed Grid -->
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            ${filtered.length === 0 ? `
+              <div style="text-align: center; padding: 40px 20px; background: var(--bg); border: 1px dashed var(--border-dark); border-radius: 8px;">
+                <div style="font-size: 15px; font-weight: 700; color: var(--text-main);">No matching circulars or notices found</div>
+                <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Try searching for different keywords or reset category filters.</div>
+                <button onclick="setAnnouncementFilter('all'); searchAnnouncements('');" class="btn-sub-cta" style="margin-top: 14px; font-size: 12px; padding: 6px 14px;">Reset All Filters</button>
+              </div>
+            ` : filtered.map(item => {
+              const pillClass = item.category === 'Examinations' ? 'pill-exam' :
+                                item.category === 'Academic' ? 'pill-acad' :
+                                item.category === 'Events & Venues' ? 'pill-event' :
+                                item.category === 'Facilities' ? 'pill-facil' : 'pill-admin';
+              return `
+                <div class="announcement-card" style="background: #ffffff; border: 1px solid var(--border); border-radius: 8px; padding: 18px 20px; transition: all 0.15s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.02); display: flex; flex-direction: column; gap: 10px;">
+                  <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap;">
+                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                      <span class="marquee-pill ${pillClass}">${item.category}</span>
+                      ${item.urgent ? `<span class="mono" style="font-size: 10px; font-weight: 800; background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; padding: 2px 7px; border-radius: 3px;">● URGENT</span>` : ''}
+                      <span class="mono" style="font-size: 11px; color: var(--text-dim);">${item.ref}</span>
+                    </div>
+                    <div class="mono" style="font-size: 11.5px; color: var(--text-dim); display: flex; align-items: center; gap: 5px;">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                      </svg>
+                      <span>${item.date}</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 style="font-size: 15px; font-weight: 800; color: var(--text-main); margin-bottom: 6px; line-height: 1.4; cursor: pointer;" onclick="openNoticeModal('${item.id}')">
+                      ${item.title}
+                    </h3>
+                    <p style="font-size: 13px; color: var(--text-muted); line-height: 1.6; margin: 0;">
+                      ${item.summary}
+                    </p>
+                  </div>
+
+                  <div style="padding-top: 10px; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; font-size: 12px;">
+                    <div style="color: var(--text-dim); display: flex; align-items: center; gap: 6px;">
+                      <span>Authority:</span>
+                      <strong style="color: var(--text-main);">${item.author}</strong>
+                    </div>
+
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                      <button type="button" class="btn-sub-cta" onclick="copyNoticeLink('${item.id}')" style="font-size: 11px; padding: 5px 10px;" title="Copy shareable link">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                        </svg>
+                        <span>Copy Link</span>
+                      </button>
+
+                      <button type="button" class="btn-main-cta" onclick="openNoticeModal('${item.id}')" style="font-size: 11.5px; padding: 6px 14px; box-shadow: none;">
+                        <span>View Circular Memo →</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
     }
 
     function renderTab() {
@@ -3169,6 +3783,57 @@
       <button class="btn-submit" onclick="closeModal('modalSocials')">Done</button>
     </div>
   </div>
+  </div>
+
+<!-- Campus Announcement & Circular Detail Modal -->
+  <div class="modal-backdrop" id="modalNoticeDetail" onclick="if(event.target === this) closeModal('modalNoticeDetail')">
+    <div class="modal-box" style="max-width: 620px;">
+      <button class="modal-close-btn" onclick="closeModal('modalNoticeDetail')" aria-label="Close dialog">✕</button>
+      <div class="modal-head">
+        <div style="width: 38px; height: 38px; border-radius: 8px; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 1px solid var(--border);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+        </div>
+        <div>
+          <div id="notice-modal-badge" style="margin-bottom: 3px;"></div>
+          <h3 class="modal-title" id="notice-modal-title" style="font-size: 17px; line-height: 1.35;">Official Notice</h3>
+          <div class="mono" id="notice-modal-meta" style="font-size: 11px; color: var(--text-dim); margin-top: 2px;"></div>
+        </div>
+      </div>
+
+      <div style="font-size: 13.5px; color: var(--text-main); line-height: 1.65; margin: 16px 0;">
+        <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px; margin-bottom: 14px;">
+          <div style="font-weight: 700; color: var(--primary); font-size: 12px; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Summary Overview</div>
+          <div id="notice-modal-summary" style="color: var(--text-muted); font-size: 13px;"></div>
+        </div>
+
+        <div style="font-weight: 700; font-size: 13px; color: var(--text-main); margin-bottom: 6px;">Directive Details & Instructions:</div>
+        <div id="notice-modal-details" style="white-space: pre-line; color: var(--text-main); background: #ffffff; border: 1px dashed var(--border-dark); border-radius: 8px; padding: 14px;"></div>
+
+        <div style="margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 11.5px; color: var(--text-dim);">
+          <div>
+            <span>Issued by: </span><strong id="notice-modal-author" style="color: var(--text-main);"></strong>
+          </div>
+          <div class="mono" style="background: var(--yellow-light); border: 1px solid var(--yellow-border); color: var(--gold-dark); padding: 2px 7px; border-radius: 4px;">
+            CIT Certified Memo
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px;">
+        <button type="button" class="btn-sub-cta" onclick="copyNoticeLink(window.currentNoticeModalId)" style="font-size: 12px; padding: 8px 14px;">
+          Copy Notice Link
+        </button>
+        <button type="button" class="btn-submit" onclick="closeModal('modalNoticeDetail')" style="width: auto; padding: 8px 18px; margin-top: 0; font-size: 12px;">
+          Acknowledge & Close
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- My Profile Modal -->

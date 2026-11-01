@@ -170,6 +170,44 @@ class QATestRunner:
             t3.details = "Could not inspect index.html"
         self.log(t3)
 
+        # Test 4: Campus Live Marquee Bar & Pause-on-Hover
+        t_mq = TestResult("Marquee Component :: Campus Live Ticker & Pause-on-Hover", "UI / UX")
+        t_mq.duration_ms = elapsed
+        if code == 200 and isinstance(body, str):
+            has_marquee_bar = "campus-marquee-bar" in body
+            has_track = "marquee-track" in body
+            has_keyframes = "marquee-scroll" in body
+            has_pause_hover = "marquee-track-container:hover" in body or "animation-play-state: paused" in body
+            if has_marquee_bar and has_track and has_keyframes and has_pause_hover:
+                t_mq.passed = True
+                t_mq.details = "Verified: Proper CSS marquee with pause-on-hover & infinite loop active."
+            else:
+                t_mq.passed = False
+                t_mq.details = f"Missing components: bar={has_marquee_bar}, track={has_track}, keyframes={has_keyframes}, pause_hover={has_pause_hover}"
+        else:
+            t_mq.passed = False
+            t_mq.details = "Could not inspect index.html"
+        self.log(t_mq)
+
+        # Test 5: Announcements Section & Circular Memo Modal
+        t_sec = TestResult("Announcements Section :: Official Circulars Feed & Modal", "UI / UX")
+        t_sec.duration_ms = elapsed
+        if code == 200 and isinstance(body, str):
+            has_render_ann = "renderAnnouncements" in body
+            has_modal = "modalNoticeDetail" in body
+            has_tab = "tab-announcements" in body
+            if has_render_ann and has_modal and has_tab:
+                t_sec.passed = True
+                t_sec.details = "Verified: Announcements section, navigation tab, and modal circular viewer active."
+            else:
+                t_sec.passed = False
+                t_sec.details = f"Missing components: render={has_render_ann}, modal={has_modal}, tab={has_tab}"
+        else:
+            t_sec.passed = False
+            t_sec.details = "Could not inspect index.html"
+        self.log(t_sec)
+
+
     # --------------------------------------------------------------------------
     # SUITE 3: Academic Optimization & Solver Endpoints
     # --------------------------------------------------------------------------
@@ -221,6 +259,25 @@ class QATestRunner:
             t_val.passed = False
             t_val.details = f"Status {code}: {body}"
         self.log(t_val)
+
+        # /api/announcements
+        t_ann = TestResult("GET /api/announcements (Campus Circulars & Broadcast Feed)", "Data API")
+        code, body, elapsed, _ = self.request("/api/announcements")
+        t_ann.duration_ms = elapsed
+        if code == 200 and isinstance(body, dict) and body.get("success"):
+            ann_list = body.get("announcements", [])
+            has_broadcast = "broadcast" in body
+            if len(ann_list) >= 5 and has_broadcast:
+                t_ann.passed = True
+                t_ann.details = f"Verified: {len(ann_list)} official circulars loaded with active campus broadcast."
+            else:
+                t_ann.passed = False
+                t_ann.details = f"Invalid announcement schema: count={len(ann_list)}, broadcast={has_broadcast}"
+        else:
+            t_ann.passed = False
+            t_ann.details = f"Status {code}: {body}"
+        self.log(t_ann)
+
 
     # --------------------------------------------------------------------------
     # SUITE 4: Security & Authentication (Zero-Leakage & OWASP)
