@@ -1199,26 +1199,7 @@
         });
       });
 
-      // 2. Baseline fest week bookings
-      festBookings.forEach((b, idx) => {
-        const id = b.request_id || `BR-0${idx + 1}`;
-        const req = requestsBaseline.find(r => r.id === id);
-        const ovr = BOOKING_OVERRIDES[id] || {};
-        list.push({
-          id: id,
-          title: req ? req.title : 'Official Campus Event',
-          requester: req ? req.requester : 'Campus Operations',
-          role: req ? req.role : 'club',
-          room_id: ovr.room_id || b.room_id,
-          day: b.day || 'Wednesday',
-          start_period: b.start_period || 2,
-          end_period: b.end_period || 4,
-          status: ovr.status || b.status || 'approved',
-          reason: ovr.reason || b.reason || 'Verified institutional clearance',
-          attendance: req ? req.expected_attendance : 120,
-          is_custom: false
-        });
-      });
+      // Fake bot data removed per user request: only authentic campus bookings included
 
       return list;
     }

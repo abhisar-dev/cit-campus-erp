@@ -2634,7 +2634,6 @@
     }
 
 function renderBookings(content) {
-      const festBookings = (SCHED && SCHED.fest_week && SCHED.fest_week.bookings) ? SCHED.fest_week.bookings : [];
       let customBookings = [];
       try {
         customBookings = JSON.parse(localStorage.getItem('cit_custom_bookings') || '[]');
@@ -2644,8 +2643,8 @@ function renderBookings(content) {
         <div class="content-card">
           <div class="card-title-row">
             <div>
-              <div class="title-text">Spectra Fest Week 7 — Venue Allocation Status</div>
-              <div class="subtitle-text">Official decisions following CIT institutional precedence rules</div>
+              <div class="title-text">Campus Venue Allocation Status</div>
+              <div class="subtitle-text">Live verified institutional reservations, club requests, and room allocations</div>
             </div>
             <button onclick="switchUserTab('ai')" style="background: var(--primary); color: #fff; border: none; padding: 7px 14px; border-radius: 4px; font-size: 12px; font-weight: 700; cursor: pointer;">
               + Request New Venue Booking (AI Assistant)
@@ -2653,94 +2652,60 @@ function renderBookings(content) {
           </div>
 
           ${customBookings.length > 0 ? `
-            <div style="margin-bottom: 22px;">
-              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-                <strong style="font-size: 13px; color: var(--primary);">📌 My Submitted Venue Requests (${customBookings.length})</strong>
-                <span style="font-size: 11px; color: var(--text-muted);">Real-time Dean Telemetry</span>
-              </div>
-              <div class="grid-wrapper">
-                <table class="calendar-table" style="font-size: 12px;">
-                  <thead>
-                    <tr style="background: var(--primary-light);">
-                      <th style="width: 85px;">REQUEST ID</th>
-                      <th>EVENT TITLE</th>
-                      <th>APPLICANT</th>
-                      <th>ROLE</th>
-                      <th>VENUE & TIME</th>
-                      <th>STATUS</th>
-                      <th>NOTES / CLEARANCE</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    ${customBookings.map(cb => {
-                      const id = cb.id || cb.request_id || 'BR-REQ';
-                      let statusBadge = '<span class="status-tag" style="background:#fef3c7; color:#92400e; border:1px solid #fde68a;">⏳ Under Review</span>';
-                      if (cb.status === 'approved') {
-                        statusBadge = '<span class="status-tag green">● Approved</span>';
-                      } else if (cb.status === 'rejected') {
-                        statusBadge = '<span class="status-tag red">✕ Rejected</span>';
-                      }
-                      return `
-                        <tr>
-                          <td class="mono" style="font-weight: 700; color: var(--primary);">${id}</td>
-                          <td style="font-weight: 700;">${escapeHtml(cb.title || 'Campus Event')}</td>
-                          <td>${escapeHtml(cb.requester || 'Student Member')}</td>
-                          <td class="mono" style="color: var(--text-muted); font-size: 11px;">${cb.role || 'student'}</td>
-                          <td class="mono" style="font-weight: 600;">${cb.room_id || 'AUD'} (${cb.day || 'FRI'} P${cb.start_period || 6}-P${cb.end_period || 8})</td>
-                          <td>${statusBadge}</td>
-                          <td style="color: var(--text-muted); font-size: 11px;">${escapeHtml(cb.reason || 'Pending Academic Clearance')}</td>
-                        </tr>
-                      `;
-                    }).join('')}
-                  </tbody>
-                </table>
-              </div>
+            <div class="mobile-swipe-hint"><span>⇄ Swipe horizontally to view full schedule</span></div>
+            <div class="grid-wrapper">
+              <table class="calendar-table" style="font-size: 12px;">
+                <thead>
+                  <tr style="background: var(--yellow-light);">
+                    <th style="width: 85px;">REQUEST ID</th>
+                    <th>EVENT TITLE</th>
+                    <th>APPLICANT</th>
+                    <th>ORGANIZER ROLE</th>
+                    <th>ALLOCATED VENUE & TIME</th>
+                    <th>STATUS</th>
+                    <th>DECISION NOTE / REMARKS</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${customBookings.map(cb => {
+                    const id = cb.id || cb.request_id || 'BR-REQ';
+                    let statusBadge = '<span class="status-tag" style="background:#fef3c7; color:#92400e; border:1px solid #fde68a;">⏳ Under Review</span>';
+                    if (cb.status === 'approved') {
+                      statusBadge = '<span class="status-tag green">● Approved</span>';
+                    } else if (cb.status === 'rejected') {
+                      statusBadge = '<span class="status-tag red">✕ Rejected</span>';
+                    } else if (cb.status === 'alternative_offered') {
+                      statusBadge = '<span class="status-tag" style="background:#fef3c7; color:#92400e; border:1px solid #fde68a;">Alternative Offered</span>';
+                    }
+                    return `
+                      <tr>
+                        <td class="mono" style="font-weight: 700; color: var(--primary);">${id}</td>
+                        <td style="font-weight: 700;">${escapeHtml(cb.title || 'Campus Event')}</td>
+                        <td>${escapeHtml(cb.requester || 'Student Member')}</td>
+                        <td class="mono" style="color: var(--text-muted); font-size: 11px;">${escapeHtml(cb.role || 'student')}</td>
+                        <td class="mono" style="font-weight: 600;">${cb.room_id || 'AUD'} (${cb.day || 'FRI'} P${cb.start_period || 6}-P${cb.end_period || 8})</td>
+                        <td>${statusBadge}</td>
+                        <td style="color: var(--text-muted); font-size: 11px;">${escapeHtml(cb.reason || 'Pending Academic Clearance')}</td>
+                      </tr>
+                    `;
+                  }).join('')}
+                </tbody>
+              </table>
             </div>
-            <div style="border-top: 1px solid var(--border); margin-bottom: 18px;"></div>
-            <div style="font-size: 13px; font-weight: 800; margin-bottom: 8px; color: var(--text-main);">
-              Official Campus Baseline Allocations
+          ` : `
+            <div style="text-align: center; padding: 48px 20px; background: #fafafa; border: 1px dashed var(--border); border-radius: 8px; margin-top: 14px;">
+              <div style="font-size: 38px; margin-bottom: 12px;">🏛️</div>
+              <div style="font-size: 16px; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">
+                No Active Venue Allocations
+              </div>
+              <p style="font-size: 13px; color: var(--text-muted); max-width: 520px; margin: 0 auto 20px; line-height: 1.6;">
+                All 27 classrooms, laboratories, and lecture halls are operating under regular conflict-free academic timetable schedules. No special event reservations are currently scheduled.
+              </p>
+              <button onclick="switchUserTab('ai')" class="btn-action" style="background: var(--primary); color: #fff; padding: 10px 24px; font-weight: 800; font-size: 12.5px; border-radius: 6px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 2px 6px rgba(15,23,42,0.15);">
+                <span>⚡</span> Check Availability & Request Booking (AI Assistant) &rarr;
+              </button>
             </div>
-          ` : ''}
-
-          <div class="mobile-swipe-hint"><span>⇄ Swipe horizontally to view full schedule</span></div>
-          <div class="grid-wrapper">
-            <table class="calendar-table" style="font-size: 12px;">
-              <thead>
-                <tr style="background: var(--yellow-light);">
-                  <th style="width: 85px;">REQUEST ID</th>
-                  <th>EVENT TITLE</th>
-                  <th>REQUESTED BY</th>
-                  <th>ORGANIZER ROLE</th>
-                  <th>ALLOCATED VENUE & TIME</th>
-                  <th>STATUS</th>
-                  <th>DECISION NOTE</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${festBookings.map(b => {
-                  const req = (DATA && DATA.booking_requests) ? DATA.booking_requests.find(r => r.id === b.request_id) : null;
-                  let statusTag = `<span class="status-tag green">● Approved</span>`;
-                  if (b.status === 'alternative_offered') {
-                    statusTag = `<span class="status-tag" style="background:#fef3c7; color:#92400e; border:1px solid #fde68a;">Alternative Offered</span>`;
-                  } else if (b.status === 'rejected') {
-                    statusTag = `<span class="status-tag red">✕ Rejected</span>`;
-                  }
-
-                  return `
-                    <tr>
-                      <td class="mono" style="font-weight: 700; color: var(--primary);">${b.request_id}</td>
-                      <td style="font-weight: 700;">${req ? req.title : 'Event'}</td>
-                      <td>${req ? req.requester : 'Unknown'}</td>
-                      <td class="mono" style="color: var(--text-muted); font-size: 11px;">${req ? req.role : ''}</td>
-                      <td class="mono" style="font-weight: 600;">${b.status !== 'rejected' ? `${b.room_id} (${b.day} P${b.start_period}-P${b.end_period})` : '—'}</td>
-                      <td>${statusTag}</td>
-                      <td style="color: var(--text-muted); font-size: 11px;">${b.reason}</td>
-                    </tr>
-                  `;
-                }).join('')}
-              </tbody>
-            </table>
-          </div>
+          `}
         </div>
       `;
     }
@@ -2857,15 +2822,19 @@ function renderBookings(content) {
         }
       }
 
-      // Verify against fest week confirmed bookings
-      if (!clash && SCHED && SCHED.fest_week && SCHED.fest_week.bookings) {
-        for (const b of SCHED.fest_week.bookings) {
-          if (b.room_id === matchedRoom && b.day === day && b.status !== 'rejected') {
+      // Verify against custom confirmed bookings only (fake fest_week bot data removed)
+      let customList = [];
+      try {
+        customList = JSON.parse(localStorage.getItem('cit_custom_bookings') || '[]');
+      } catch (e) {}
+
+      if (!clash && customList && customList.length) {
+        for (const b of customList) {
+          if (b.room_id === matchedRoom && b.day === day && b.status === 'approved') {
             if (!(endP < b.start_period || startP > b.end_period)) {
-              const req = (DATA.booking_requests || []).find(r => r.id === b.request_id);
               clash = {
-                type: 'Fest Week Booking',
-                details: req ? req.title : 'Approved Booking',
+                type: 'Confirmed Venue Reservation',
+                details: b.title || 'Approved Booking',
                 period: `P${b.start_period}–P${b.end_period}`
               };
               break;
