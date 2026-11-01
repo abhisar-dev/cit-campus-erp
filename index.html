@@ -1755,6 +1755,12 @@
       const courseMap = {};
       DATA.courses.forEach(c => { courseMap[c.id] = c; });
 
+      // Restrict to only 5 faculty in official timetable views
+      const visibleFaculty = (DATA.faculty || []).slice(0, 5);
+      if (visibleFaculty.length > 0 && !visibleFaculty.some(f => f.id === selectedFaculty)) {
+        selectedFaculty = visibleFaculty[0].id;
+      }
+
       const grid = {};
       for (let p = 1; p <= 9; p++) {
         grid[p] = { MON: null, TUE: null, WED: null, THU: null, FRI: null };
@@ -1769,7 +1775,7 @@
         if (timetableFilterType === 'cohort') {
           matches = s.groups.includes(selectedCohort) || s.groups.includes("ALL-Y1") || s.groups.includes("ALL-Y2");
         } else if (timetableFilterType === 'faculty') {
-          matches = item.faculty_id === selectedFaculty;
+          matches = (s.faculty_id === selectedFaculty || item.faculty_id === selectedFaculty);
         } else if (timetableFilterType === 'room') {
           matches = item.room_id === selectedRoom;
         }
@@ -1874,7 +1880,7 @@
                 </select>
               ` : timetableFilterType === 'faculty' ? `
                 <select onchange="changeFaculty(this.value)" class="filter-dropdown">
-                  ${DATA.faculty.map(f => `<option value="${f.id}" ${selectedFaculty === f.id ? 'selected' : ''}>Faculty ${f.id} (${f.department})</option>`).join('')}
+                  ${(DATA.faculty || []).slice(0, 5).map(f => `<option value="${f.id}" ${selectedFaculty === f.id ? 'selected' : ''}>Faculty ${f.id} (${f.department})</option>`).join('')}
                 </select>
               ` : `
                 <select onchange="changeRoom(this.value)" class="filter-dropdown">
