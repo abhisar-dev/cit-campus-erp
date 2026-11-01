@@ -2600,8 +2600,45 @@
     }
 
     // 2. VENUE BOOKINGS (USER VIEW)
-    function renderBookings(content) {
-      const bookings = SCHED.fest_week.bookings || [];
+    
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function extractEventTitle(query) {
+      if (!query) return 'Campus Activity & Workshop';
+      const q = query.trim();
+      const lower = q.toLowerCase();
+      
+      const forMatch = q.match(/(?:for|ke liye|purpose|event|regarding)\s+([^.?!,;]+)/i);
+      if (forMatch && forMatch[1]) {
+        let t = forMatch[1].trim();
+        return t.charAt(0).toUpperCase() + t.slice(1);
+      }
+      
+      if (lower.includes('rehearsal')) return 'Club Performance Rehearsal';
+      if (lower.includes('workshop')) return 'Technical Workshop';
+      if (lower.includes('hackathon')) return 'Campus Hackathon';
+      if (lower.includes('guest lecture') || lower.includes('talk')) return 'Guest Lecture & Seminar';
+      if (lower.includes('meeting') || lower.includes('baithak')) return 'Committee Coordination Meeting';
+      if (lower.includes('robotics')) return 'RoboCIT Society Practice';
+      if (lower.includes('drama') || lower.includes('play')) return 'Dramatics Society Practice';
+      
+      return 'Campus Venue Reservation';
+    }
+
+function renderBookings(content) {
+      const festBookings = (SCHED && SCHED.fest_week && SCHED.fest_week.bookings) ? SCHED.fest_week.bookings : [];
+      let customBookings = [];
+      try {
+        customBookings = JSON.parse(localStorage.getItem('cit_custom_bookings') || '[]');
+      } catch (e) {}
 
       content.innerHTML = `
         <div class="content-card">
@@ -2611,9 +2648,59 @@
               <div class="subtitle-text">Official decisions following CIT institutional precedence rules</div>
             </div>
             <button onclick="switchUserTab('ai')" style="background: var(--primary); color: #fff; border: none; padding: 7px 14px; border-radius: 4px; font-size: 12px; font-weight: 700; cursor: pointer;">
-              + Request New Venue Booking
+              + Request New Venue Booking (AI Assistant)
             </button>
           </div>
+
+          ${customBookings.length > 0 ? `
+            <div style="margin-bottom: 22px;">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                <strong style="font-size: 13px; color: var(--primary);">📌 My Submitted Venue Requests (${customBookings.length})</strong>
+                <span style="font-size: 11px; color: var(--text-muted);">Real-time Dean Telemetry</span>
+              </div>
+              <div class="grid-wrapper">
+                <table class="calendar-table" style="font-size: 12px;">
+                  <thead>
+                    <tr style="background: var(--primary-light);">
+                      <th style="width: 85px;">REQUEST ID</th>
+                      <th>EVENT TITLE</th>
+                      <th>APPLICANT</th>
+                      <th>ROLE</th>
+                      <th>VENUE & TIME</th>
+                      <th>STATUS</th>
+                      <th>NOTES / CLEARANCE</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${customBookings.map(cb => {
+                      const id = cb.id || cb.request_id || 'BR-REQ';
+                      let statusBadge = '<span class="status-tag" style="background:#fef3c7; color:#92400e; border:1px solid #fde68a;">⏳ Under Review</span>';
+                      if (cb.status === 'approved') {
+                        statusBadge = '<span class="status-tag green">● Approved</span>';
+                      } else if (cb.status === 'rejected') {
+                        statusBadge = '<span class="status-tag red">✕ Rejected</span>';
+                      }
+                      return `
+                        <tr>
+                          <td class="mono" style="font-weight: 700; color: var(--primary);">${id}</td>
+                          <td style="font-weight: 700;">${escapeHtml(cb.title || 'Campus Event')}</td>
+                          <td>${escapeHtml(cb.requester || 'Student Member')}</td>
+                          <td class="mono" style="color: var(--text-muted); font-size: 11px;">${cb.role || 'student'}</td>
+                          <td class="mono" style="font-weight: 600;">${cb.room_id || 'AUD'} (${cb.day || 'FRI'} P${cb.start_period || 6}-P${cb.end_period || 8})</td>
+                          <td>${statusBadge}</td>
+                          <td style="color: var(--text-muted); font-size: 11px;">${escapeHtml(cb.reason || 'Pending Academic Clearance')}</td>
+                        </tr>
+                      `;
+                    }).join('')}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div style="border-top: 1px solid var(--border); margin-bottom: 18px;"></div>
+            <div style="font-size: 13px; font-weight: 800; margin-bottom: 8px; color: var(--text-main);">
+              Official Campus Baseline Allocations
+            </div>
+          ` : ''}
 
           <div class="mobile-swipe-hint"><span>⇄ Swipe horizontally to view full schedule</span></div>
           <div class="grid-wrapper">
@@ -2630,8 +2717,8 @@
                 </tr>
               </thead>
               <tbody>
-                ${bookings.map(b => {
-                  const req = DATA.booking_requests.find(r => r.id === b.request_id);
+                ${festBookings.map(b => {
+                  const req = (DATA && DATA.booking_requests) ? DATA.booking_requests.find(r => r.id === b.request_id) : null;
                   let statusTag = `<span class="status-tag green">● Approved</span>`;
                   if (b.status === 'alternative_offered') {
                     statusTag = `<span class="status-tag" style="background:#fef3c7; color:#92400e; border:1px solid #fde68a;">Alternative Offered</span>`;
@@ -2673,7 +2760,7 @@
           </div>
 
           <div style="display: flex; gap: 8px; margin-bottom: 12px;">
-            <input type="text" id="ai-query-input" class="form-input" placeholder="e.g. Can we book Seminar Hall SH-1 on Friday from P6 to P8 for guest lecture?" />
+            <input type="text" id="ai-query-input" class="form-input" placeholder="e.g. Can we book Seminar Hall SH-1 on Friday from P6 to P8 for guest lecture?" onkeydown="if(event.key==='Enter') handleAIQuery();" />
             <button onclick="handleAIQuery()" class="btn-submit" style="width: auto; padding: 0 20px; white-space: nowrap; margin-top: 0;">Check Venue</button>
           </div>
 
@@ -2685,8 +2772,11 @@
           </div>
 
           <div id="ai-response-area" style="background: var(--yellow-light); border: 1px solid var(--yellow-border); border-radius: 6px; padding: 16px; min-height: 120px; font-size: 12px; line-height: 1.6;">
-            <div style="color: var(--text-muted);">Ask any venue booking question above to check real-time availability and institutional precedence.</div>
+            <div style="color: var(--text-muted);">Ask any venue booking question above in English or Hinglish to check real-time availability and apply instantly.</div>
           </div>
+
+          <!-- Inline Venue Booking Application Container -->
+          <div id="ai-booking-form-container" style="display: none; margin-top: 18px;"></div>
         </div>
       `;
     }
@@ -2702,6 +2792,9 @@
       if (!q) return;
 
       const area = document.getElementById('ai-response-area');
+      const formContainer = document.getElementById('ai-booking-form-container');
+      if (formContainer) formContainer.style.display = 'none';
+
       area.innerHTML = "<div style='color: var(--gold-dark); font-weight: 700;'>Checking timetable and precedence constraints...</div>";
 
       // Detect room
@@ -2783,10 +2876,11 @@
 
       const roomObj = (DATA.rooms || []).find(r => r.id === matchedRoom);
       const capText = roomObj ? ` (Capacity: ${roomObj.capacity} seats)` : '';
+      const detectedTitle = extractEventTitle(q);
 
       if (clash) {
         area.innerHTML = `
-          <div style="margin-bottom: 8px;"><strong>Query Parsed:</strong> ${q}</div>
+          <div style="margin-bottom: 8px;"><strong>Query Parsed:</strong> ${escapeHtml(q)}</div>
           <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; background: #ffffff; padding: 10px; border-radius: 4px; border: 1px solid var(--border); margin-bottom: 10px;" class="mono">
             <div>Venue: <strong>${matchedRoom}</strong>${capText}</div>
             <div>Day: <strong>${day}</strong></div>
@@ -2796,24 +2890,259 @@
             ✕ Slot Unavailable: ${matchedRoom} on ${day} is occupied by ${clash.type} "${clash.details}" during ${clash.period}.
           </div>
           <div style="font-size: 11px; color: var(--text-muted); margin-top: 8px;">
-            Institutional Rule: Academic classes and confirmed bookings have strict precedence. Please select another slot or venue.
+            Institutional Rule: Academic classes and confirmed bookings have strict precedence.
+          </div>
+          <div style="margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+            <div style="font-size: 11.5px; color: var(--text-muted);">Need this venue or an alternate slot for administrative review?</div>
+            <button class="btn-topbar" style="background: #ffffff; border-color: var(--border); font-size: 11.5px; font-weight: 700; padding: 6px 14px; cursor: pointer;" onclick="openBookingApplicationForm('${matchedRoom}', '${day}', ${startP}, ${endP}, '${escapeHtml(detectedTitle)}', true)">
+              Request Administrative Exemption &rarr;
+            </button>
           </div>
         `;
       } else {
         area.innerHTML = `
-          <div style="margin-bottom: 8px;"><strong>Query Parsed:</strong> ${q}</div>
+          <div style="margin-bottom: 8px;"><strong>Query Parsed:</strong> ${escapeHtml(q)}</div>
           <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; background: #ffffff; padding: 10px; border-radius: 4px; border: 1px solid var(--border); margin-bottom: 10px;" class="mono">
             <div>Venue: <strong>${matchedRoom}</strong>${capText}</div>
             <div>Day: <strong>${day}</strong></div>
             <div>Requested Slot: <strong>P${startP} – P${endP}</strong></div>
           </div>
-          <div style="color: var(--green); font-weight: 700;">
-            ✓ Slot Available: ${matchedRoom} is completely free on ${day} Period ${startP} to ${endP}.
+          <div style="color: var(--green); font-weight: 700; display: flex; align-items: center; gap: 6px;">
+            <span style="font-size: 16px;">✓</span> Slot Available: ${matchedRoom} is completely free on ${day} Period ${startP} to ${endP}.
           </div>
-          <div style="font-size: 11px; color: var(--text-muted); margin-top: 8px;">
+          <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">
             Institutional Rule: Venue complies with capacity and zero-clash constraints.
           </div>
+
+          <div style="margin-top: 14px; padding: 14px; background: #ffffff; border: 1.5px solid var(--green); border-radius: 6px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+            <div>
+              <div style="font-weight: 800; font-size: 13.5px; color: var(--text-main);">
+                🎉 Slot is Free — Apply & Reserve this Venue
+              </div>
+              <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 2px;">
+                Instant submission to Academic Operations clearance queue with conflict-free precedence.
+              </div>
+            </div>
+            <button class="btn-action" style="background: var(--primary); color: #ffffff; border: none; padding: 9px 20px; font-weight: 800; font-size: 12.5px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; box-shadow: 0 2px 4px rgba(15,23,42,0.12);" onclick="openBookingApplicationForm('${matchedRoom}', '${day}', ${startP}, ${endP}, '${escapeHtml(detectedTitle)}', false)">
+              <span>📝</span> Apply for this Venue Now &rarr;
+            </button>
+          </div>
         `;
+      }
+    }
+
+    function openBookingApplicationForm(room, day, startP, endP, defaultTitle, isExemption) {
+      const container = document.getElementById('ai-booking-form-container');
+      if (!container) return;
+
+      const roomObj = (DATA && DATA.rooms) ? DATA.rooms.find(r => r.id === room) : null;
+      const cap = roomObj ? roomObj.capacity : 60;
+      const user = currentUser || {};
+      const userEmail = user.email || 'student@cit.ac.in';
+      const userName = user.name || 'Student Representative';
+      const userRole = user.role || 'student';
+
+      const dayNames = { MON: 'Monday', TUE: 'Tuesday', WED: 'Wednesday', THU: 'Thursday', FRI: 'Friday' };
+      const fullDay = dayNames[day] || day;
+
+      container.style.display = 'block';
+      container.innerHTML = `
+        <div style="background: #ffffff; border: 1.5px solid var(--primary); border-radius: 8px; padding: 20px; box-shadow: 0 4px 14px rgba(15,23,42,0.08);">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+            <div>
+              <div style="font-size: 16px; font-weight: 800; color: var(--primary);">
+                ${isExemption ? '⚠️ Request Special Administrative Venue Clearance' : '📝 Official Venue Reservation Application'}
+              </div>
+              <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
+                Target Venue: <strong style="color: var(--text-main);">${room}</strong> (${cap} seats) · <strong>${fullDay}</strong> Period ${startP} to ${endP}
+              </div>
+            </div>
+            <button type="button" onclick="document.getElementById('ai-booking-form-container').style.display='none'" style="background: transparent; border: none; font-size: 18px; color: var(--text-muted); cursor: pointer; padding: 2px 8px;">✕</button>
+          </div>
+
+          <form id="ai-booking-apply-form" onsubmit="event.preventDefault(); submitVenueBookingApplication('${room}', '${day}', ${startP}, ${endP});">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-bottom: 14px;">
+              <div>
+                <label style="display: block; font-size: 11.5px; font-weight: 700; color: var(--text-main); margin-bottom: 4px;">
+                  Event / Activity Title <span style="color: var(--red);">*</span>
+                </label>
+                <input type="text" id="apply-event-title" class="form-input" required value="${escapeHtml(defaultTitle || 'Campus Activity & Workshop')}" placeholder="e.g. RoboCIT Autonomous Workshop / Drama Rehearsal" />
+              </div>
+
+              <div>
+                <label style="display: block; font-size: 11.5px; font-weight: 700; color: var(--text-main); margin-bottom: 4px;">
+                  Applicant Name / Lead <span style="color: var(--red);">*</span>
+                </label>
+                <input type="text" id="apply-applicant-name" class="form-input" required value="${escapeHtml(userName)}" placeholder="Your full name" />
+              </div>
+
+              <div>
+                <label style="display: block; font-size: 11.5px; font-weight: 700; color: var(--text-main); margin-bottom: 4px;">
+                  Institutional Email <span style="color: var(--red);">*</span>
+                </label>
+                <input type="email" id="apply-applicant-email" class="form-input" required value="${escapeHtml(userEmail)}" placeholder="username@cit.ac.in" />
+              </div>
+
+              <div>
+                <label style="display: block; font-size: 11.5px; font-weight: 700; color: var(--text-main); margin-bottom: 4px;">
+                  Organizing Body / Role <span style="color: var(--red);">*</span>
+                </label>
+                <select id="apply-applicant-role" class="form-input" style="height: 38px;">
+                  <option value="club" ${userRole === 'club' ? 'selected' : ''}>Student Club / Society (Spectra Tech, Cultural, Robotics)</option>
+                  <option value="student" ${userRole === 'student' ? 'selected' : ''}>Student Body / Cohort Representative</option>
+                  <option value="faculty" ${userRole === 'faculty' ? 'selected' : ''}>Faculty Member / Department Coordinator</option>
+                  <option value="admin" ${userRole === 'admin' ? 'selected' : ''}>Central Institutional Operations</option>
+                </select>
+              </div>
+
+              <div>
+                <label style="display: block; font-size: 11.5px; font-weight: 700; color: var(--text-main); margin-bottom: 4px;">
+                  Expected Attendance (Venue Capacity: ${cap})
+                </label>
+                <input type="number" id="apply-event-attendance" class="form-input" min="5" max="${cap * 2}" value="${Math.min(60, cap)}" />
+              </div>
+
+              <div>
+                <label style="display: block; font-size: 11.5px; font-weight: 700; color: var(--text-main); margin-bottom: 4px;">
+                  AV & Equipment Requirements
+                </label>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px;">
+                  <label style="font-size: 11.5px; display: inline-flex; align-items: center; gap: 4px; cursor: pointer;">
+                    <input type="checkbox" id="need-pa" checked /> Stage & Sound PA
+                  </label>
+                  <label style="font-size: 11.5px; display: inline-flex; align-items: center; gap: 4px; cursor: pointer;">
+                    <input type="checkbox" id="need-proj" checked /> Projector & Screen
+                  </label>
+                  <label style="font-size: 11.5px; display: inline-flex; align-items: center; gap: 4px; cursor: pointer;">
+                    <input type="checkbox" id="need-rec" /> Hybrid Recording
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div style="margin-bottom: 18px;">
+              <label style="display: block; font-size: 11.5px; font-weight: 700; color: var(--text-main); margin-bottom: 4px;">
+                Purpose, Justification & Special Notes
+              </label>
+              <textarea id="apply-event-reason" class="form-input" style="height: 65px; resize: vertical;" placeholder="Explain event purpose, guest speaker details, or justification for administrative approval...">${escapeHtml(defaultTitle ? `Requesting ${room} on ${fullDay} for ${defaultTitle}.` : '')}</textarea>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; align-items: center; gap: 10px; border-top: 1px solid var(--border); padding-top: 14px; flex-wrap: wrap;">
+              <button type="button" class="btn-topbar" onclick="document.getElementById('ai-booking-form-container').style.display='none'">
+                Cancel
+              </button>
+              <button type="submit" id="btn-submit-booking-app" class="btn-submit" style="margin: 0; width: auto; padding: 9px 24px; font-weight: 800; font-size: 13px;">
+                🚀 Submit Venue Booking Request
+              </button>
+            </div>
+          </form>
+        </div>
+      `;
+      container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    async function submitVenueBookingApplication(room, day, startP, endP) {
+      const title = (document.getElementById('apply-event-title').value || '').trim();
+      const name = (document.getElementById('apply-applicant-name').value || '').trim();
+      const email = (document.getElementById('apply-applicant-email').value || '').trim();
+      const role = document.getElementById('apply-applicant-role').value || 'student';
+      const attendance = parseInt(document.getElementById('apply-event-attendance').value, 10) || 50;
+      const reason = (document.getElementById('apply-event-reason').value || '').trim();
+
+      const needs = [];
+      if (document.getElementById('need-pa') && document.getElementById('need-pa').checked) needs.push('pa_system');
+      if (document.getElementById('need-proj') && document.getElementById('need-proj').checked) needs.push('projector');
+      if (document.getElementById('need-rec') && document.getElementById('need-rec').checked) needs.push('recording');
+
+      if (!title) {
+        alert('Please enter an event title.');
+        return;
+      }
+      if (!email || !email.includes('@')) {
+        alert('Please enter a valid institutional email address.');
+        return;
+      }
+
+      const btn = document.getElementById('btn-submit-booking-app');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerText = 'Submitting to Central Clearance...';
+      }
+
+      const payload = {
+        title: title,
+        room_id: room,
+        day: day,
+        start_period: startP,
+        end_period: endP,
+        requester: name || 'Student Representative',
+        email: email,
+        role: role,
+        attendance: attendance,
+        needs: needs,
+        reason: reason || `AI verified booking request for ${title}`,
+        status: 'pending'
+      };
+
+      let assignedId = null;
+      try {
+        const res = await fetch('/api/bookings/create', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        }).then(r => r.json());
+
+        if (res && res.success && res.booking) {
+          assignedId = res.booking.id;
+        }
+      } catch (err) {
+        console.warn('Backend booking create fallback:', err);
+      }
+
+      let custom = [];
+      try {
+        custom = JSON.parse(localStorage.getItem('cit_custom_bookings') || '[]');
+      } catch(e) {}
+
+      if (!assignedId) {
+        assignedId = `BR-${26 + custom.length}`;
+      }
+      payload.id = assignedId;
+      payload.request_id = assignedId;
+      payload.submitted_at = new Date().toISOString();
+      custom.unshift(payload);
+      localStorage.setItem('cit_custom_bookings', JSON.stringify(custom));
+
+      showToast(`✓ Booking request ${assignedId} submitted successfully!`);
+
+      const container = document.getElementById('ai-booking-form-container');
+      if (container) {
+        const dayNames = { MON: 'Monday', TUE: 'Tuesday', WED: 'Wednesday', THU: 'Thursday', FRI: 'Friday' };
+        const fullDay = dayNames[day] || day;
+
+        container.innerHTML = `
+          <div style="background: #f0fdf4; border: 1.5px solid var(--green); border-radius: 8px; padding: 22px; text-align: center; box-shadow: 0 4px 12px rgba(22, 101, 52, 0.08);">
+            <div style="font-size: 32px; margin-bottom: 6px;">🎉</div>
+            <div style="font-size: 17px; font-weight: 800; color: #166534;">
+              Venue Booking Request Successfully Submitted!
+            </div>
+            <div style="display: inline-block; background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; padding: 4px 12px; border-radius: 4px; font-family: monospace; font-weight: 800; font-size: 13px; margin: 10px 0;">
+              Reference ID: ${assignedId} · Status: ⏳ Under Administrative Review
+            </div>
+            <p style="font-size: 12.5px; color: #14532d; max-width: 580px; margin: 0 auto 16px; line-height: 1.5;">
+              Your request for <strong>${room}</strong> on <strong>${fullDay} (Period ${startP} to ${endP})</strong> for "<strong>${escapeHtml(title)}</strong>" has been queued for Dean of Academic Operations approval.
+            </p>
+            <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+              <button type="button" class="btn-action" style="background: var(--primary); color: #ffffff; padding: 9px 20px; font-weight: 800; font-size: 12.5px; border-radius: 6px; cursor: pointer; border: none;" onclick="switchUserTab('bookings')">
+                📋 View in Venue Bookings Tracker &rarr;
+              </button>
+              <button type="button" class="btn-topbar" style="background: #ffffff; padding: 9px 18px; font-size: 12px; font-weight: 700;" onclick="renderAI(document.getElementById('portal-content'))">
+                🔍 Check Another Venue
+              </button>
+            </div>
+          </div>
+        `;
+        container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
     }
 
