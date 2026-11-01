@@ -1874,7 +1874,7 @@
                 </select>
               ` : timetableFilterType === 'faculty' ? `
                 <select onchange="changeFaculty(this.value)" class="filter-dropdown">
-                  ${DATA.faculty.map(f => `<option value="${f.id}" ${selectedFaculty === f.id ? 'selected' : ''}>${f.id} — ${f.name} (${f.department})</option>`).join('')}
+                  ${DATA.faculty.map(f => `<option value="${f.id}" ${selectedFaculty === f.id ? 'selected' : ''}>Faculty ${f.id} (${f.department})</option>`).join('')}
                 </select>
               ` : `
                 <select onchange="changeRoom(this.value)" class="filter-dropdown">
@@ -1978,7 +1978,7 @@
                               </div>
                               <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(0,0,0,0.06); padding-top: 4px; margin-top: 4px; font-size: 10px; color: var(--text-muted);">
                                 <span>${roomDisplay}</span>
-                                <span>Fac: <strong>${item.faculty_id}</strong></span>
+                                <span>${timetableFilterType === 'faculty' ? `Cohort: <strong>${item.groups.join(', ')}</strong>` : `Fac: <strong>${item.faculty_id}</strong>`}</span>
                               </div>
                             </div>
                           </td>
