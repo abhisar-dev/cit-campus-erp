@@ -1,3 +1,9 @@
+import sys
+try:
+    if sys.stdout and hasattr(sys.stdout, 'reconfigure'):
+        sys.stdout.reconfigure(encoding='utf-8')
+except Exception:
+    pass
 """
 CIT Campus ERP - Automated Professional QA & Security Test Suite
 Designed & Executed by Lead QA Automation & Security Test Engineer
