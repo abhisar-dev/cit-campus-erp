@@ -3074,7 +3074,7 @@ function renderBookings(content) {
       } catch(e) {}
 
       if (!assignedId) {
-        assignedId = `BR-${26 + custom.length}`;
+        assignedId = `BR-${Date.now().toString(36).toUpperCase()}-${Math.floor(100 + Math.random() * 900)}`;
       }
       payload.id = assignedId;
       payload.request_id = assignedId;

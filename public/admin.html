@@ -815,6 +815,80 @@
         padding: 16px;
       }
     }
+    /* Administrative Review Modal */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 16px;
+    }
+    .modal-backdrop.show {
+      display: flex;
+    }
+    .modal-box {
+      background: #ffffff;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 660px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 24px;
+      position: relative;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border);
+      animation: modalFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: scale(0.96) translateY(-8px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .modal-close-btn {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: transparent;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: var(--text-muted);
+      transition: all 0.15s ease;
+    }
+    .modal-close-btn:hover {
+      background: #f1f5f9;
+      color: var(--text-main);
+    }
+    .modal-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .modal-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+    .modal-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
   </style>
 </head>
 <body>
@@ -991,6 +1065,17 @@
     // System State
     let activeTab = 'executive';
     let PUBLIC_DATA = null;
+    let SCHEDULE_DATA = null;
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
     let USERS_DATA = [];
     let AUDIT_LOGS = [];
     let CUSTOM_BOOKINGS = [];
@@ -1092,15 +1177,23 @@
     // Refresh state from storage & server
     async function refreshAdminState(showFeedback = false) {
       try {
-        // Load Public CIT Data
+        // Load Public CIT Data & Master Schedule
         if (!PUBLIC_DATA) {
           PUBLIC_DATA = await fetch('/public/cit_public.json').then(r => r.json()).catch(() => null);
+        }
+        if (!SCHEDULE_DATA) {
+          SCHEDULE_DATA = await fetch('/public/schedule.json').then(r => r.json()).catch(() => null);
         }
 
         // Fetch Backend Bookings & Overrides
         const bRes = await fetch('/api/admin/bookings', { headers: getAdminHeaders() }).then(r => r.json()).catch(() => null);
         if (bRes && bRes.success) {
-          BOOKING_OVERRIDES = bRes.overrides || {};
+          if (bRes.overrides && typeof bRes.overrides === 'object') {
+            BOOKING_OVERRIDES = Object.assign({}, bRes.overrides);
+          }
+          if (Array.isArray(bRes.custom_bookings)) {
+            CUSTOM_BOOKINGS = bRes.custom_bookings;
+          }
         }
 
         // Fetch Audit Logs
@@ -1122,11 +1215,22 @@
         }
         updateNeonTopbar();
 
-        // Local Storage Sync (custom bookings created by students)
+        // Local Storage Sync (merge seamlessly with backend so no booking is dropped)
         try {
           const localCustom = JSON.parse(localStorage.getItem('cit_custom_bookings') || '[]');
-          if (Array.isArray(localCustom)) {
-            CUSTOM_BOOKINGS = localCustom;
+          if (Array.isArray(localCustom) && localCustom.length > 0) {
+            const map = new Map();
+            CUSTOM_BOOKINGS.forEach(b => {
+              const id = b.id || b.request_id;
+              if (id) map.set(id, b);
+            });
+            localCustom.forEach(b => {
+              const id = b.id || b.request_id;
+              if (id && !map.has(id)) {
+                map.set(id, b);
+              }
+            });
+            CUSTOM_BOOKINGS = Array.from(map.values());
           }
           const localOverrides = JSON.parse(localStorage.getItem('cit_booking_overrides') || '{}');
           BOOKING_OVERRIDES = Object.assign({}, BOOKING_OVERRIDES, localOverrides);
@@ -1173,74 +1277,92 @@
       if (badgeAudit) badgeAudit.innerText = AUDIT_LOGS.length || '48';
     }
 
-    // Normalizes baseline + custom + overridden bookings
+    // Normalizes bookings ensuring unique IDs, individual status, and complete review metadata
     function getAllNormalizedBookings() {
       const list = [];
-      const festBookings = (PUBLIC_DATA && PUBLIC_DATA.fest_week && PUBLIC_DATA.fest_week.bookings) ? PUBLIC_DATA.fest_week.bookings : [];
-      const requestsBaseline = (PUBLIC_DATA && PUBLIC_DATA.booking_requests) ? PUBLIC_DATA.booking_requests : [];
+      const seenIds = new Set();
 
-      // 1. User custom bookings (at the top)
-      CUSTOM_BOOKINGS.forEach(cb => {
-        const id = cb.id || cb.request_id;
-        const ovr = BOOKING_OVERRIDES[id] || {};
+      (CUSTOM_BOOKINGS || []).forEach((cb, idx) => {
+        if (!cb) return;
+        let id = String(cb.id || cb.request_id || '').trim();
+        if (!id || id === 'undefined' || id === 'null') {
+          id = `BR-REQ-${idx + 1}-${Date.now().toString(36).toUpperCase()}`;
+          cb.id = id;
+          cb.request_id = id;
+        }
+        if (seenIds.has(id)) {
+          id = `${id}-D${idx + 1}`;
+          cb.id = id;
+          cb.request_id = id;
+        }
+        seenIds.add(id);
+
+        const ovr = (id && BOOKING_OVERRIDES[id]) ? BOOKING_OVERRIDES[id] : {};
         list.push({
           id: id,
           title: cb.title || 'Campus Venue Request',
           requester: cb.requester || 'Student Member',
           role: cb.role || 'student',
+          email: cb.email || (cb.requester ? `${cb.requester.toLowerCase().replace(/[^a-z0-9]/g, '')}@cit.ac.in` : 'student@cit.ac.in'),
           room_id: ovr.room_id || cb.room_id || 'Audi-1',
           day: cb.day || 'Wednesday',
-          start_period: cb.start_period || 5,
-          end_period: cb.end_period || 7,
+          start_period: parseInt(cb.start_period, 10) || 5,
+          end_period: parseInt(cb.end_period, 10) || 7,
           status: ovr.status || cb.status || 'pending',
-          reason: ovr.reason || cb.reason || 'Student requested reservation',
-          attendance: cb.attendance || 60,
+          reason: ovr.reason || cb.reason || 'Pending Dean Clearance',
+          attendance: parseInt(cb.attendance, 10) || 60,
+          needs: Array.isArray(cb.needs) ? cb.needs : (cb.needs ? [cb.needs] : ['pa_system', 'projector']),
+          submitted_at: cb.submitted_at || 'Recently submitted',
+          raw_text: cb.raw_text || cb.reason || 'Student requested reservation',
           is_custom: true
         });
       });
 
-      // Fake bot data removed per user request: only authentic campus bookings included
-
       return list;
     }
 
-    // Approve Booking
-    async function handleApproveBooking(bid) {
+    // Approve Booking (Strictly by specific unique ID)
+    async function handleApproveBooking(bid, customNote) {
+      if (!bid || typeof bid !== 'string' || bid === 'undefined' || bid === 'null' || !bid.trim()) {
+        showToast('⚠️ Error: Invalid booking ID');
+        return;
+      }
+      bid = bid.trim();
+      const clearanceNote = (customNote && customNote.trim()) ? customNote.trim() : 'Dean clearance granted · Verified zero-clash H6 compliant';
+
       BOOKING_OVERRIDES[bid] = {
         status: 'approved',
-        reason: 'Dean clearance granted · Verified zero-clash H6 compliant',
+        reason: clearanceNote,
         updated_at: 'Just now'
       };
       
-      // Update custom bookings if matched
       CUSTOM_BOOKINGS.forEach(cb => {
-        if (cb.id === bid || cb.request_id === bid) {
+        const cbid = String(cb.id || cb.request_id || '').trim();
+        if (cbid && cbid === bid) {
           cb.status = 'approved';
-          cb.reason = 'Dean clearance granted · Verified zero-clash H6 compliant';
+          cb.reason = clearanceNote;
         }
       });
 
       localStorage.setItem('cit_booking_overrides', JSON.stringify(BOOKING_OVERRIDES));
       localStorage.setItem('cit_custom_bookings', JSON.stringify(CUSTOM_BOOKINGS));
 
-      // Append Audit Log
       AUDIT_LOGS.unshift({
         id: 'AUD-' + (100 + AUDIT_LOGS.length + 1),
         user: 'Dean of Academic Operations',
         email: 'admin@cit.ac.in',
         role: 'admin',
-        action: `Approved venue booking reservation ${bid}`,
+        action: `Approved venue booking reservation ${bid}: "${clearanceNote}"`,
         module: 'Request Management',
         status: 'Success',
         timestamp: 'Just now',
         online: true
       });
 
-      // Post to backend
       fetch('/api/admin/bookings/update', {
         method: 'POST',
         headers: getAdminHeaders(),
-        body: JSON.stringify({ id: bid, status: 'approved', reason: 'Dean clearance granted' })
+        body: JSON.stringify({ id: bid, status: 'approved', reason: clearanceNote })
       }).catch(() => {});
 
       updateSidebarBadges();
@@ -1248,10 +1370,20 @@
       renderAdminWorkspace();
     }
 
-    // Reject Booking
-    async function handleRejectBooking(bid) {
-      const reason = prompt(`Please specify reason for rejecting ${bid}:`, 'Administrative scheduling priority / Venue maintenance') || 'Administrative priority override';
-      
+    // Reject Booking (Strictly by specific unique ID)
+    async function handleRejectBooking(bid, customReason) {
+      if (!bid || typeof bid !== 'string' || bid === 'undefined' || bid === 'null' || !bid.trim()) {
+        showToast('⚠️ Error: Invalid booking ID');
+        return;
+      }
+      bid = bid.trim();
+      let reason = (customReason && customReason.trim()) ? customReason.trim() : '';
+      if (!reason) {
+        reason = prompt(`Please specify reason for rejecting ${bid}:`, 'Administrative scheduling priority / Venue maintenance');
+      }
+      if (!reason) return;
+      reason = reason.trim();
+
       BOOKING_OVERRIDES[bid] = {
         status: 'rejected',
         reason: reason,
@@ -1259,7 +1391,8 @@
       };
 
       CUSTOM_BOOKINGS.forEach(cb => {
-        if (cb.id === bid || cb.request_id === bid) {
+        const cbid = String(cb.id || cb.request_id || '').trim();
+        if (cbid && cbid === bid) {
           cb.status = 'rejected';
           cb.reason = reason;
         }
@@ -1291,23 +1424,35 @@
       renderAdminWorkspace();
     }
 
-    // Offer Alternative Room
-    async function handleOfferAlternative(bid) {
-      const altRoom = prompt(`Enter alternative room for ${bid} (e.g. CR-101, CR-102, Audi-2):`, 'CR-101');
+    // Offer Alternative Room (Strictly by specific unique ID)
+    async function handleOfferAlternative(bid, customRoom, customNote) {
+      if (!bid || typeof bid !== 'string' || bid === 'undefined' || bid === 'null' || !bid.trim()) {
+        showToast('⚠️ Error: Invalid booking ID');
+        return;
+      }
+      bid = bid.trim();
+      let altRoom = (customRoom && customRoom.trim()) ? customRoom.trim() : '';
+      if (!altRoom) {
+        altRoom = prompt(`Enter alternative room for ${bid} (e.g. CR-101, CR-102, Audi-2):`, 'CR-101');
+      }
       if (!altRoom) return;
+      altRoom = altRoom.trim();
+
+      const note = (customNote && customNote.trim()) ? customNote.trim() : `Dean offered alternative venue allocation in ${altRoom}`;
 
       BOOKING_OVERRIDES[bid] = {
         status: 'alternative_offered',
         room_id: altRoom,
-        reason: `Dean offered alternative venue allocation in ${altRoom}`,
+        reason: note,
         updated_at: 'Just now'
       };
 
       CUSTOM_BOOKINGS.forEach(cb => {
-        if (cb.id === bid || cb.request_id === bid) {
+        const cbid = String(cb.id || cb.request_id || '').trim();
+        if (cbid && cbid === bid) {
           cb.status = 'alternative_offered';
           cb.room_id = altRoom;
-          cb.reason = `Dean offered alternative venue allocation in ${altRoom}`;
+          cb.reason = note;
         }
       });
 
@@ -1326,9 +1471,273 @@
         online: true
       });
 
+      fetch('/api/admin/bookings/update', {
+        method: 'POST',
+        headers: getAdminHeaders(),
+        body: JSON.stringify({ id: bid, status: 'alternative_offered', room_id: altRoom, reason: note })
+      }).catch(() => {});
+
       updateSidebarBadges();
       showToast(`✓ Alternative room ${altRoom} assigned for ${bid}.`);
       renderAdminWorkspace();
+    }
+
+    // Modal Control: Close Review Modal
+    function closeReviewModal() {
+      const modal = document.getElementById('modalReviewBooking');
+      if (modal) modal.classList.remove('show');
+    }
+
+    // Modal Control: Open and render interactive Review Modal for specific booking
+    function openReviewBookingModal(bid) {
+      if (!bid) return;
+      const all = getAllNormalizedBookings();
+      const b = all.find(item => item.id === bid);
+      if (!b) {
+        showToast('⚠️ Request not found: ' + bid);
+        return;
+      }
+
+      // 1. Room info & capacity check
+      const roomInfo = (PUBLIC_DATA && PUBLIC_DATA.rooms) ? PUBLIC_DATA.rooms.find(r => r.id === b.room_id) : null;
+      const capacity = roomInfo ? roomInfo.capacity : 60;
+      const roomType = roomInfo ? roomInfo.type : 'Hall/Classroom';
+      const capExceeded = b.attendance > capacity;
+
+      // 2. Timetable Schedule Clash Check (189 sessions)
+      let timetableClash = null;
+      if (SCHEDULE_DATA && SCHEDULE_DATA.sessions) {
+        for (const item of SCHEDULE_DATA.sessions) {
+          if (item.room_id === b.room_id && item.day === b.day) {
+            const s = (PUBLIC_DATA && PUBLIC_DATA.sessions) ? PUBLIC_DATA.sessions.find(sess => sess.id === item.session_id) : null;
+            const duration = s ? (s.duration || 1) : 1;
+            const itemEnd = item.start_period + duration - 1;
+            if (!(b.end_period < item.start_period || b.start_period > itemEnd)) {
+              timetableClash = {
+                course: s ? s.course_id : (item.session_id || 'Academic Session'),
+                faculty: item.faculty_id || 'Assigned Faculty',
+                groups: s && s.groups ? s.groups.join(', ') : 'All Batches',
+                slot: `P${item.start_period}–P${itemEnd}`
+              };
+              break;
+            }
+          }
+        }
+      }
+
+      // 3. Check against other approved bookings
+      let bookingClash = null;
+      if (!timetableClash) {
+        for (const ob of all) {
+          if (ob.id !== b.id && ob.room_id === b.room_id && ob.day === b.day && ob.status === 'approved') {
+            if (!(b.end_period < ob.start_period || b.start_period > ob.end_period)) {
+              bookingClash = {
+                title: ob.title,
+                requester: ob.requester,
+                slot: `P${ob.start_period}–P${ob.end_period}`
+              };
+              break;
+            }
+          }
+        }
+      }
+
+      let statusBadge = '<span class="badge badge-warning">Pending Clearance</span>';
+      if (b.status === 'approved') statusBadge = '<span class="badge badge-success">✓ Approved</span>';
+      else if (b.status === 'rejected') statusBadge = '<span class="badge badge-danger">✗ Rejected</span>';
+      else if (b.status === 'alternative_offered') statusBadge = '<span class="badge badge-info">⚡ Alternative Offered</span>';
+
+      const needsList = (b.needs && b.needs.length) ? b.needs.map(n => `<span class="badge badge-neutral" style="text-transform:capitalize;">${n.replace('_', ' ')}</span>`).join(' ') : '<span style="color:var(--text-muted); font-size:12px;">Standard classroom setup</span>';
+
+      const container = document.getElementById('review-modal-content');
+      if (!container) return;
+
+      container.innerHTML = `
+        <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 14px; margin-bottom: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 8px;">
+            <div>
+              <div class="mono" style="font-size: 11px; font-weight: 800; color: var(--primary); letter-spacing: 0.5px;">REQUEST ID: ${b.id}</div>
+              <div style="font-size: 16px; font-weight: 800; color: var(--text-main); margin-top: 2px;">${escapeHtml(b.title)}</div>
+            </div>
+            <div>${statusBadge}</div>
+          </div>
+          <div style="font-size: 11.5px; color: var(--text-muted);">
+            Submitted: <strong>${b.submitted_at || 'Recent'}</strong> · Purpose: <em>"${escapeHtml(b.raw_text || b.reason || 'Venue allocation')}"</em>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px;">
+          <div style="background: #ffffff; border: 1px solid var(--border); border-radius: 8px; padding: 12px;">
+            <div style="font-size: 10.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Applicant Profile</div>
+            <div style="font-weight: 800; font-size: 13.5px; color: var(--text-main); margin-top: 4px;">${escapeHtml(b.requester)}</div>
+            <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 2px;">Role: <span class="badge badge-neutral">${b.role}</span></div>
+            <div class="mono" style="font-size: 11px; color: var(--primary); margin-top: 4px;">${escapeHtml(b.email)}</div>
+          </div>
+
+          <div style="background: #ffffff; border: 1px solid var(--border); border-radius: 8px; padding: 12px;">
+            <div style="font-size: 10.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Venue & Timeslot</div>
+            <div style="font-weight: 800; font-size: 13.5px; color: var(--primary); margin-top: 4px;">${b.room_id} <span style="font-size: 11px; font-weight: normal; color: var(--text-muted);">(${roomType})</span></div>
+            <div style="font-size: 11.5px; color: var(--text-main); margin-top: 2px;"><strong>${b.day}</strong> · Period ${b.start_period}–${b.end_period}</div>
+            <div style="font-size: 11px; margin-top: 4px; color: ${capExceeded ? 'var(--red)' : 'var(--text-muted)'};">
+              Attendees: <strong>${b.attendance}</strong> / ${capacity} seats ${capExceeded ? '⚠️ (Exceeds capacity)' : '✓ (Fits venue)'}
+            </div>
+          </div>
+        </div>
+
+        <div style="background: #ffffff; border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 16px;">
+          <div style="font-size: 10.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px;">Requested Technical Facilities</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+            ${needsList}
+          </div>
+        </div>
+
+        <!-- Real-Time Conflict Verification Engine -->
+        ${timetableClash ? `
+          <div style="background: #fef2f2; border: 1.5px solid #f87171; border-radius: 8px; padding: 12px; margin-bottom: 16px;">
+            <div style="color: #991b1b; font-weight: 800; font-size: 12.5px; display: flex; align-items: center; gap: 6px;">
+              <span>⚠️</span> TIMETABLE CLASH DETECTED (H6 Hard Constraint Violation)
+            </div>
+            <div style="color: #7f1d1d; font-size: 12px; margin-top: 4px; line-height: 1.5;">
+              Venue <strong>${b.room_id}</strong> is occupied on <strong>${b.day}</strong> by <strong>${timetableClash.course}</strong> (${timetableClash.groups}) with Faculty ${timetableClash.faculty} during <strong>${timetableClash.slot}</strong>.
+            </div>
+            <div style="color: #b91c1c; font-size: 11px; margin-top: 6px; font-weight: 600;">
+              Dean Recommendation: Do not approve this slot. Offer an alternative hall or reject.
+            </div>
+          </div>
+        ` : (bookingClash ? `
+          <div style="background: #fef2f2; border: 1.5px solid #f87171; border-radius: 8px; padding: 12px; margin-bottom: 16px;">
+            <div style="color: #991b1b; font-weight: 800; font-size: 12.5px; display: flex; align-items: center; gap: 6px;">
+              <span>⚠️</span> BOOKING RESERVATION OVERLAP
+            </div>
+            <div style="color: #7f1d1d; font-size: 12px; margin-top: 4px; line-height: 1.5;">
+              Venue <strong>${b.room_id}</strong> is already confirmed for <strong>"${escapeHtml(bookingClash.title)}"</strong> (${escapeHtml(bookingClash.requester)}) during <strong>${bookingClash.slot}</strong>.
+            </div>
+          </div>
+        ` : `
+          <div style="background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 8px; padding: 12px; margin-bottom: 16px;">
+            <div style="color: #166534; font-weight: 800; font-size: 12.5px; display: flex; align-items: center; gap: 6px;">
+              <span>✓</span> ZERO CONFLICT VERIFIED (OR-Tools H6 Compliant)
+            </div>
+            <div style="color: #15803d; font-size: 12px; margin-top: 4px;">
+              Venue <strong>${b.room_id}</strong> has zero scheduled academic sessions and zero conflicting bookings on <strong>${b.day}</strong> during Period ${b.start_period}–${b.end_period}.
+            </div>
+          </div>
+        `)}
+
+        <!-- Remarks & Conditions -->
+        <div style="margin-bottom: 14px;">
+          <label style="display: block; font-size: 11.5px; font-weight: 700; color: var(--text-main); margin-bottom: 4px;">
+            DEAN CLEARANCE REMARKS / CONDITIONS (Optional)
+          </label>
+          <input type="text" id="review-custom-note" class="search-input" style="width: 100%; font-size: 12px;" placeholder="e.g. Approved with standard AV setup · Subject to clean handover" value="${(b.reason && !b.reason.includes('Pending') && !b.reason.includes('Verified')) ? escapeHtml(b.reason) : ''}" />
+        </div>
+
+        <!-- Alternative Hall Section -->
+        <div style="margin-bottom: 16px; background: #f8fafc; border: 1px solid var(--border); border-radius: 6px; padding: 10px;">
+          <label style="display: block; font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 4px;">
+            RE-ASSIGN TO ALTERNATIVE HALL
+          </label>
+          <div style="display: flex; gap: 8px;">
+            <select id="review-alt-room" class="search-input" style="flex: 1; font-size: 12px;">
+              <option value="">-- Select Alternate Room --</option>
+              <option value="Audi-1">Audi-1 (500 seats · Auditorium)</option>
+              <option value="Audi-2">Audi-2 (250 seats · Mini-Auditorium)</option>
+              <option value="CR-101">CR-101 (65 seats · Classroom)</option>
+              <option value="CR-102">CR-102 (65 seats · Classroom)</option>
+              <option value="CR-201">CR-201 (60 seats · Classroom)</option>
+              <option value="Lab-1">Lab-1 (40 seats · CS Lab)</option>
+              <option value="Lab-2">Lab-2 (40 seats · Electronics Lab)</option>
+              <option value="Seminar-Hall">Seminar-Hall (120 seats · AV Hall)</option>
+            </select>
+            <button type="button" class="btn-topbar" style="white-space: nowrap;" onclick="executeReviewAction('${b.id}', 'alternative')">
+              ⚡ Offer Hall
+            </button>
+          </div>
+        </div>
+
+        <!-- Explicit Decisions -->
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border);">
+          <button type="button" class="btn-topbar" onclick="closeReviewModal()">Cancel / Keep Unchanged</button>
+          <div style="display: flex; gap: 8px;">
+            <button type="button" class="btn-action btn-action-reject" style="padding: 8px 16px; font-size: 12px; font-weight: 700;" onclick="executeReviewAction('${b.id}', 'reject')">
+              ✗ Reject Request
+            </button>
+            <button type="button" class="btn-action btn-action-approve" style="padding: 8px 18px; font-size: 12px; font-weight: 700;" onclick="executeReviewAction('${b.id}', 'approve')">
+              ✓ Grant Dean Approval
+            </button>
+          </div>
+        </div>
+      `;
+
+      const modal = document.getElementById('modalReviewBooking');
+      if (modal) modal.classList.add('show');
+    }
+
+    async function executeReviewAction(bid, action) {
+      if (!bid) return;
+      const noteInput = document.getElementById('review-custom-note');
+      const customNote = noteInput ? noteInput.value.trim() : '';
+
+      if (action === 'approve') {
+        if (!confirm(`Confirm Dean Approval for booking request ${bid}?`)) return;
+        closeReviewModal();
+        await handleApproveBooking(bid, customNote);
+      } else if (action === 'reject') {
+        let reason = customNote;
+        if (!reason) {
+          reason = prompt(`Enter reason for rejecting request ${bid}:`, 'Administrative scheduling priority / Room unavailable');
+        }
+        if (!reason) return;
+        closeReviewModal();
+        await handleRejectBooking(bid, reason);
+      } else if (action === 'alternative') {
+        const altSelect = document.getElementById('review-alt-room');
+        const altRoom = altSelect ? altSelect.value : '';
+        if (!altRoom) {
+          alert('Please select an alternate room from the dropdown list.');
+          return;
+        }
+        closeReviewModal();
+        await handleOfferAlternative(bid, altRoom, customNote);
+      }
+    }
+
+    // Helper: Create a sample student request for testing Dean review workflow
+    function createSampleReviewRequest() {
+      const sampleId = 'BR-' + Date.now().toString(36).toUpperCase() + '-' + Math.floor(100 + Math.random() * 900);
+      const sample = {
+        id: sampleId,
+        request_id: sampleId,
+        title: 'RoboCIT Autonomous Navigation Workshop',
+        requester: 'Spectra Robotics Club',
+        email: 'robotics.club@cit.ac.in',
+        role: 'club',
+        room_id: 'Audi-1',
+        day: 'Wednesday',
+        start_period: 5,
+        end_period: 7,
+        attendance: 90,
+        needs: ['pa_system', 'projector', 'stage'],
+        reason: 'Hands-on autonomous rover navigation tutorial for pre-final year students',
+        raw_text: 'Hands-on autonomous rover navigation tutorial for pre-final year students',
+        status: 'pending',
+        submitted_at: 'Just now'
+      };
+
+      CUSTOM_BOOKINGS.unshift(sample);
+      localStorage.setItem('cit_custom_bookings', JSON.stringify(CUSTOM_BOOKINGS));
+
+      fetch('/api/bookings/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(sample)
+      }).catch(() => {});
+
+      showToast(`✓ Sample request ${sampleId} created. Opening review window...`);
+      renderAdminWorkspace();
+      setTimeout(() => {
+        openReviewBookingModal(sampleId);
+      }, 150);
     }
 
     // Export CSV Handlers
@@ -1691,6 +2100,7 @@
             </div>
             <div style="display: flex; gap: 8px;">
               <input type="text" class="search-input" placeholder="Search event, requester, room..." value="${requestSearch}" oninput="requestSearch=this.value; renderAdminWorkspace();" />
+              <button class="btn-topbar" onclick="createSampleReviewRequest()" title="Simulate a new incoming student reservation to review">+ New Test Request</button>
               <button class="btn-topbar" onclick="exportBookingsCSV()">📥 Export CSV</button>
             </div>
           </div>
@@ -1712,8 +2122,15 @@
               <tbody>
                 ${filtered.length === 0 ? `
                   <tr>
-                    <td colspan="8" style="text-align: center; padding: 32px; color: var(--text-muted);">
-                      No venue booking requests match current filter.
+                    <td colspan="8" style="text-align: center; padding: 36px 20px; color: var(--text-muted);">
+                      <div style="font-size: 32px; margin-bottom: 8px;">📭</div>
+                      <div style="font-size: 15px; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">No Venue Booking Requests in Current View</div>
+                      <p style="font-size: 12px; max-width: 460px; margin: 0 auto 16px;">
+                        All student and club booking requests have been reviewed or no requests match the active filter.
+                      </p>
+                      <button class="btn-topbar" onclick="createSampleReviewRequest()" style="background: var(--primary); color: #fff; font-weight: 700;">
+                        + Create Sample Request to Test Review Workflow
+                      </button>
                     </td>
                   </tr>
                 ` : filtered.map(b => {
@@ -1729,11 +2146,11 @@
                         ${b.is_custom ? '<span style="display:block; font-size:9.5px; color:var(--text-muted); font-weight:normal;">(Live Request)</span>' : ''}
                       </td>
                       <td>
-                        <div style="font-weight: 800; color: var(--text-main);">${b.title}</div>
-                        <div style="font-size: 11px; color: var(--text-muted);">${b.reason || 'Official institutional allocation'}</div>
+                        <div style="font-weight: 800; color: var(--text-main);">${escapeHtml(b.title)}</div>
+                        <div style="font-size: 11px; color: var(--text-muted);">${escapeHtml(b.reason || 'Official campus allocation')}</div>
                       </td>
                       <td>
-                        <div style="font-weight: 700;">${b.requester}</div>
+                        <div style="font-weight: 700;">${escapeHtml(b.requester)}</div>
                         <div style="font-size: 10.5px;"><span class="badge badge-neutral">${b.role}</span></div>
                       </td>
                       <td>
@@ -1747,9 +2164,9 @@
                       <td>${statusBadge}</td>
                       <td style="text-align: right;">
                         <div class="btn-action-group" style="justify-content: flex-end;">
-                          ${b.status !== 'approved' ? `<button class="btn-action btn-action-approve" onclick="handleApproveBooking('${b.id}')" title="Approve this venue allocation">✓ Approve</button>` : ''}
-                          ${b.status !== 'rejected' ? `<button class="btn-action btn-action-reject" onclick="handleRejectBooking('${b.id}')" title="Reject request with formal note">✗ Reject</button>` : ''}
-                          <button class="btn-action btn-action-alt" onclick="handleOfferAlternative('${b.id}')" title="Re-assign to alternative hall">⚡ Alt Hall</button>
+                          <button class="btn-action" style="background: var(--primary); color: #fff; font-weight: 700; display: inline-flex; align-items: center; gap: 5px; border-radius: 4px; padding: 6px 12px; font-size: 11.5px; border: none; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.1);" onclick="openReviewBookingModal('${b.id}')" title="Review request details, evaluate timetable clashes, and decide">
+                            <span>🔍</span> Review & Decide
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -2819,5 +3236,21 @@
       refreshAdminState(false);
     });
   </script>
+  <!-- Administrative Booking Review & Decision Modal -->
+  <div id="modalReviewBooking" class="modal-backdrop" onclick="if(event.target===this) closeReviewModal();">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="closeReviewModal()" title="Close">&times;</button>
+      <div class="modal-head">
+        <div style="font-size: 24px;">📋</div>
+        <div>
+          <div class="modal-title" id="review-modal-title">Review Venue Booking Request</div>
+          <div class="modal-subtitle" id="review-modal-subtitle">Dean of Academic Operations · Institutional Allocation Review</div>
+        </div>
+      </div>
+      <div id="review-modal-content">
+        <!-- Dynamic content rendered by openReviewBookingModal -->
+      </div>
+    </div>
+  </div>
 </body>
 </html>

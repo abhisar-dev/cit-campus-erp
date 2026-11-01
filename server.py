@@ -1283,13 +1283,18 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
             self.send_header("Access-Control-Allow-Origin", "*")
             self.end_headers()
             try:
-                bid = data.get("id") or data.get("booking_id") or data.get("request_id")
+                bid = str(data.get("id") or data.get("booking_id") or data.get("request_id") or "").strip()
+                if not bid or bid in ("None", "null", "undefined"):
+                    self.wfile.write(json.dumps({"success": False, "message": "Invalid or missing booking ID"}).encode("utf-8"))
+                    return
+
                 new_status = data.get("status", "approved")
                 reason = data.get("reason", "")
                 alt_room = data.get("room_id") or data.get("alternative_room", "")
                 
                 for cb in CUSTOM_BOOKINGS:
-                    if (cb.get("id") == bid) or (cb.get("request_id") == bid):
+                    cbid = str(cb.get("id") or cb.get("request_id") or "").strip()
+                    if cbid and cbid == bid:
                         cb["status"] = new_status
                         if reason: cb["reason"] = reason
                         if alt_room: cb["room_id"] = alt_room
@@ -1317,7 +1322,7 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
                 save_persistent_db()
             except Exception:
                 pass
-            self.wfile.write(json.dumps({"success": True, "overrides": BOOKING_OVERRIDES}).encode("utf-8"))
+            self.wfile.write(json.dumps({"success": True, "overrides": BOOKING_OVERRIDES, "id": bid, "status": new_status}).encode("utf-8"))
             return
 
         if url.path == "/api/bookings/create":
@@ -1329,7 +1334,9 @@ class ERPHandler(http.server.SimpleHTTPRequestHandler):
             data = {}
             try:
                 data = json.loads(body)
-                bid = data.get("id") or f"BR-{26 + len(CUSTOM_BOOKINGS)}"
+                bid = str(data.get("id") or data.get("request_id") or "").strip()
+                if not bid or bid in ("None", "null", "undefined"):
+                    bid = f"BR-{int(time.time()*1000)%1000000:06d}"
                 data["id"] = bid
                 data["request_id"] = bid
                 if "status" not in data:
